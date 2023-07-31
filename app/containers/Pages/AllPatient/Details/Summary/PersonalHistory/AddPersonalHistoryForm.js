@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import css from "dan-styles/Form.scss";
 import { Box, Button, Grid } from "@mui/material";
 import Send from "@mui/icons-material/Send";
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete from "@mui/material/Autocomplete";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
 import { FloatingPanel, TextField } from "dan-components";
 import apiCall from "dan-redux/apiInterface";
@@ -19,7 +19,7 @@ function AddPersonalHistoryForm(props) {
   const { height } = useWindowDimensions();
 
   useEffect(() => {
-    setEditData(data)
+    setEditData(data);
   }, []);
 
   const postPesronalHistory = async (
@@ -37,7 +37,7 @@ function AddPersonalHistoryForm(props) {
         }
       })
       .catch((Error) => {
-        console.log('Error:', Error)
+        console.log("Error:", Error);
         let ErrorMessage = Error.ErrorMessage;
         if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
           ErrorMessage = Error.ErrorMessage.join("\n");
@@ -57,21 +57,21 @@ function AddPersonalHistoryForm(props) {
       <Formik
         initialValues={{
           patientRef: patient && patient.patientRef,
-          personalRef: editData ? editData['personal_id'] : '',
-          handednessType: editData ? editData['handedness_type'] : '',
-          education: editData ? editData['education'] : '',
-          occupation: editData ? editData['occupation'] : '',
-          marriedStatus: editData ? editData['married_status'] : '',
-          diet: editData ? editData['diet'] : '',
-          mealPattern: editData ? editData['meal_pattern'] : '',
-          averageCalories: editData ? editData['average_calories'] : '',
-          weeklyNightShiftWork: editData ? editData['weekly_night_shift'] : '',
-          sleepType: editData ? editData['sleep_type'] : '',
-          averageBedTime: editData ? editData['average_bed_time'] : '',
-          averageWakeUpTime: editData ? editData['average_wake_up_time'] : '',
-          bowelFrequency: editData ? editData['bowel_frequency'] : '',
-          bladderFrequency: editData ? editData['bladder_frequency'] : '',
-          remarks: editData ? editData['remarks'] : '',
+          personalRef: editData ? editData["personal_id"] : "",
+          handednessType: editData ? editData["handedness_type"] : "",
+          education: editData ? editData["education"] : "",
+          occupation: editData ? editData["occupation"] : "",
+          marriedStatus: editData ? editData["married_status"] : "",
+          diet: editData ? editData["diet"] : "",
+          mealPattern: editData ? editData["meal_pattern"] : "",
+          averageCalories: editData ? editData["average_calories"] : "",
+          weeklyNightShiftWork: editData ? editData["weekly_night_shift"] : "",
+          sleepType: editData ? editData["sleep_type"] : "",
+          averageBedTime: editData ? editData["average_bed_time"] : "",
+          averageWakeUpTime: editData ? editData["average_wake_up_time"] : "",
+          bowelFrequency: editData ? editData["bowel_frequency"] : "",
+          bladderFrequency: editData ? editData["bladder_frequency"] : "",
+          remarks: editData ? editData["remarks"] : "",
         }}
         enableReinitialize={true}
         validationSchema={personalHistorySchema}
@@ -112,7 +112,7 @@ function AddPersonalHistoryForm(props) {
                   justifyContent="space-between"
                   alignItems="center"
                 >
-                  <Grid item xs={12} sm={12}>
+                  {/* <Grid item xs={12} sm={12}>
                     <Autocomplete
                       name="handednessType"
                       options={["None", "Right", "Left"]}
@@ -132,12 +132,12 @@ function AddPersonalHistoryForm(props) {
                         />
                       )}
                     />
-                  </Grid>
+                  </Grid> */}
                   <Grid item xs={12} sm={6}>
                     <Autocomplete
                       id="free-solo-demo"
                       freeSolo
-                      value={values.education || ''}
+                      value={values.education || ""}
                       options={[
                         "Doctorate",
                         "Post Graduate",
@@ -169,7 +169,7 @@ function AddPersonalHistoryForm(props) {
                         "Buisness Analyst",
                         "Artist",
                       ]}
-                      value={values.occupation || ''}
+                      value={values.occupation || ""}
                       onChange={(event, newVal) => {
                         setFieldValue("occupation", newVal);
                       }}
@@ -179,10 +179,12 @@ function AddPersonalHistoryForm(props) {
                           variant="standard"
                           label="Occupation"
                           placeholder="Select Occupation"
-                          value={values.occupation || ''}
+                          value={values.occupation || ""}
                           onChange={handleChange("Occupation")}
                           onBlur={handleBlur}
-                          helperText={touched.occupation ? errors.occupation : ""}
+                          helperText={
+                            touched.occupation ? errors.occupation : ""
+                          }
                           error={touched.occupation ? errors.occupation : ""}
                         />
                       )}
@@ -192,7 +194,7 @@ function AddPersonalHistoryForm(props) {
                     <Autocomplete
                       name="marriedStatus"
                       options={["Married", "Unmarried", "Divorced"]}
-                      value={values.marriedStatus || ''}
+                      value={values.marriedStatus || ""}
                       onChange={(event, newVal) => {
                         setFieldValue("marriedStatus", newVal);
                       }}
@@ -203,8 +205,12 @@ function AddPersonalHistoryForm(props) {
                           label="Married Status"
                           placeholder="Select Married Status"
                           onBlur={handleBlur}
-                          helperText={touched.marriedStatus ? errors.marriedStatus : ""}
-                          error={touched.marriedStatus ? errors.marriedStatus : ""}
+                          helperText={
+                            touched.marriedStatus ? errors.marriedStatus : ""
+                          }
+                          error={
+                            touched.marriedStatus ? errors.marriedStatus : ""
+                          }
                         />
                       )}
                     />
@@ -218,7 +224,7 @@ function AddPersonalHistoryForm(props) {
                         "Vegetarian",
                         "Vegan",
                       ]}
-                      value={values.diet || ''}
+                      value={values.diet || ""}
                       onChange={(event, newVal) => {
                         setFieldValue("diet", newVal);
                       }}
@@ -244,7 +250,7 @@ function AddPersonalHistoryForm(props) {
                         "Lunch-Dinner",
                         "Breakfast-Lunch-Dinner",
                       ]}
-                      value={values.mealPattern || ''}
+                      value={values.mealPattern || ""}
                       onChange={(event, newVal) => {
                         setFieldValue("mealPattern", newVal);
                       }}
@@ -255,7 +261,9 @@ function AddPersonalHistoryForm(props) {
                           label="MealPattern"
                           placeholder="Daily average meal pattern"
                           onBlur={handleBlur}
-                          helperText={touched.mealPattern ? errors.mealPattern : ""}
+                          helperText={
+                            touched.mealPattern ? errors.mealPattern : ""
+                          }
                           error={touched.mealPattern ? errors.mealPattern : ""}
                         />
                       )}
@@ -268,11 +276,15 @@ function AddPersonalHistoryForm(props) {
                       label="Daily average calories"
                       placeholder="Enter daily average calories"
                       type="text"
-                      value={values.averageCalories || ''}
+                      value={values.averageCalories || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.averageCalories ? errors.averageCalories : ""}
-                      error={touched.averageCalories ? errors.averageCalories : ""}
+                      helperText={
+                        touched.averageCalories ? errors.averageCalories : ""
+                      }
+                      error={
+                        touched.averageCalories ? errors.averageCalories : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>
@@ -281,11 +293,19 @@ function AddPersonalHistoryForm(props) {
                       name="weeklyNightShiftWork"
                       label="Night Sifts in a week if any"
                       placeholder="2 days (Tuesday, Thusrday)"
-                      value={values.weeklyNightShiftWork || ''}
+                      value={values.weeklyNightShiftWork || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.weeklyNightShiftWork ? errors.weeklyNightShiftWork : ""}
-                      error={touched.weeklyNightShiftWork ? errors.weeklyNightShiftWork : ""}
+                      helperText={
+                        touched.weeklyNightShiftWork
+                          ? errors.weeklyNightShiftWork
+                          : ""
+                      }
+                      error={
+                        touched.weeklyNightShiftWork
+                          ? errors.weeklyNightShiftWork
+                          : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>
@@ -297,7 +317,7 @@ function AddPersonalHistoryForm(props) {
                         "Monophasic sleep",
                         "Individual’s sleep pattern",
                       ].map((option) => option)}
-                      value={values.sleepType || ''}
+                      value={values.sleepType || ""}
                       onChange={(event, newVal) => {
                         setFieldValue("sleepType", newVal);
                       }}
@@ -324,8 +344,12 @@ function AddPersonalHistoryForm(props) {
                       value={values.averageBedTime}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.averageBedTime ? errors.averageBedTime : ""}
-                      error={touched.averageBedTime ? errors.averageBedTime : ""}
+                      helperText={
+                        touched.averageBedTime ? errors.averageBedTime : ""
+                      }
+                      error={
+                        touched.averageBedTime ? errors.averageBedTime : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -338,8 +362,16 @@ function AddPersonalHistoryForm(props) {
                       value={values.averageWakeUpTime}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.averageWakeUpTime ? errors.averageWakeUpTime : ""}
-                      error={touched.averageWakeUpTime ? errors.averageWakeUpTime : ""}
+                      helperText={
+                        touched.averageWakeUpTime
+                          ? errors.averageWakeUpTime
+                          : ""
+                      }
+                      error={
+                        touched.averageWakeUpTime
+                          ? errors.averageWakeUpTime
+                          : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -351,8 +383,12 @@ function AddPersonalHistoryForm(props) {
                       value={values.bowelFrequency}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.bowelFrequency ? errors.bowelFrequency : ""}
-                      error={touched.bowelFrequency ? errors.bowelFrequency : ""}
+                      helperText={
+                        touched.bowelFrequency ? errors.bowelFrequency : ""
+                      }
+                      error={
+                        touched.bowelFrequency ? errors.bowelFrequency : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -364,8 +400,12 @@ function AddPersonalHistoryForm(props) {
                       value={values.bladderFrequency}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.bladderFrequency ? errors.bladderFrequency : ""}
-                      error={touched.bladderFrequency ? errors.bladderFrequency : ""}
+                      helperText={
+                        touched.bladderFrequency ? errors.bladderFrequency : ""
+                      }
+                      error={
+                        touched.bladderFrequency ? errors.bladderFrequency : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>
@@ -399,6 +439,5 @@ function AddPersonalHistoryForm(props) {
     </FloatingPanel>
   );
 }
-
 
 export default AddPersonalHistoryForm;

@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import brand from "dan-api/dummy/brand";
 import { Grid } from "@mui/material";
 import styles from "../settings-jss";

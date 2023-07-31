@@ -11,9 +11,9 @@ import {
   DialogContent,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import CloseIcon from '@mui/icons-material/Close';
-import SendIcon from '@mui/icons-material/Send';
-import { makeStyles } from 'tss-react/mui';
+import CloseIcon from "@mui/icons-material/Close";
+import SendIcon from "@mui/icons-material/Send";
+import { makeStyles } from "tss-react/mui";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -37,7 +37,8 @@ const Transition = React.forwardRef((props, ref) => (
 ));
 
 function FullModal(props) {
-  const { title, children, showModal, handleClose, handleSave, btnLabel } = props;
+  const { title, children, showModal, handleClose, handleSave, btnLabel } =
+    props;
   const classes = useStyles();
   return (
     <Dialog
@@ -45,7 +46,7 @@ function FullModal(props) {
       open={showModal}
       onClose={handleClose}
       TransitionComponent={Transition}
-    //scroll={scroll}
+      //scroll={scroll}
     >
       <AppBar className={classes.appBar}>
         <Toolbar>
@@ -58,7 +59,7 @@ function FullModal(props) {
             <CloseIcon />
           </IconButton>
           <Typography variant="h6" className={classes.title}>
-            {title}
+            {/* {title} */}
           </Typography>
           {/*  {btnLabel &&
             <Button autoFocus color="inherit" onClick={() => handleSave()}>

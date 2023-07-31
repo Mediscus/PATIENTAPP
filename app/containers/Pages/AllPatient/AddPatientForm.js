@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import css from "dan-styles/Form.scss";
-import { Box, Button, Grid, Autocomplete, TextField as MuiTextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Autocomplete,
+  TextField as MuiTextField,
+} from "@mui/material";
 import { Formik } from "formik";
 import moment from "moment";
 import Send from "@mui/icons-material/Send";
@@ -15,10 +21,10 @@ const AddPatientForm = (props) => {
   const [editData, setEditData] = useState({});
 
   useEffect(() => {
-    if (type == 'edit') {
-      setEditData(data)
+    if (type == "edit") {
+      setEditData(data);
     } else {
-      setEditData({})
+      setEditData({});
     }
   }, []);
 
@@ -56,26 +62,26 @@ const AddPatientForm = (props) => {
         initialValues={{
           /*  patientRef: patientRef,
            patientId: editData ? editData['patient_id'] : '', */
-          relationship: editData ? editData['relationship'] : '',
-          firstName: editData ? editData['first_name'] : '',
-          middleName: editData ? editData['middle_name'] : '',
-          lastName: editData ? editData['last_name'] : '',
-          gender: editData ? editData['gender'] : '',
-          email: editData ? editData['email'] : '',
-          dob: editData ? editData['dob'] : '',
-          mobile: editData ? editData['phone'] : 1234567890,
-          landline: editData ? editData['landline'] : 2314569877,
-          dialCountryCode: editData ? editData['dial_country_code'] : '91',
-          bloodGroup: editData ? editData['blood_group'] : '',
-          marriedStatus: editData ? editData['marriage_status'] : '',
-          castGroup: editData ? editData['cast_group'] : '',
-          occupation: editData ? editData['occupation'] : '',
-          membership: editData ? editData['membership'] : '',
-          employerInfo: editData ? editData['employer_info'] : '',
-          race: editData ? editData['race'] : '',
-          panCardNumber: editData ? editData['pan_card_number'] : '',
-          ABHANumber: editData ? editData['abha_number'] : '',
-          UIDAINumber: editData ? editData['uidai_card_number'] : ''
+          relationship: editData ? editData["relationship"] : "",
+          firstName: editData ? editData["first_name"] : "",
+          middleName: editData ? editData["middle_name"] : "",
+          lastName: editData ? editData["last_name"] : "",
+          gender: editData ? editData["gender"] : "",
+          email: editData ? editData["email"] : "",
+          dob: editData ? editData["dob"] : "",
+          mobile: editData ? editData["phone"] : 1234567890,
+          landline: editData ? editData["landline"] : 2314569877,
+          dialCountryCode: editData ? editData["dial_country_code"] : "91",
+          bloodGroup: editData ? editData["blood_group"] : "",
+          marriedStatus: editData ? editData["marriage_status"] : "",
+          castGroup: editData ? editData["cast_group"] : "",
+          occupation: editData ? editData["occupation"] : "",
+          membership: editData ? editData["membership"] : "",
+          employerInfo: editData ? editData["employer_info"] : "",
+          race: editData ? editData["race"] : "",
+          panCardNumber: editData ? editData["pan_card_number"] : "",
+          ABHANumber: editData ? editData["abha_number"] : "",
+          UIDAINumber: editData ? editData["uidai_card_number"] : "",
         }}
         enableReinitialize={true}
         validationSchema={basicInfoSchema}
@@ -114,11 +120,8 @@ const AddPatientForm = (props) => {
                     <Autocomplete
                       className={classes.AutoComplete}
                       name="relationship"
-                      options={[
-                        "Self",
-                        "Child",
-                      ]}
-                      value={values.relationship || ''}
+                      options={["Self", "Child"]}
+                      value={values.relationship || ""}
                       onChange={(event, value) => {
                         setFieldValue("relationship", value);
                       }}
@@ -146,28 +149,24 @@ const AddPatientForm = (props) => {
                       name="firstName"
                       label="First Name"
                       placeholder="First Name"
-                      value={values.firstName || ''}
+                      value={values.firstName || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={
-                        touched.firstName ? errors.firstName : ""
-                      }
+                      helperText={touched.firstName ? errors.firstName : ""}
                       error={touched.firstName ? errors.firstName : ""}
                     />
                   </Grid>
                   <Grid item xs={12} sm={4}>
                     <TextField
                       fullWidth
-                      type="text"
+                      type="text" 
                       name="middleName"
                       placeholder="Middle Name"
                       label="Middle Name"
-                      value={values.middleName || ''}
+                      value={values.middleName || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={
-                        touched.middleName ? errors.middleName : ""
-                      }
+                      helperText={touched.middleName ? errors.middleName : ""}
                       error={touched.middleName ? errors.middleName : ""}
                     />
                   </Grid>
@@ -178,12 +177,10 @@ const AddPatientForm = (props) => {
                       name="lastName"
                       placeholder="Last Name"
                       label="Last Name"
-                      value={values.lastName || ''}
+                      value={values.lastName || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={
-                        touched.lastName ? errors.lastName : ""
-                      }
+                      helperText={touched.lastName ? errors.lastName : ""}
                       error={touched.lastName ? errors.lastName : ""}
                     />
                   </Grid>
@@ -194,13 +191,15 @@ const AddPatientForm = (props) => {
                       name="dialCountryCode"
                       placeholder="Country Code"
                       label="Country Code"
-                      value={values.dialCountryCode || ''}
+                      value={values.dialCountryCode || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       helperText={
                         touched.dialCountryCode ? errors.dialCountryCode : ""
                       }
-                      error={touched.dialCountryCode ? errors.dialCountryCode : ""}
+                      error={
+                        touched.dialCountryCode ? errors.dialCountryCode : ""
+                      }
                       inputProps={{ maxLength: 2 }}
                     />
                   </Grid>
@@ -211,12 +210,10 @@ const AddPatientForm = (props) => {
                       name="mobile"
                       placeholder="Mobile Number"
                       label="Mobile Number"
-                      value={values.mobile || ''}
+                      value={values.mobile || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={
-                        touched.mobile ? errors.mobile : ""
-                      }
+                      helperText={touched.mobile ? errors.mobile : ""}
                       error={touched.mobile ? errors.mobile : ""}
                       inputProps={{ maxLength: 10 }}
                     />
@@ -225,11 +222,8 @@ const AddPatientForm = (props) => {
                     <Autocomplete
                       className={classes.AutoComplete}
                       name="gender"
-                      options={[
-                        "Male",
-                        "Female",
-                      ]}
-                      value={values.gender || ''}
+                      options={["Male", "Female"]}
+                      value={values.gender || ""}
                       onChange={(event, value) => {
                         setFieldValue("gender", value);
                       }}
@@ -240,12 +234,8 @@ const AddPatientForm = (props) => {
                           label="Select gender"
                           placeholder="Select gender"
                           onBlur={handleBlur}
-                          helperText={
-                            touched.gender ? errors.gender : ""
-                          }
-                          error={Boolean(
-                            touched.gender ? errors.gender : ""
-                          )}
+                          helperText={touched.gender ? errors.gender : ""}
+                          error={Boolean(touched.gender ? errors.gender : "")}
                         />
                       )}
                     />
@@ -254,11 +244,8 @@ const AddPatientForm = (props) => {
                     <Autocomplete
                       className={classes.AutoComplete}
                       name="bloodGroup"
-                      options={[
-                        "A+",
-                        "B+",
-                      ]}
-                      value={values.bloodGroup || ''}
+                      options={["A+", "B+"]}
+                      value={values.bloodGroup || ""}
                       onChange={(event, value) => {
                         setFieldValue("bloodGroup", value);
                       }}
@@ -286,7 +273,7 @@ const AddPatientForm = (props) => {
                       name="email"
                       label="Enter Email Address"
                       placeholder="Enter Email Address"
-                      value={values.email || ''}
+                      value={values.email || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       helperText={touched.email ? errors.email : ""}
@@ -297,11 +284,8 @@ const AddPatientForm = (props) => {
                     <Autocomplete
                       className={classes.AutoComplete}
                       name="marriedStatus"
-                      options={[
-                        "Married",
-                        "UnMarried",
-                      ]}
-                      value={values.marriedStatus || ''}
+                      options={["Married", "UnMarried"]}
+                      value={values.marriedStatus || ""}
                       onChange={(event, value) => {
                         setFieldValue("marriedStatus", value);
                       }}
@@ -326,11 +310,8 @@ const AddPatientForm = (props) => {
                     <Autocomplete
                       className={classes.AutoComplete}
                       name="castGroup"
-                      options={[
-                        "Hindu",
-                        "Christan",
-                      ]}
-                      value={values.castGroup || ''}
+                      options={["Hindu", "Christan"]}
+                      value={values.castGroup || ""}
                       onChange={(event, value) => {
                         setFieldValue("castGroup", value);
                       }}
@@ -341,9 +322,7 @@ const AddPatientForm = (props) => {
                           label="Select Cast"
                           placeholder="Select Cast"
                           onBlur={handleBlur}
-                          helperText={
-                            touched.castGroup ? errors.castGroup : ""
-                          }
+                          helperText={touched.castGroup ? errors.castGroup : ""}
                           error={Boolean(
                             touched.castGroup ? errors.castGroup : ""
                           )}
@@ -355,11 +334,8 @@ const AddPatientForm = (props) => {
                     <Autocomplete
                       className={classes.AutoComplete}
                       name="occupation"
-                      options={[
-                        "Employee",
-                        "Student",
-                      ]}
-                      value={values.occupation || ''}
+                      options={["Employee", "Student"]}
+                      value={values.occupation || ""}
                       onChange={(event, value) => {
                         setFieldValue("occupation", value);
                       }}
@@ -384,11 +360,8 @@ const AddPatientForm = (props) => {
                     <Autocomplete
                       className={classes.AutoComplete}
                       name="membership"
-                      options={[
-                        "Yes",
-                        "No",
-                      ]}
-                      value={values.membership || ''}
+                      options={["Yes", "No"]}
+                      value={values.membership || ""}
                       onChange={(event, value) => {
                         setFieldValue("membership", value);
                       }}
@@ -416,10 +389,12 @@ const AddPatientForm = (props) => {
                       name="employerInfo"
                       placeholder="Enter EmployerInfo"
                       label="Enter EmployerInfo"
-                      value={values.employerInfo || ''}
+                      value={values.employerInfo || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.employerInfo ? errors.employerInfo : ""}
+                      helperText={
+                        touched.employerInfo ? errors.employerInfo : ""
+                      }
                       error={touched.employerInfo ? errors.employerInfo : ""}
                     />
                   </Grid>
@@ -430,7 +405,7 @@ const AddPatientForm = (props) => {
                       name="race"
                       placeholder="Enter Race"
                       label="Enter Race"
-                      value={values.race || ''}
+                      value={values.race || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       helperText={touched.race ? errors.race : ""}
@@ -444,10 +419,12 @@ const AddPatientForm = (props) => {
                       name="panCardNumber"
                       placeholder="Enter Pan Card Number"
                       label="Enter Pan Card Number"
-                      value={values.panCardNumber || ''}
+                      value={values.panCardNumber || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.panCardNumber ? errors.panCardNumber : ""}
+                      helperText={
+                        touched.panCardNumber ? errors.panCardNumber : ""
+                      }
                       error={touched.panCardNumber ? errors.panCardNumber : ""}
                       inputProps={{ maxLength: 10 }}
                     />
@@ -459,7 +436,7 @@ const AddPatientForm = (props) => {
                       name="ABHANumber"
                       label="Enter ABHA Number"
                       placeholder="Enter ABHA Number"
-                      value={values.ABHANumber || ''}
+                      value={values.ABHANumber || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       helperText={touched.ABHANumber ? errors.ABHANumber : ""}
@@ -474,7 +451,7 @@ const AddPatientForm = (props) => {
                       name="UIDAINumber"
                       label="Enter UIDAI Number"
                       placeholder="Enter UIDAI Number"
-                      value={values.UIDAINumber || ''}
+                      value={values.UIDAINumber || ""}
                       onChange={handleChange}
                       onBlur={handleBlur}
                       helperText={touched.UIDAINumber ? errors.UIDAINumber : ""}
@@ -492,11 +469,7 @@ const AddPatientForm = (props) => {
                         setFieldValue("dob", date, true);
                       }}
                       renderInput={(params) => (
-                        <MuiTextField
-                          {...params}
-                          fullWidth
-                          name="dob"
-                        />
+                        <MuiTextField {...params} fullWidth name="dob" />
                       )}
                     />
                   </Grid>
@@ -522,6 +495,6 @@ const AddPatientForm = (props) => {
       </Formik>
     </FloatingPanel>
   );
-}
+};
 
 export default withStyles(styles)(AddPatientForm);

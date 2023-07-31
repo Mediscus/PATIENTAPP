@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Box, Divider, Paper, Typography, List, ListItem, IconButton } from "@mui/material";
+import {
+  Box,
+  Divider,
+  Paper,
+  Typography,
+  List,
+  ListItem,
+  IconButton,
+} from "@mui/material";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import { CustomSnackbar } from "dan-components";
@@ -15,27 +23,28 @@ function PersonalHistory(props) {
   const { classes, add, shadow } = props;
   const [apiData, setApiData] = useState({});
   const [form, setForm] = useState({ open: false, data: null });
-  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "", })
-  const openForm = () => setForm({ ...form, ["open"]: true, ['data']: apiData });
+  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
+  const openForm = () =>
+    setForm({ ...form, ["open"]: true, ["data"]: apiData });
   const closeForm = () => [setForm({ ...form, ["open"]: false })];
 
   useEffect(() => {
     getPersonalHistory();
     return () => {
       setApiData({});
-    }
+    };
   }, []);
 
   const callBackResponse = (refresh) => {
-    closeForm()
+    closeForm();
     if (refresh) {
       getPersonalHistory();
     }
-  }
+  };
 
   async function getPersonalHistory() {
     if (Object.keys(patient).length > 0) {
-      await apiCall('ehr/personal-history', "get", patient)
+      await apiCall("ehr/personal-history", "get", patient)
         .then((res) => {
           if (res && res.Data && res.Status === "Success") {
             let data = res.Data;
@@ -50,7 +59,7 @@ function PersonalHistory(props) {
           handleSnackBar(true, "error", ErrorMessage);
         });
     }
-  };
+  }
 
   const handleSnackBar = (open, type, msg) => {
     setSnackBar({ ...snackBar, ["open"]: open, ["type"]: type, ["msg"]: msg });
@@ -66,11 +75,11 @@ function PersonalHistory(props) {
         <Typography variant="h6" className={classes.title}>
           Personal History
         </Typography>
-        {add &&
+        {add && (
           <IconButton color="secondary" onClick={() => openForm()} size="large">
             <Edit fontSize="small" />
           </IconButton>
-        }
+        )}
       </Box>
       <Divider />
       <Box p={1}>

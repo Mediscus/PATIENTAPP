@@ -1,14 +1,36 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import classNames from "classnames";
-import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 import brand from "dan-api/dummy/brand";
 import logo from "dan-images/logo.svg";
-import useStyles from './user-jss';
+import useStyles from "./user-jss";
 import { Formik } from "formik";
 import { registerFormSchema } from "dan-api/schemas";
-import { ArrowForward, AllInclusive, Brightness5, People } from "@mui/icons-material";
-import { Checkbox, TextField, Hidden, Icon, FormControlLabel, Paper, Tab, Typography, Tabs, FormControl, Button } from "@mui/material";
+import {
+  ArrowForward,
+  AllInclusive,
+  Brightness5,
+  People,
+} from "@mui/icons-material";
+import {
+  Checkbox,
+  TextField,
+  Hidden,
+  Icon,
+  FormControlLabel,
+  Paper,
+  Tab,
+  Typography,
+  Tabs,
+  FormControl,
+  Button,
+  MenuItem,
+  Select,
+} from "@mui/material";
+import { useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import axios from "axios";
+import { async } from "regenerator-runtime";
 
 const LinkBtn = React.forwardRef(function LinkBtn(props, ref) {
   // eslint-disable-line
@@ -18,22 +40,88 @@ const LinkBtn = React.forwardRef(function LinkBtn(props, ref) {
 function RegisterForm(props) {
   const { classes } = useStyles();
   const { handleData, errorSms } = props;
-  const values = {
-    type: 2,
-    firstName: "Abhi",
-    middleName: "Kumar",
-    lastName: "Patel",
-    email: "abhi@gmail.com",
-    phone: "7854120325",
-    country_code: "91",
-    password: "Abhi@1234",
-    conPassword: "Abhi@1234",
-  };
   const [tab, setTab] = useState(0);
+  const [otpSent, setOtpSent] = useState(true);
+  const [otp, setOtp] = useState("");
+  const history = useHistory(); // Initialize useHistory hook
+
   const deco = useSelector((state) => state.ui.decoration);
 
-  const handleChangeTab = (event, value) => {
+  const [stateData, setStateData] = useState([]); // Assuming you have the complete state and district data
+  const [selectedStateCode, setSelectedStateCode] = useState("");
+  const [districts, setDistricts] = useState([]);
+
+  useEffect(() => {
+    const fetchStateData = async () => {
+      try {
+        const res = await axios.get("http://localhost:3002/api/stateCode");
+        setStateData(res.data); // Assuming the API response is an array of state objects
+      } catch (error) {
+        console.error("Error fetching state data:", error);
+      }
+    };
+
+    fetchStateData();
+  }, []);
+
+  const handleStateChange = (event) => {
+    const selectedStateCode = event.target.value;
+    setSelectedStateCode(selectedStateCode);
+
+    // Set the districts based on the selected state code
+    const districtsForSelectedState =
+      getDistrictsByStateCode(selectedStateCode);
+    setDistricts(districtsForSelectedState);
+  };
+
+  const getDistrictsByStateCode = (selectedStateCode) => {
+    const selectedState = stateData.find(
+      (state) => state.code === selectedStateCode
+    );
+    return selectedState ? selectedState.districts : [];
+  };
+
+  const handleChangeTab = (_event, value) => {
     setTab(value);
+  };
+
+  const responseData = useSelector((state) => state.otp);
+
+  const values = {
+    address: "",
+    dayOfBirth: "",
+    monthOfBirth: "",
+    yearOfBirth: "",
+    districtCode: "",
+    stateCode: "",
+    email: "",
+    firstName: "",
+    gender: "",
+    healthId: "",
+    lastName: "",
+    middleName: "",
+    name: "",
+    password: "",
+    pincode: "",
+    profilePhoto: "",
+    subdistrictCode: "",
+    txnId: responseData.txnId.txnId,
+    villageCode: "",
+    wardCode: "",
+  };
+
+  const handleDateOfBirthChange = (date) => {
+    const dateObj = new Date(date);
+    const day = dateObj.getDate();
+    const month = dateObj.getMonth() + 1; // JavaScript months are 0-indexed, so add 1
+    const year = dateObj.getFullYear();
+
+    setFieldValue("dayOfBirth", day);
+    setFieldValue("monthOfBirth", month);
+    setFieldValue("yearOfBirth", year);
+
+    // Also, update the full date of birth field
+    setFieldValue("dateOfBirth", date);
   };
 
   return (
@@ -71,7 +159,7 @@ function RegisterForm(props) {
           gutterBottom
           align="center"
         >
-          Lorem ipsum dolor sit amet
+          Register For Your Mediscus Account
         </Typography>
         <Tabs
           value={tab}
@@ -81,35 +169,18 @@ function RegisterForm(props) {
           centered
           className={classes.tab}
         >
-          <Tab label="With Email" />
-          <Tab label="With Social Media" />
+          <Tab label="Mobile Number" />
+          <Tab label="Aadhar Card" />
         </Tabs>
         {tab === 0 && (
           <Formik
             initialValues={values}
-            validationSchema={registerFormSchema}
+            // validationSchema={registerFormSchema}
             onSubmit={(values, { resetForm, setErrors }) => {
-              handleData(values);
-              if (
-                errorSms.includes("Invalid Phone Number") ||
-                errorSms === "Invalid Phone Number"
-              ) {
-                setErrors({ phone: "Invalid Phone Number" });
-              }
-              if (
-                errorSms.includes(
-                  "Email address already in use" ||
-                  errorSms === "Email address already in use"
-                )
-              ) {
-                setErrors({ email: "Email address already in use" });
-              }
-              if (
-                errorSms.includes("Phone number already in use") ||
-                errorSms === "Phone number already in use"
-              ) {
-                setErrors({ phone: "Phone number already in use" });
-              }
+              handleData(values) &&
+                setTimeout(() => {
+                  history.push("/app/all-patient"); // Navigate to the next page using useHistory
+                }, 500);
             }}
           >
             {({
@@ -125,7 +196,6 @@ function RegisterForm(props) {
             }) => (
               <section className={classes.formWrap}>
                 <form onSubmit={handleSubmit}>
-
                   <FormControl className={classes.formControl}>
                     <TextField
                       fullWidth
@@ -183,35 +253,102 @@ function RegisterForm(props) {
                   </FormControl>
 
                   <FormControl className={classes.formControl}>
-                    <TextField
+                    <Select
                       fullWidth
-                      name="phone"
-                      placeholder="Phone Number"
-                      label="Phone Number"
-                      value={values.phone}
+                      name="gender"
+                      value={values.gender}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.phone ? errors.phone : ""}
-                      error={touched.phone && Boolean(errors.phone)}
+                      displayEmpty
+                      inputProps={{ "aria-label": "Gender" }}
+                    >
+                      <MenuItem value="" disabled>
+                        Select Gender
+                      </MenuItem>
+                      <MenuItem value="M">Male</MenuItem>
+                      <MenuItem value="F">Female</MenuItem>
+                      <MenuItem value="O">Other</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl className={classes.formControl}>
+                    <TextField
+                      fullWidth
+                      type="date"
+                      name="dateOfBirth"
+                      value={
+                        values.dayOfBirth
+                          ? `${values.yearOfBirth}-${String(
+                              values.monthOfBirth + 1
+                            ).padStart(2, "0")}-${String(
+                              values.dayOfBirth
+                            ).padStart(2, "0")}`
+                          : ""
+                      }
+                      onChange={(el) => {
+                        const dateOfBirth = el.target.value;
+                        if (dateOfBirth) {
+                          const [year, month, day] = dateOfBirth.split("-");
+                          setFieldValue("yearOfBirth", Number(year));
+                          setFieldValue("monthOfBirth", Number(month));
+                          setFieldValue("dayOfBirth", Number(day));
+                        } else {
+                          setFieldValue("yearOfBirth", "");
+                          setFieldValue("monthOfBirth", "");
+                          setFieldValue("dayOfBirth", "");
+                        }
+                      }}
+                      onBlur={handleBlur}
+                      helperText={touched.dayOfBirth ? errors.dayOfBirth : ""}
+                      error={touched.dayOfBirth && Boolean(errors.dayOfBirth)}
                     />
                   </FormControl>
 
                   <FormControl className={classes.formControl}>
                     <TextField
                       fullWidth
-                      name="country_code"
-                      placeholder="Country Code"
-                      label="Country Code"
-                      value={values.country_code}
+                      name="healthId"
+                      placeholder="healthId "
+                      label="healthId "
+                      value={values.healthId}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={
-                        touched.country_code ? errors.country_code : ""
-                      }
-                      error={
-                        touched.country_code && Boolean(errors.country_code)
-                      }
+                      helperText={touched.healthId ? errors.healthId : ""}
+                      error={touched.healthId && Boolean(errors.healthId)}
                     />
+                  </FormControl>
+
+                  <FormControl className={classes.formControl}>
+                    <TextField
+                      fullWidth
+                      name="stateCode"
+                      select
+                      label="Select State"
+                      value={selectedStateCode}
+                      onChange={handleStateChange}
+                    >
+                      {stateData.map((state) => (
+                        <MenuItem key={state.code} value={state.code}>
+                          {state.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </FormControl>
+
+                  <FormControl className={classes.formControl}>
+                    <TextField
+                      fullWidth
+                      select
+                      label="Select District"
+                      value={values.districtCode}
+                      onChange={handleChange}
+                    >
+                      {districts.map((district) => (
+                        <MenuItem key={district.code} value={district.code}>
+                          {district.name}
+                        </MenuItem>
+                      ))}
+                    </TextField>
                   </FormControl>
 
                   <FormControl className={classes.formControl}>
@@ -228,30 +365,11 @@ function RegisterForm(props) {
                     />
                   </FormControl>
 
-                  <FormControl className={classes.formControl}>
-                    <TextField
-                      fullWidth
-                      type="password"
-                      name="conPassword"
-                      label="Re-type Password"
-                      value={values.conPassword}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.conPassword ? errors.conPassword : ""
-                      }
-                      error={
-                        touched.conPassword && Boolean(errors.conPassword)
-                      }
-                    />
-                  </FormControl>
-
-
                   <FormControlLabel
                     className={classes.label}
                     control={<Checkbox />}
                     label="Agree with"
-                    onChange={(event, value) => { }}
+                    onChange={(_event, _value) => {}}
                   />
                   <a href="#" className={classes.link}>
                     Terms &amp; Condition
@@ -274,44 +392,83 @@ function RegisterForm(props) {
           </Formik>
         )}
         {tab === 1 && (
-          <section className={classes.socmedFull}>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="large"
-              className={classes.redBtn}
-              type="button"
-            >
-              <AllInclusive
-                className={classNames(classes.leftIcon, classes.iconSmall)}
-              />
-              Socmed 1
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="large"
-              className={classes.blueBtn}
-              type="button"
-            >
-              <Brightness5
-                className={classNames(classes.leftIcon, classes.iconSmall)}
-              />
-              Socmed 2
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="large"
-              className={classes.cyanBtn}
-              type="button"
-            >
-              <People
-                className={classNames(classes.leftIcon, classes.iconSmall)}
-              />
-              Socmed 3
-            </Button>
-          </section>
+          <Formik
+            initialValues={values}
+            // validationSchema={registerFormSchema}
+            onSubmit={(values, { resetForm, setErrors }) => {
+              handleData(values);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+              setFieldValue,
+              /* and other goodies */
+            }) => (
+              <section className={classes.formWrap}>
+                <form onSubmit={handleSubmit}>
+                  <FormControl className={classes.formControl}>
+                    <TextField
+                      fullWidth
+                      name="aadhaar"
+                      placeholder="Enter Your Aadhar Number"
+                      label="Enter Your Aadhar Number"
+                      value={values.aadhaar}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.aadhaar ? errors.aadhaar : ""}
+                      error={touched.aadhaar && Boolean(errors.aadhaar)}
+                    />
+                  </FormControl>
+
+                  {otpSent && (
+                    <div>
+                      <FormControl className={classes.formControl}>
+                        <TextField
+                          fullWidth
+                          name="otp"
+                          label="Your OTP number"
+                          placeholder="Your OTP Number"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)} // Update the otp state
+                          onBlur={handleBlur}
+                          helperText={touched.otp ? errors.otp : ""}
+                          error={touched.otp && Boolean(errors.otp)}
+                        />
+                      </FormControl>
+                    </div>
+                  )}
+
+                  <FormControlLabel
+                    className={classes.label}
+                    control={<Checkbox />}
+                    label="Agree with"
+                    onChange={(_event, _value) => {}}
+                  />
+                  <a href="#" className={classes.link}>
+                    Terms &amp; Condition
+                  </a>
+
+                  <div className={classes.btnArea}>
+                    <Button variant="contained" color="primary" type="submit">
+                      Continue
+                      <ArrowForward
+                        className={classNames(
+                          classes.rightIcon,
+                          classes.iconSmall
+                        )}
+                      />
+                    </Button>
+                  </div>
+                </form>
+              </section>
+            )}
+          </Formik>
         )}
       </Paper>
     </Fragment>

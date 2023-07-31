@@ -1,5 +1,3 @@
-
-
 import AxiosInstance from "./api";
 import "regenerator-runtime/runtime";
 
@@ -10,17 +8,20 @@ export function prepareFormData(obj, form, namespace) {
   for (let property in obj) {
     if (obj.hasOwnProperty(property) && obj[property]) {
       if (namespace) {
-        formKey = namespace + '[' + property + ']';
+        formKey = namespace + "[" + property + "]";
       } else {
         formKey = property;
       }
       // if the property is an object, but not a File, use recursivity.
       if (obj[property] instanceof Date) {
         fd.append(formKey, obj[property].toISOString());
-      }
-      else if (typeof obj[property] === 'object' && !(obj[property] instanceof File)) {
+      } else if (
+        typeof obj[property] === "object" &&
+        !(obj[property] instanceof File)
+      ) {
         this.prepareFormData(obj[property], fd, formKey);
-      } else { // if it's a string or a File object
+      } else {
+        // if it's a string or a File object
         fd.append(formKey, obj[property]);
       }
     }
@@ -29,7 +30,7 @@ export function prepareFormData(obj, form, namespace) {
 }
 
 export function prepareGetData(data) {
-  let params = '';
+  let params = "";
   if (data && Object.keys(data).length > 0 && data.constructor === Object) {
     for (var key in data) {
       if (params) {
@@ -43,36 +44,32 @@ export function prepareGetData(data) {
 }
 
 const objectToFormData = function (obj, form, namespace) {
-
   var fd = form || new FormData();
   var formKey;
 
   for (var property in obj) {
     if (obj.hasOwnProperty(property)) {
-
       if (namespace) {
-        formKey = namespace + '[' + property + ']';
+        formKey = namespace + "[" + property + "]";
       } else {
         formKey = property;
       }
 
       // if the property is an object, but not a File,
       // use recursivity.
-      if (typeof obj[property] === 'object' && !(obj[property] instanceof File)) {
-
+      if (
+        typeof obj[property] === "object" &&
+        !(obj[property] instanceof File)
+      ) {
         objectToFormData(obj[property], fd, property);
-
       } else {
-
         // if it's a string or a File object
         fd.append(formKey, obj[property]);
       }
-
     }
   }
 
   return fd;
-
 };
 
 function statusHelper(response) {
@@ -96,7 +93,7 @@ const getApiCall = async (url, method, headers, payload) => {
   return await AxiosInstance.get(uri)
     .then(statusHelper)
     .then(responseHelper)
-    .then(response => {
+    .then((response) => {
       return response.data;
     });
 };
@@ -106,18 +103,18 @@ const postApiCall = async (url, method, headers, body) => {
   return await AxiosInstance.post(url, body)
     .then(statusHelper)
     .then(responseHelper)
-    .then(response => {
+    .then((response) => {
       return response.data;
     });
 };
 
 const putApiCall = async (url, method, headers, body) => {
-  return await AxiosInstance.put(url, body,)
+  return await AxiosInstance.put(url, body)
     .then(statusHelper)
-    .then(response => {
+    .then((response) => {
       return response;
     })
-    .catch(error => {
+    .catch((error) => {
       return error.response;
     });
 };
@@ -129,24 +126,23 @@ const deleteApiCall = async (url, method, headers, payload) => {
   return await AxiosInstance.delete(uri)
     .then(statusHelper)
     .then(responseHelper)
-    .then(response => {
+    .then((response) => {
       return response.data;
     });
-}
+};
 
 const apiCall = (url, method, body, headers) => {
-
   switch (method) {
-    case 'get':
+    case "get":
       return getApiCall(url, method, headers, body);
 
-    case 'post':
+    case "post":
       return postApiCall(url, method, headers, body);
 
-    case 'put':
+    case "put":
       return putApiCall(url, method, headers, body);
 
-    case 'delete':
+    case "delete":
       return deleteApiCall(url, method, headers, body);
 
     default:

@@ -6,7 +6,7 @@ import {
   REGISTER_FAIL,
   REGISTER_SUCCESS,
   USER_LOGIN,
-  USER_REGISTER
+  USER_REGISTER,
 } from "../constants/reduxFormConstants";
 
 export const userLogin = (data) => ({
@@ -28,5 +28,5 @@ export const userRegister = (data) => ({
 });
 
 export const userLogout = () => ({
-  type: LOG_OUT
+  type: LOG_OUT,
 });

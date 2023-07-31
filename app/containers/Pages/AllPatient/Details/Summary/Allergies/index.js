@@ -27,28 +27,28 @@ function Allergies(props) {
   const { classes, add, shadow } = props;
   const [apiData, setApiData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [form, setForm] = useState({ open: false, data: null, type: 'add' });
-  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "", });
-  const openForm = () => setForm({ ...form, ["open"]: true, ['type']: 'add' });
+  const [form, setForm] = useState({ open: false, data: null, type: "add" });
+  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
+  const openForm = () => setForm({ ...form, ["open"]: true, ["type"]: "add" });
   const closeForm = () => [setForm({ ...form, ["open"]: false })];
 
   useEffect(() => {
     getAllergies();
     return () => {
       setApiData([]);
-    }
+    };
   }, []);
 
   const callBackResponse = (refresh) => {
-    closeForm()
+    closeForm();
     if (refresh) {
       getAllergies();
     }
-  }
+  };
 
   async function getAllergies() {
     if (Object.keys(patient).length > 0) {
-      await apiCall('ehr/allergies', "get", patient)
+      await apiCall("ehr/allergies", "get", patient)
         .then((res) => {
           let data = res.Data;
           if (res && res.Status === "Success") {
@@ -64,21 +64,16 @@ function Allergies(props) {
         });
       setIsLoading(false);
     }
-  };
+  }
 
   const handleDelete = async (id, patientRef) => {
     let prepareData = {
       patientRef: patientRef,
-      allergiesRef: id
-    }
+      allergiesRef: id,
+    };
     if (prepareData) {
-      if (
-        confirm("Are You Sure You Want To Delete This Data") == true
-      ) {
-        await apiCall(
-          'ehr/allergies',
-          "delete", prepareData
-        )
+      if (confirm("Are You Sure You Want To Delete This Data") == true) {
+        await apiCall("ehr/allergies", "delete", prepareData)
           .then((res) => {
             if (res && res.Data && res.Status === "Success") {
               handleSanackBar(true, "success", "Data Deleted Successffuly");
@@ -94,7 +89,6 @@ function Allergies(props) {
           });
       }
     } else alert("Patient Id Not Found");
-
   };
 
   const handleSanackBar = (open, type, msg) => {
@@ -102,7 +96,7 @@ function Allergies(props) {
   };
 
   const handleEdit = (data) => {
-    setForm({ ...form, ["data"]: data, ["open"]: true, ['type']: 'edit' });
+    setForm({ ...form, ["data"]: data, ["open"]: true, ["type"]: "edit" });
   };
 
   const handleMessage = (type, msg) => {
@@ -151,7 +145,7 @@ function Allergies(props) {
                     {data.allergy_name}
                   </Typography>
                 </ListItem>
-                {add &&
+                {add && (
                   <ListItemSecondaryAction
                     classes={{
                       root: classes.secondaryAction,
@@ -180,7 +174,7 @@ function Allergies(props) {
                       <DeleteForever fontSize="small" />
                     </IconButton>
                   </ListItemSecondaryAction>
-                }
+                )}
               </List>
             );
           })}
@@ -196,6 +190,7 @@ function Allergies(props) {
           setMessage={(type, msg) => handleMessage(type, msg)}
         />
       )}
+
       <CustomSnackbar
         open={snackBar.open}
         msg={snackBar.msg}

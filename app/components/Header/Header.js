@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import Typography from '@mui/material/Typography';
-import Hidden from '@mui/material/Hidden';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import SearchIcon from '@mui/icons-material/Search';
-import Fab from '@mui/material/Fab';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import UserMenu from './UserMenu';
-import SearchUi from '../Search/SearchUi';
-import { withStyles } from '@mui/styles';
-import styles from './header-jss';
-import PatientCard from '../../containers/Pages/AllPatient/Details/patientCard';
-import ClinicList from './ClinicList';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import classNames from "classnames";
+import Typography from "@mui/material/Typography";
+import Hidden from "@mui/material/Hidden";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import SearchIcon from "@mui/icons-material/Search";
+import Fab from "@mui/material/Fab";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import UserMenu from "./UserMenu";
+import SearchUi from "../Search/SearchUi";
+import { withStyles } from "@mui/styles";
+import styles from "./header-jss";
+import PatientCard from "../../containers/Pages/AllPatient/Details/patientCard";
+import ClinicList from "./ClinicList";
 const elem = document.documentElement;
 
 function Header(props) {
@@ -32,8 +32,8 @@ function Header(props) {
   const handleScroll = () => {
     const doc = document.documentElement;
     const scroll = (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
-    const newFlagDarker = (scroll > 30);
-    const newFlagTitle = (scroll > 40);
+    const newFlagDarker = scroll > 30;
+    const newFlagTitle = scroll > 40;
     if (flagDarker !== newFlagDarker) {
       setTurnDarker(newFlagDarker);
       flagDarker = newFlagDarker;
@@ -45,9 +45,9 @@ function Header(props) {
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -55,11 +55,14 @@ function Header(props) {
     setFullScreen(true);
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) { /* Firefox */
+    } else if (elem.mozRequestFullScreen) {
+      /* Firefox */
       elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+    } else if (elem.webkitRequestFullscreen) {
+      /* Chrome, Safari & Opera */
       elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+    } else if (elem.msRequestFullscreen) {
+      /* IE/Edge */
       elem.msRequestFullscreen();
     }
   };
@@ -77,11 +80,11 @@ function Header(props) {
     }
   };
 
-  const turnMode = mode => {
-    if (mode === 'light') {
-      props.changeMode('dark');
+  const turnMode = (mode) => {
+    if (mode === "light") {
+      props.changeMode("dark");
     } else {
-      props.changeMode('light');
+      props.changeMode("light");
     }
   };
 
@@ -94,14 +97,14 @@ function Header(props) {
     mode,
     title,
     openGuide,
-    history
+    history,
   } = props;
 
   const setMargin = (sidebarPosition) => {
-    if (sidebarPosition === 'right-sidebar') {
+    if (sidebarPosition === "right-sidebar") {
       return classes.right;
     }
-    if (sidebarPosition === 'left-sidebar-big') {
+    if (sidebarPosition === "left-sidebar-big") {
       return classes.leftBig;
     }
     return classes.left;
@@ -109,16 +112,14 @@ function Header(props) {
 
   return (
     <AppBar
-      className={
-        classNames(
-          classes.appBar,
-          classes.floatingBar,
-          margin && classes.appBarShift,
-          setMargin(position),
-          turnDarker && classes.darker,
-          gradient ? classes.gradientBg : classes.solidBg
-        )
-      }
+      className={classNames(
+        classes.appBar,
+        classes.floatingBar,
+        margin && classes.appBarShift,
+        setMargin(position),
+        turnDarker && classes.darker,
+        gradient ? classes.gradientBg : classes.solidBg
+      )}
     >
       <Toolbar disableGutters={!open}>
         <Fab
@@ -131,39 +132,73 @@ function Header(props) {
         </Fab>
         <Hidden mdDown>
           <div className={classes.headerProperties}>
-            <div className={classNames(classes.headerAction, showTitle && classes.fadeOut)}>
+            <div
+              className={classNames(
+                classes.headerAction,
+                showTitle && classes.fadeOut
+              )}
+            >
               {fullScreen ? (
                 <Tooltip title="Exit Full Screen" placement="bottom">
-                  <IconButton className={classes.button} onClick={closeFullScreen} size="large">
+                  <IconButton
+                    className={classes.button}
+                    onClick={closeFullScreen}
+                    size="large"
+                  >
                     <i className="ion-ios-qr-scanner-outline" />
                   </IconButton>
                 </Tooltip>
               ) : (
                 <Tooltip title="Full Screen" placement="bottom">
-                  <IconButton className={classes.button} onClick={openFullScreen} size="large">
+                  <IconButton
+                    className={classes.button}
+                    onClick={openFullScreen}
+                    size="large"
+                  >
                     <i className="ion-ios-qr-scanner-outline" />
                   </IconButton>
                 </Tooltip>
               )}
               <Tooltip title="Turn Dark/Light" placement="bottom">
-                <IconButton className={classes.button} onClick={() => turnMode(mode)} size="large">
+                <IconButton
+                  className={classes.button}
+                  onClick={() => turnMode(mode)}
+                  size="large"
+                >
                   <i className="ion-ios-bulb-outline" />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Show Guide" placement="bottom">
-                <IconButton className={classes.button} onClick={openGuide} size="large">
+                <IconButton
+                  className={classes.button}
+                  onClick={openGuide}
+                  size="large"
+                >
                   <i className="ion-ios-help-circle-outline" />
                 </IconButton>
               </Tooltip>
             </div>
-            {
-              title === 'Patient Details' ?
-                <div className={classNames(classes.headerTitle, showTitle && classes.show)} >
-                  <PatientCard />
-                </div>
-                :
-                <Typography component="h2" className={classNames(classes.headerTitle, showTitle && classes.show)}> {title}</Typography>
-            }
+            {title === "Patient Details" ? (
+              <div
+                className={classNames(
+                  classes.headerTitle,
+                  showTitle && classes.show
+                )}
+              >
+                <PatientCard />
+              </div>
+            ) : (
+              <Typography
+                component="h2"
+                className={classNames(
+                  classes.headerTitle,
+                  showTitle && classes.show
+                )}
+              >
+                {" "}
+                {title}
+              </Typography>
+            )}
           </div>
         </Hidden>
 

@@ -12,7 +12,10 @@ import {
   Profile,
   ChangePassword,
   Parent,
-  NotFound
+  Abha,
+  NotFound,
+  Appointments,
+  MyFamily,
 } from "../pageListAsync";
 
 function Application(props) {
@@ -25,14 +28,20 @@ function Application(props) {
         <Route path="/app/all-patient">
           <Switch>
             <Route exact path="/app/all-patient" component={AllPatient} />
-            <Route path="/app/all-patient/details/:patientRef" component={Details} />
+            <Route
+              path="/app/all-patient/details/:patientRef"
+              component={Details}
+            />
           </Switch>
         </Route>
         <Route path="/app/pages/chat" component={Chat} />
         <Route path="/app/pages/contact" component={Contact} />
-        <Route path="/app/pages/doctor-profile" component={Profile} />
+        <Route path="/app/pages/user-profile" component={Profile} />
         <Route path="/app/changePassword" component={ChangePassword} />
         <Route exact path="/app/pages" component={Parent} />
+        <Route exact path="/app/pages/abha" component={Abha} />
+        <Route exact path="/app/pages/appointments" component={Appointments} />
+        <Route exact path="/app/pages/myfamily" component={MyFamily} />
         <Route component={NotFound} />
       </Switch>
     </Dashboard>

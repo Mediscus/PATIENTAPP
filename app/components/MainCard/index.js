@@ -53,7 +53,6 @@ const styles = (theme) => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),
     },
-
   },
   title: {
     position: "relative",

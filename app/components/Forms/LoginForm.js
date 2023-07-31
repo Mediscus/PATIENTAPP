@@ -1,5 +1,4 @@
-import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import withStyles from "@mui/styles/withStyles";
 import classNames from "classnames";
@@ -16,9 +15,9 @@ import Hidden from "@mui/material/Hidden";
 import brand from "dan-api/dummy/brand";
 import logo from "dan-images/logo.svg";
 import { loginFormSchema } from "dan-api/schemas";
-import useStyles from './user-jss';
+import useStyles from "./user-jss";
 import { ContentDivider } from "../Divider";
-import { Checkbox, FormHelperText, TextField } from "@mui/material";
+import { Checkbox, FormHelperText, TextField, Tabs, Tab } from "@mui/material";
 import {
   Visibility,
   VisibilityOff,
@@ -27,24 +26,72 @@ import {
   ArrowForward,
   People,
 } from "@mui/icons-material";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  generateOtpRequest,
+  resendOtpRequest,
+  verifyOtpRequest,
+  createHealthIdRequest,
+} from "dan-redux/actions/index";
+import {
+  generateAadharOtpRequest,
+  verifyAadharOtpRequest,
+} from "dan-redux/actions/aadharReg";
+import { useHistory } from "react-router-dom";
+import { bottom } from "@popperjs/core";
+import { Formik } from "formik";
 
 const LinkBtn = React.forwardRef(function LinkBtn(props, ref) {
-  // eslint-disable-line
-  return <NavLink to={props.to} {...props} innerRef={ref} />; // eslint-disable-line
+  return <NavLink to={props.to} {...props} innerRef={ref} />;
 });
 
 function LoginForm(props) {
   const { classes } = useStyles();
-  const { handleData, errorSms } = props;
-  const [showPassword, setShowPassword] = useState(false);
-  const values = { loginID: "doctor@mailinator.com", password: "Info9179@", remember: false };
+  const [aadhaarOtpSent, setAadhaarOtpSent] = useState(false);
+  const [mobileOtpSent, setMobileOtpSent] = useState(false);
 
-  const handleClickShowPassword = () => {
-    setShowPassword((show) => !show);
+  const [otp, setOtp] = useState("");
+  const [aadhaarOtp, setAadhaarOtp] = useState("");
+  const [isMobileOtpSending, setMobileOtpSending] = useState(false);
+  const [isAadhaarOtpSending, setAadhaarOtpSending] = useState(false);
+
+  const history = useHistory();
+  const [tab, setTab] = useState(0);
+
+  const handleChangeTab = (_event, value) => {
+    setTab(value);
   };
 
-  const handleMouseDownPassword = (event) => {
-    event.preventDefault();
+  const values = {
+    mobile: "",
+  };
+  const value = {
+    aadhaar: "",
+  };
+
+  const dispatch = useDispatch();
+  const responseData = useSelector((state) => state.otp);
+
+  const handleOtpSubmit = (values, setMobileOtpSent) => {
+    if (!isMobileOtpSending) {
+      setMobileOtpSending(true);
+      dispatch(generateOtpRequest(values));
+    }
+  };
+
+  const handleAadharOtpSubmit = (value, setAadhaarOtpSent) => {
+    if (!isAadhaarOtpSending) {
+      setAadhaarOtpSending(true);
+      dispatch(generateAadharOtpRequest(value));
+    }
+  };
+
+  const handleOtpVerify = () => {
+    dispatch(verifyOtpRequest(otp, responseData.txnId));
+  };
+
+  const handleAadharOtpVerify = () => {
+    dispatch(verifyAadharOtpRequest(aadhaarOtp, responseData.txnId));
   };
 
   return (
@@ -87,7 +134,7 @@ function LoginForm(props) {
               <AllInclusive
                 className={classNames(classes.leftIcon, classes.iconSmall)}
               />
-              Socmed 1
+              Mobile Verification
             </Button>
             <Button
               variant="outlined"
@@ -98,7 +145,7 @@ function LoginForm(props) {
               <Brightness5
                 className={classNames(classes.leftIcon, classes.iconSmall)}
               />
-              Socmed 2
+              Aadhar Verification
             </Button>
             <Button
               variant="outlined"
@@ -112,14 +159,32 @@ function LoginForm(props) {
               Socmed 3
             </Button>
           </div>
-          <ContentDivider content="Or sign in with email" />
+          <ContentDivider content="sign in with Mobile Number" />
         </section>
-        <section className={classes.formWrap}>
+        <Tabs
+          value={tab}
+          onChange={handleChangeTab}
+          indicatorColor="secondary"
+          textColor="secondary"
+          centered
+          className={classes.tab}
+        >
+          <Tab label="Mobile Number" />
+          <Tab label="Aadhar Card" />
+        </Tabs>
+        {tab === 0 && (
           <Formik
             initialValues={values}
-            validationSchema={loginFormSchema}
+            // validationSchema={loginFormSchema}
             onSubmit={(values, { resetForm, setErrors }) => {
-              handleData(values);
+              if (mobileOtpSent) {
+                handleOtpVerify();
+                setTimeout(() => {
+                  history.push("/register");
+                }, 500); // simulate server latency
+              } else {
+                handleOtpSubmit(values, setMobileOtpSent);
+              }
             }}
           >
             {({
@@ -133,103 +198,154 @@ function LoginForm(props) {
               setFieldValue,
               /* and other goodies */
             }) => (
-              <form onSubmit={handleSubmit}>
-                <div>
-                  <FormControl className={classes.formControl}>
-                    <TextField
-                      fullWidth
-                      name="loginID"
-                      label="Your Email"
-                      placeholder="Your Email"
-                      value={values.loginID}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.loginID ? errors.loginID : ""}
-                      error={touched.loginID && Boolean(errors.loginID)}
-                    />
-                  </FormControl>
-                </div>
-                <div>
-                  <FormControl className={classes.formControl}>
-                    <TextField
-                      fullWidth
-                      name="password"
-                      label="Password"
-                      placeholder="Enter Password"
-                      type={showPassword ? "text" : "password"}
-                      value={values.password}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.password ? errors.password : ""}
-                      error={touched.password && Boolean(errors.password)}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton
-                              aria-label="Toggle password visibility"
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
-                              size="large"
-                            >
-                              {showPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
+              <section className={classes.formWrap}>
+                <form onSubmit={handleSubmit}>
+                  <div style={{ margin: 10 }}>
+                    <FormControl className={classes.formControl}>
+                      <TextField
+                        fullWidth
+                        name="mobile"
+                        label="Your Mobile Number"
+                        placeholder="Your Mobile Number"
+                        value={values.mobile}
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                        helperText={touched.mobile ? errors.mobile : ""}
+                        error={touched.mobile && Boolean(errors.mobile)}
+                      />
+                    </FormControl>
+                  </div>
 
-                    <FormHelperText error>
-                      {errorSms}
-                    </FormHelperText>
-                  </FormControl>
-                </div>
-                <div className={classes.optArea}>
-                  <FormControlLabel
-                    className={classes.label}
-                    value={values.remember}
-                    control={<Checkbox />}
-                    label="Remember"
-                    name="remember"
-                    onChange={(event, value) => {
-                      setFieldValue("remember", value);
-                    }}
-                  />
-                  <Button
-                    size="small"
-                    component={LinkBtn}
-                    to="/reset-password"
-                    className={classes.buttonLink}
-                  >
-                    Forgot Password
-                  </Button>
-                </div>
-                <div className={classes.btnArea}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    type="submit"
-                  >
-                    Continue
-                    <ArrowForward
-                      className={classNames(
-                        classes.rightIcon,
-                        classes.iconSmall
-                      )}
-                    />
-                  </Button>
-                </div>
-              </form>
+                  {mobileOtpSent && (
+                    <div style={{ margin: 10 }}>
+                      <FormControl className={classes.formControl}>
+                        <TextField
+                          fullWidth
+                          name="otp"
+                          label="Your OTP number"
+                          placeholder="Your OTP Number"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)} // Update the otp state
+                          onBlur={handleBlur}
+                          helperText={touched.otp ? errors.otp : ""}
+                          error={touched.otp && Boolean(errors.otp)}
+                        />
+                      </FormControl>
+                    </div>
+                  )}
+
+                  <div className={classes.btnArea}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      size="large"
+                      type="submit"
+                    >
+                      Continue
+                      <ArrowForward
+                        className={classNames(
+                          classes.rightIcon,
+                          classes.iconSmall
+                        )}
+                      />
+                    </Button>
+                  </div>
+                </form>
+              </section>
             )}
           </Formik>
-        </section>
+        )}
+        {tab === 1 && (
+          <Formik
+            initialValues={value}
+            // validationSchema={registerFormSchema}
+            onSubmit={(value, { resetForm, setErrors }) => {
+              if (aadhaarOtpSent) {
+                handleAadharOtpVerify();
+                setTimeout(() => {
+                  history.push("/register");
+                }, 500); // simulate server latency
+              } else {
+                handleAadharOtpSubmit(value, setAadhaarOtpSent);
+              }
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              isSubmitting,
+              setFieldValue,
+              /* and other goodies */
+            }) => (
+              <section className={classes.formWrap}>
+                <form onSubmit={handleSubmit}>
+                  <FormControl className={classes.formControl}>
+                    <TextField
+                      fullWidth
+                      name="aadhaar"
+                      placeholder="Enter Your Aadhar Number"
+                      label="Enter Your Aadhar Number"
+                      value={values.aadhaar}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.aadhaar ? errors.aadhaar : ""}
+                      error={touched.aadhaar && Boolean(errors.aadhaar)}
+                    />
+                  </FormControl>
+
+                  {aadhaarOtpSent && (
+                    <FormControl className={classes.formControl}>
+                      <TextField
+                        fullWidth
+                        name="aadharOtp"
+                        label="Your OTP number"
+                        placeholder="Your OTP Number"
+                        value={aadhaarOtp}
+                        onChange={(e) => setAadhaarOtp(e.target.value)} // Update the aadhaarOtp state
+                        onBlur={handleBlur}
+                        helperText={touched.aadharOtp ? errors.aadharOtp : ""}
+                        error={touched.aadharOtp && Boolean(errors.aadharOtp)}
+                      />
+                    </FormControl>
+                  )}
+
+                  <FormControlLabel
+                    className={classes.label}
+                    control={<Checkbox />}
+                    label="Agree with"
+                    onChange={(_event, _value) => {}}
+                  />
+                  <a href="#" className={classes.link}>
+                    Terms &amp; Condition
+                  </a>
+
+                  <div className={classes.btnArea}>
+                    <Button variant="contained" color="primary" type="submit">
+                      Continue
+                      <ArrowForward
+                        className={classNames(
+                          classes.rightIcon,
+                          classes.iconSmall
+                        )}
+                      />
+                    </Button>
+                  </div>
+                </form>
+              </section>
+            )}
+          </Formik>
+        )}
       </Paper>
     </>
   );
 }
 
-export default LoginForm;
+LoginForm.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(useStyles)(LoginForm);

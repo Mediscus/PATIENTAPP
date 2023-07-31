@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import brand from "dan-api/dummy/brand";
 import Grid from "@mui/material/Grid";
 import SocialHistory from "./SocialHistory";
@@ -15,6 +15,11 @@ import ReproductiveHistory from "./ReproductiveHistory";
 import MenstrualHistory from "./MenstrualHistory";
 import TravelHistory from "./TravelHistory";
 import VaccinationsHistory from "./VaccinationsHistory";
+import ObservationBodyMeasurement from "./ObservationBodyMeasurement";
+import ObservationGeneralAssessment from "./ObservationGeneralAssessment";
+import ObservationLifestyle from "./ObservationLifestyle";
+import ObservationPhysicalActivity from "./ObservationPhysicalActivity";
+import FlowSheets from "../../../../../components/PatientEncounter/FlowSheets";
 
 function Status(props) {
   const title = brand.name + " - Patient Summary";
@@ -35,19 +40,21 @@ function Status(props) {
         <Grid item md={encounter ? 12 : 4} xs={12}>
           {/* <FlowSheets add={add} shadow={visible} /> */}
           {/*  <Diagnosis add={add} shadow={visible} /> */}
-          <SocialHistory add={add} shadow={visible} />
           <PersonalHistory add={add} shadow={visible} />
-          <FamilyHistory add={add} shadow={visible} />
+          <ObservationLifestyle add={add} shadow={visible} />
         </Grid>
 
         <Grid item md={encounter ? 12 : 4} xs={12}>
+          <SocialHistory add={add} shadow={visible} />
           <Allergies add={add} shadow={visible} />
+          <FamilyHistory add={add} shadow={visible} />
           {/* <Medications add={add} shadow={visible} /> */}
           <VaccinationsHistory add={add} shadow={visible} />
           <TravelHistory add={add} shadow={visible} />
           <PastHistory add={add} shadow={visible} />
           {/*  <CheifComplaint add={add} shadow={visible} />  */}
           {/* <Assessment add={add} shadow={visible} /> */}
+          <ObservationPhysicalActivity add={add} shadow={visible} />
         </Grid>
 
         <Grid item md={encounter ? 12 : 4} xs={12}>
@@ -56,8 +63,9 @@ function Status(props) {
           {/* <Appointments add={add} shadow={visible} /> */}
           <MenstrualHistory add={add} shadow={visible} />
           <ReproductiveHistory add={add} shadow={visible} />
+          <ObservationGeneralAssessment add={add} shadow={visible} />
+          <ObservationBodyMeasurement add={add} shadow={visible} />
         </Grid>
-
       </Grid>
     </div>
   );

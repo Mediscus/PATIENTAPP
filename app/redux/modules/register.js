@@ -1,28 +1,30 @@
-import { REGISTER_FAIL, REGISTER_SUCCESS, USER_REGISTER } from '../constants/reduxFormConstants';
+import {
+  REGISTER_FAIL,
+  REGISTER_SUCCESS,
+  USER_REGISTER,
+} from "../constants/reduxFormConstants";
 
 const initialState = {
   data: [],
   loading: false,
-  error: ''
+  error: "",
 };
 
 function register(state = initialState, action) {
-
   switch (action.type) {
-    case USER_REGISTER
-      :
+    case USER_REGISTER:
       return {
         ...state,
         loading: true,
-        error: ''
+        error: "",
       };
 
     case REGISTER_SUCCESS:
       return {
         ...state,
         data: action.data,
-        loading: false
-      }
+        loading: false,
+      };
 
     case REGISTER_FAIL:
       return {

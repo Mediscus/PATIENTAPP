@@ -5,28 +5,27 @@ import { withStyles } from "@mui/styles";
 import brand from "dan-api/dummy/brand";
 import { RegisterForm } from "dan-components";
 import styles from "dan-components/Forms/user-jss";
-import { userRegister } from "dan-redux/actions/loginAndRegister";
+import { createHealthIdRequest } from "dan-redux/actions/index";
 import { useDispatch, useSelector } from "react-redux";
 
 function Register(props) {
-  const responseData = useSelector((state) => state.register);
-  console.log('responseData:', responseData)
+  const responseData = useSelector((state) => state.otp);
   const dispatch = useDispatch();
   const authLogin = (values) => {
-    dispatch(userRegister(values));
+    dispatch(createHealthIdRequest(values));
   };
 
   const submitForm = (values) => {
     authLogin(values);
   };
 
-  useEffect(() => {
-    if (responseData.data.Status == "Success") {
-      setTimeout(() => {
-        window.location.href = "/app";
-      }, 500); // simulate server latency
-    }
-  }, [responseData]);
+  // useEffect(() => {
+  //   if (responseData.data.Status == "Success") {
+  //     setTimeout(() => {
+  //       window.location.href = "/app";
+  //     }, 500); // simulate server latency
+  //   }
+  // }, [responseData]);
 
   const title = brand.name + " - Register";
   const description = brand.desc;
@@ -43,10 +42,10 @@ function Register(props) {
       </Helmet>
       <div className={classes.container}>
         <div className={classes.userFormWrap}>
-          <RegisterForm
+          {/* <RegisterForm
             handleData={(values) => submitForm(values)}
             errorSms={responseData.error}
-          />
+          /> */}
         </div>
       </div>
     </div>

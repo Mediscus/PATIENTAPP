@@ -18,7 +18,10 @@ import { Box } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import PatientCard from "./patientCard";
 import { useDispatch, useSelector } from "react-redux";
-import { clearEncounter, removeEncounter } from "../../../../redux/actions/encounterActions";
+import {
+  clearEncounter,
+  removeEncounter,
+} from "../../../../redux/actions/encounterActions";
 
 function Settings(props) {
   const { classes } = props;
@@ -28,16 +31,16 @@ function Settings(props) {
 
   useEffect(() => {
     if (encounters.length > 0) {
-      setValue(encounters.length + 2)
+      setValue(encounters.length + 2);
     } else {
-      setValue(0)
+      setValue(0);
     }
   }, [encounters.length]);
 
   useEffect(() => {
     return () => {
-      dispatch(clearEncounter())
-    }
+      dispatch(clearEncounter());
+    };
   }, []);
 
   const handleChange = (event, newValue) => {
@@ -64,8 +67,7 @@ function Settings(props) {
             color="secondary"
             endIcon={<KeyboardArrowDownIcon />}
           >
-            {" "}
-            Action{" "}
+            Action
           </Button>
         </Box>
       </Paper>
@@ -83,17 +85,22 @@ function Settings(props) {
             <Tab label="Summary" {...a11yProps(0)} />
             <Tab label="Timeline" {...a11yProps(1)} />
             <Tab label="Profile" {...a11yProps(2)} />
-            {
-              encounters.length > 0 &&
+            {encounters.length > 0 &&
               encounters.map((tab, index) => {
                 return (
                   <Tab
                     key={index}
                     label={
                       <Chip
-                        sx={{ bgcolor: 'transparent' }}
+                        sx={{ bgcolor: "transparent" }}
                         label={tab.diagnosis}
-                        onDelete={() => dispatch(removeEncounter({ appointment_id: tab.appointment_id }))}
+                        onDelete={() =>
+                          dispatch(
+                            removeEncounter({
+                              appointment_id: tab.appointment_id,
+                            })
+                          )
+                        }
                         color="primary"
                       />
                     }
@@ -117,10 +124,14 @@ function Settings(props) {
           encounters.length > 0 &&
           encounters.map((data, index) => {
             return (
-              <TabPanel key={'tabPanel' + index} value={value} index={index + 3}>
+              <TabPanel
+                key={"tabPanel" + index}
+                value={value}
+                index={index + 3}
+              >
                 <Encounter data={data} />
               </TabPanel>
-            )
+            );
           })}
       </Box>
     </div>

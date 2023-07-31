@@ -6,46 +6,47 @@
  */
 
 // Import all the third party stuff
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { ConnectedRouter } from 'connected-react-router';
-import FontFaceObserver from 'fontfaceobserver';
-import history from 'utils/history';
-import 'sanitize.css/sanitize.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { ConnectedRouter } from "connected-react-router";
+import FontFaceObserver from "fontfaceobserver";
+import history from "utils/history";
+import "sanitize.css/sanitize.css";
+import "./style.css";
 
 // Import root app
-import App from 'containers/App';
-import './styles/layout/base.scss';
+import App from "containers/App";
+import "./styles/layout/base.scss";
 
 // Import Language Provider
-import LanguageProvider from 'containers/LanguageProvider';
+import LanguageProvider from "containers/LanguageProvider";
 
 // Load the favicon and the .htaccess file
-import '!file-loader?name=[name].[ext]!../public/favicons/favicon.ico'; // eslint-disable-line
-import 'file-loader?name=.htaccess!./.htaccess'; // eslint-disable-line
+import "!file-loader?name=[name].[ext]!../public/favicons/favicon.ico"; // eslint-disable-line
+import "file-loader?name=.htaccess!./.htaccess"; // eslint-disable-line
 
-import configureStore from './redux/configureStore';
+import configureStore from "./redux/configureStore";
 
 // Import i18n messages
-import { translationMessages } from './i18n';
+import { translationMessages } from "./i18n";
 
 // Observe loading of Open Sans (to remove open sans, remove the <link> tag in
 // the index.html file and this observer)
-const openSansObserver = new FontFaceObserver('Open Sans', {});
+const openSansObserver = new FontFaceObserver("Open Sans", {});
 
 // When Open Sans is loaded, add a font-family using Open Sans to the body
 openSansObserver.load().then(() => {
-  document.body.classList.add('fontLoaded');
+  document.body.classList.add("fontLoaded");
 });
 
 // Create redux store with history
 const initialState = {};
 const { store, persistor } = configureStore(initialState, history);
-const MOUNT_NODE = document.getElementById('app');
+const MOUNT_NODE = document.getElementById("app");
 
-const render = messages => {
+const render = (messages) => {
   ReactDOM.render(
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -56,7 +57,7 @@ const render = messages => {
         </LanguageProvider>
       </PersistGate>
     </Provider>,
-    MOUNT_NODE,
+    MOUNT_NODE
   );
 };
 
@@ -64,7 +65,7 @@ if (module.hot) {
   // Hot reloadable React components and translation json files
   // modules.hot.accept does not accept dynamic dependencies,
   // have to be constants at compile-time
-  module.hot.accept(['./i18n', 'containers/App'], () => {
+  module.hot.accept(["./i18n", "containers/App"], () => {
     ReactDOM.unmountComponentAtNode(MOUNT_NODE);
     render(translationMessages);
   });
@@ -72,15 +73,17 @@ if (module.hot) {
 
 // Chunked polyfill for browsers without Intl support
 if (!window.Intl) {
-  new Promise(resolve => {
-    resolve(import('intl'));
+  new Promise((resolve) => {
+    resolve(import("intl"));
   })
-    .then(() => Promise.all([
-      import('intl/locale-data/jsonp/en.js'),
-      import('intl/locale-data/jsonp/de.js'),
-    ])) // eslint-disable-line
+    .then(() =>
+      Promise.all([
+        import("intl/locale-data/jsonp/en.js"),
+        import("intl/locale-data/jsonp/de.js"),
+      ])
+    ) // eslint-disable-line
     .then(() => render(translationMessages))
-    .catch(err => {
+    .catch((err) => {
       throw err;
     });
 } else {

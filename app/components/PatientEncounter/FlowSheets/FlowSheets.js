@@ -129,6 +129,7 @@ class FlowSheet extends Component {
       addAssessment,
     } = this.state;
     let OutPutData = [];
+    // console.log(assessmentCategory);
     assessmentCategory.map((head, index) => {
       let showChild = showAssessmentCategory.includes(head.category_name)
         ? true
@@ -220,11 +221,13 @@ class FlowSheet extends Component {
 
   renderFlowSheetData = (ElementName) => {
     const { assessmentCatData, addAssessment } = this.state;
+    console.log("ppp", assessmentCatData);
     let OutPutData = [];
     let ElementData =
       assessmentCatData && ElementName in assessmentCatData
         ? assessmentCatData[ElementName]
         : [];
+    console.log("lll", ElementData);
     if (ElementData) {
       ElementData.map((head, index) => {
         OutPutData[index] = (
@@ -279,21 +282,14 @@ class FlowSheet extends Component {
     const { assessmentHeader, assessmentData } = this.state;
 
     return (
-      <StyledTableContainer>
-        <Table
-          className={classNames(
-            classes.table,
-            classes.bordered,
-            classes["small"]
-          )}
-          style={{ margin: 0, tableLayout: "auto" }}
-        >
-          <TableHead>
+      <div>
+        <StyledTableContainer>
+          <TableHead style={{ margin: 0, tableLayout: "auto", width: "100vw" }}>
             <TableRow>{this.renderAssessmentHeader()}</TableRow>
           </TableHead>
           <TableBody>{this.renderAssessmentCategory()}</TableBody>
-        </Table>
-      </StyledTableContainer>
+        </StyledTableContainer>
+      </div>
     );
   }
 }

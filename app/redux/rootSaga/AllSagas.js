@@ -1,8 +1,6 @@
 import * as types from "../constants/reduxFormConstants";
-import { takeLatest} from "redux-saga/effects";
+import { takeLatest } from "redux-saga/effects";
 import customAPI from "./CustomApi";
-
-
 
 export const userRegisterSaga = function* userRegisterSaga() {
   yield takeLatest(types.USER_REGISTER, customAPI);

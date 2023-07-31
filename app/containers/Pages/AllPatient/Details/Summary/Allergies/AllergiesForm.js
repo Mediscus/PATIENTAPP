@@ -16,10 +16,10 @@ function AllergiesForm(props) {
   const { height } = useWindowDimensions();
 
   useEffect(() => {
-    if (type == 'edit') {
-      setEditData(data)
+    if (type === "edit") {
+      setEditData(data);
     } else {
-      setEditData({})
+      setEditData({});
     }
   }, []);
 
@@ -45,15 +45,19 @@ function AllergiesForm(props) {
     <FloatingPanel
       openForm={open}
       closeForm={closeForm}
-      title={type === 'edit' ? "Edit Allergy" : "Add Allergy"}
+      title={type === "edit" ? "Edit Allergy" : "Add Allergy"}
       extraSize={false}
     >
       <Formik
         initialValues={{
           patientRef: patient && patient.patientRef,
-          allergiesRef: editData ? editData['allergies_id'] : '',
-          allergyType: editData ? editData['allergy_type'] : '',
-          allergyName: editData ? editData['allergy_name'] : '',
+          allergiesRef: editData ? editData["allergies_id"] : "",
+          allergyType: editData ? editData["allergy_type"] : "",
+          selectAllergen: editData ? editData["select_allergen"] : "",
+          clinicalStatus: editData ? editData["clinical_status"] : "",
+          verificationStatus: editData ? editData["verification_status"] : "",
+          criticality: editData ? editData["criticality"] : "",
+          severity: editData ? editData["severity"] : "",
         }}
         enableReinitialize={true}
         validationSchema={allergiesFormSchema}
@@ -109,15 +113,64 @@ function AllergiesForm(props) {
                   <Grid item xs={12} sm={12}>
                     <TextField
                       fullWidth
-                      id="allergyName"
-                      label="Allergy Name"
-                      value={values.allergyName}
+                      id="selectAllergen"
+                      label="Select Allergen"
+                      value={values.selectAllergen}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.allergyName ? errors.allergyName : ""}
-                      error={touched.allergyName ? errors.allergyName : ""}
+                      helperText={touched.selectAllergen ? errors.selectAllergen : ""}
+                      error={touched.selectAllergen ? errors.selectAllergen : ""}
                     />
                   </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      fullWidth
+                      id="clinicalStatus"
+                      label="Clinical Status"
+                      value={values.clinicalStatus}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.clinicalStatus ? errors.clinicalStatus : ""}
+                      error={touched.clinicalStatus ? errors.clinicalStatus : ""}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      fullWidth
+                      id="verificationStatus"
+                      label="Verification Status"
+                      value={values.verificationStatus}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.verificationStatus ? errors.verificationStatus : ""}
+                      error={touched.verificationStatus ? errors.verificationStatus : ""}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      fullWidth
+                      id="criticality"
+                      label="Criticality"
+                      value={values.criticality}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.criticality ? errors.criticality : ""}
+                      error={touched.criticality ? errors.criticality : ""}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      fullWidth
+                      id="severity"
+                      label="Severity"
+                      value={values.severity}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.severity ? errors.severity : ""}
+                      error={touched.severity ? errors.severity : ""}
+                    />
+                  </Grid>
+                  {/* Add more fields here */}
                 </Grid>
               </div>
               <div className={css.buttonArea}>
@@ -141,9 +194,5 @@ function AllergiesForm(props) {
     </FloatingPanel>
   );
 }
-
-// AllergiesForm.propTypes = {
-//   classes: PropTypes.object.isRequired,
-// };
 
 export default AllergiesForm;

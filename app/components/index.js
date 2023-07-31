@@ -1,24 +1,28 @@
 // Main Components
-export Header from './Header/Header';
-export HeaderMenu from './Header/HeaderMenu';
-export Sidebar from './Sidebar';
-export SidebarBig from './SidebarBig';
-export BreadCrumb from './BreadCrumb/BreadCrumb';
-export SourceReader from './SourceReader/SourceReader';
-export PapperBlock from './PapperBlock';
-export SearchUi from './Search/SearchUi';
+export Header from "./Header/Header";
+export HeaderMenu from "./Header/HeaderMenu";
+export Sidebar from "./Sidebar";
+export SidebarBig from "./SidebarBig";
+export BreadCrumb from "./BreadCrumb/BreadCrumb";
+export SourceReader from "./SourceReader/SourceReader";
+export PapperBlock from "./PapperBlock";
+export SearchUi from "./Search/SearchUi";
 // Guide
-export GuideSlider from './GuideSlider';
+export GuideSlider from "./GuideSlider";
+
 // Form
-export LoginForm from './Forms/LoginForm';
-export RegisterForm from './Forms/RegisterForm';
-export ResetForm from './Forms/ResetForm';
-export ChangePassword from './Forms/ChangePassword';
-export Notification from './Notification/Notification';
+export LoginForm from "./Forms/LoginForm";
+// export LoginForm from "./Forms/NewLoginForm";
+export UserForm from "./Forms/UserForm";
+export RegisterForm from "./Forms/RegisterForm";
+export ResetForm from "./Forms/ResetForm";
+export ChangePassword from "./Forms/ChangePassword";
+export Notification from "./Notification/Notification";
+
 // Table
-export EmptyData from './Tables/EmptyData';
+export EmptyData from "./Tables/EmptyData";
 // Error
-export ErrorWrap from './Error/ErrorWrap';
+export ErrorWrap from "./Error/ErrorWrap";
 
 //Pannel
 export FloatingPanel from "./Panel/FloatingPanel";
@@ -36,12 +40,12 @@ export ThirdClinicWidget from "./Widgets/ThirdClinicWidget";
 export TimelineWidget from "./Widgets/TimelineWidget";
 
 //Fields
-export TextField from './Fields/TextField';
-export Autocomplete from './Fields/Autocomplete';
-export DatePicker from './Fields/DatePicker';
+export TextField from "./Fields/TextField";
+export Autocomplete from "./Fields/Autocomplete";
+export DatePicker from "./Fields/DatePicker";
 
 //Snackbar
-export CustomSnackbar from './Snackbar'
+export CustomSnackbar from "./Snackbar";
 
 // Patient Summary
 export PatientEncounter from "./PatientEncounter";
@@ -49,16 +53,16 @@ export PatientTimeline from "./PatientTimeline";
 export WritePost from "./PatientTimeline/WritePost";
 
 // Loader
-export Loader from './Loader'
+export Loader from "./Loader";
 
 // Contact
-export AddContact from './Contact/AddContact';
-export ContactList from './Contact/ContactList';
-export ContactDetail from './Contact/ContactDetail';
+export AddContact from "./Contact/AddContact";
+export ContactList from "./Contact/ContactList";
+export ContactDetail from "./Contact/ContactDetail";
 
 // Chat
-export ChatHeader from './Chat/ChatHeader';
-export ChatRoom from './Chat/ChatRoom';
+export ChatHeader from "./Chat/ChatHeader";
+export ChatRoom from "./Chat/ChatRoom";
 
 //Modal
 export FullModal from "./ModalCard";
@@ -66,7 +70,6 @@ export FullModal from "./ModalCard";
 //MaterialDropZone
 export MaterialDropZone from "./MaterialDropZone";
 
-
 //Profile
-export Cover from './SocialMedia/Cover';
-export About from './Profile/About';
+export Cover from "./SocialMedia/Cover";
+export About from "./Profile/About";

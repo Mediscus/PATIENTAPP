@@ -5,29 +5,36 @@ import { withStyles } from "@mui/styles";
 import brand from "dan-api/dummy/brand";
 import { RegisterForm } from "dan-components";
 import useStyles from "dan-components/Forms/user-jss";
-import { userRegister } from "dan-redux/actions/loginAndRegister";
+import { createHealthIdRequest } from "dan-redux/actions/index";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
+import { FlashAuto } from "@mui/icons-material";
 
 function Register(props) {
   const { classes } = useStyles();
-  const responseData = useSelector((state) => state.register);
+  const responseData = useSelector((state) => state.otp);
   const dispatch = useDispatch();
-
+  const history = useHistory(); // Initialize useHistory hook
+  // const [show, setShow] = useState(false);
   const authLogin = (values) => {
-    dispatch(userRegister(values));
+    dispatch(createHealthIdRequest(values));
+    // setShow(true);
   };
 
   const submitForm = (values) => {
     authLogin(values);
   };
 
-  useEffect(() => {
-    if (responseData.data.Status == "Success") {
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 500); // simulate server latency
-    }
-  }, [responseData]);
+  console.log(responseData, "-------------------------");
+
+  // useEffect(() => {
+  //   if () {
+  //     // Assuming responseData contains the success data after health ID creation
+  //     setTimeout(() => {
+  //       history.push("/app/all-patient"); // Navigate to the next page using useHistory
+  //     }, 500); // simulate server latency
+  //   }
+  // }, [responseData, history]); // Include history in the dependency array
 
   const title = brand.name + " - Register";
   const description = brand.desc;

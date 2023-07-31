@@ -1,13 +1,18 @@
-import { LOGIN_FAIL, LOGIN_SUCCESS, USER_LOGIN, LOG_OUT } from '../constants/reduxFormConstants';
+import {
+  LOGIN_FAIL,
+  LOGIN_SUCCESS,
+  USER_LOGIN,
+  LOG_OUT,
+} from "../constants/reduxFormConstants";
 
 const initialState = {
   data: {},
   loading: false,
-  error: ''
+  error: "",
 };
 
 function login(state = initialState, action) {
-  if (action.type === 'undefined') {
+  if (action.type === "undefined") {
     return state;
   }
 
@@ -16,15 +21,15 @@ function login(state = initialState, action) {
       return {
         ...state,
         loading: true,
-        error: ''
+        error: "",
       };
 
     case LOGIN_SUCCESS:
       return {
         ...state,
         data: action.data,
-        loading: false
-      }
+        loading: false,
+      };
 
     case LOGIN_FAIL:
       return {
@@ -36,7 +41,7 @@ function login(state = initialState, action) {
       return {
         loading: false,
         data: {},
-        error: ''
+        error: "",
       };
 
     default:

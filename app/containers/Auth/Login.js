@@ -9,25 +9,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { userLogin } from "dan-redux/actions/loginAndRegister";
 
 function Login(props) {
-  const responseData = useSelector((state) => state.login);
-  const dispatch = useDispatch();
+  // const responseData = useSelector((state) => state.login);
+  // const dispatch = useDispatch();
 
-  const authLogin = (values) => {
-    dispatch(userLogin(values));
-  };
+  // const authLogin = (values) => {
+  //   dispatch(userLogin(values));
+  // };
 
-  const submitForm = (values) => {
-    authLogin(values);
-  };
+  // const submitForm = (values) => {
+  //   authLogin(values);
+  // };
 
-  useEffect(() => {
-    if (responseData && responseData.data && responseData.data.Status === 'Success') {
-      localStorage.setItem('doctorRef', responseData.data.Data.doctorRef);
-      setTimeout(() => {
-        window.location.href = "/app";
-      }, 500); // simulate server latency
-    }
-  }, [responseData]);
+  // useEffect(() => {
+  //   if (
+  //     responseData &&
+  //     responseData.data &&
+  //     responseData.data.Status === "Success"
+  //   ) {
+  //     localStorage.setItem("doctorRef", responseData.data.Data.doctorRef);
+  //     setTimeout(() => {
+  //       window.location.href =
+  //         "/app/all-patient/details/af0d07d7-b4ab-437f-828c-3b6ffe9d3846";
+  //     }, 500); // simulate server latency
+  //   }
+  // }, [responseData]);
 
   const title = brand.name + " - Login";
   const description = brand.desc;
@@ -46,9 +51,10 @@ function Login(props) {
         <div className={classes.container}>
           <div className={classes.userFormWrap}>
             <LoginForm
-              handleData={(values) => submitForm(values)}
-              errorSms={responseData && responseData.error}
+            // handleData={(values) => submitForm(values)}
+            // errorSms={responseData && responseData.error}
             />
+            {/* "new Login" */}
           </div>
         </div>
       </div>

@@ -16,7 +16,7 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import classNames from "classnames";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import styles from "../PatientEncounter-jss";
 import { Assets } from "dan-api/dummy/FlowSheet";
 
@@ -124,7 +124,8 @@ function PulseElementForm(props) {
           style={{ padding: "10px" }}
           aria-label="menu"
           onClick={() => handleShowMoreFields("toggle")}
-          size="large">
+          size="large"
+        >
           {showMoreField ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
       </Paper>
@@ -215,7 +216,6 @@ function PulseElementForm(props) {
           ))}
         </TextField>
         <TextField
-
           select={true}
           label="Tension"
           name="Tension"
@@ -350,7 +350,8 @@ function BPElementForm(props) {
           style={{ padding: "10px" }}
           aria-label="menu"
           onClick={() => handleShowMoreFields("toggle")}
-          size="large">
+          size="large"
+        >
           {showMoreField ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
       </Paper>
@@ -499,7 +500,8 @@ function RRateElementForm(props) {
           style={{ padding: "10px" }}
           aria-label="menu"
           onClick={() => handleShowMoreFields("toggle")}
-          size="large">
+          size="large"
+        >
           {showMoreField ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
       </Paper>
@@ -634,7 +636,8 @@ function SPElementForm(props) {
           style={{ padding: "10px" }}
           aria-label="menu"
           onClick={() => handleShowMoreFields("toggle")}
-          size="large">
+          size="large"
+        >
           {showMoreField ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
       </Paper>
@@ -696,6 +699,7 @@ function SPElementForm(props) {
 function TemperatureElementForm(props) {
   const { classes, ElementName, getData } = props;
   const [showMoreField, setShowMoreField] = useState(false);
+  const [button, setButton] = useState(false);
   const [FormData, setFormData] = useState({
     Common: "",
     detail: [
@@ -704,24 +708,29 @@ function TemperatureElementForm(props) {
     ],
   });
 
-  const handleShowMoreFields = (status) => {
-    if (status === "toggle") setShowMoreField(!showMoreField);
-    else setShowMoreField(status);
+  // const handleShowMoreFields = () => {
+  //   if (status === "toggle") setShowMoreField(!showMoreField);
+  //   else setShowMoreField(status);
+  // };
+  // const handleChange = (e) => {
+  //   if (e.target.name == "Common") {
+  //     setFormData({ ...FormData, [e.target.name]: e.target.value });
+  //   } else {
+  //     let newData = [];
+  //     for (let detail of FormData.detail) {
+  //       if (detail.name == e.target.name) {
+  //         detail.value = e.target.value;
+  //       }
+  //       newData.push(detail);
+  //     }
+  //     setFormData({ ...FormData, ["detail"]: newData });
+  //   }
+  // };
+
+  const handller = () => {
+    setButton(!button);
   };
-  const handleChange = (e) => {
-    if (e.target.name == "Common") {
-      setFormData({ ...FormData, [e.target.name]: e.target.value });
-    } else {
-      let newData = [];
-      for (let detail of FormData.detail) {
-        if (detail.name == e.target.name) {
-          detail.value = e.target.value;
-        }
-        newData.push(detail);
-      }
-      setFormData({ ...FormData, ["detail"]: newData });
-    }
-  };
+
   const handleData = () => {
     getData({ elementName: ElementName, data: FormData });
   };
@@ -766,14 +775,15 @@ function TemperatureElementForm(props) {
           color="secondary"
         />
         <Typography variant="body2" noWrap={true} style={{ paddingRight: 5 }}>
-          fahrenheit
+          {button ? "cm" : "inch"}
         </Typography>
         <Divider style={{ height: 28, margin: 1 }} orientation="vertical" />
         <IconButton
           style={{ padding: "10px" }}
           aria-label="menu"
-          onClick={() => handleShowMoreFields("toggle")}
-          size="large">
+          onClick={() => handller("toggle")}
+          size="large"
+        >
           {showMoreField ? <MenuOpenIcon /> : <MenuIcon />}
         </IconButton>
       </Paper>
@@ -843,6 +853,8 @@ function FlowSheetElementForm(props) {
     case "Oxygen Saturation SPO2":
       return <SPElementForm {...props} />;
     case "Temperature":
+      return <TemperatureElementForm {...props} />;
+    case "Height":
       return <TemperatureElementForm {...props} />;
     default:
       return null;

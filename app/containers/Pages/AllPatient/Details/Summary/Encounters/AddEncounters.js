@@ -7,28 +7,33 @@ import Send from "@mui/icons-material/Send";
 import apiCall from "dan-redux/apiInterface";
 import { useParams } from "react-router-dom";
 import { DatePicker, TextField, FloatingPanel } from "dan-components";
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import moment from "moment";
 import { encounterFormSchema } from "dan-api/schema";
 
 function AddEncounters(props) {
-  const doctorRef = localStorage.getItem('doctorRef');
+  const doctorRef = localStorage.getItem("doctorRef");
   const patient = useParams();
   const { open, closeForm, data, type, callBack, setMessage } = props;
   const [editData, setEditData] = useState({});
   const { height } = useWindowDimensions();
 
   useEffect(() => {
-    if (type == 'edit') {
-      setEditData(data)
+    if (type == "edit") {
+      setEditData(data);
     } else {
-      setEditData({})
+      setEditData({});
     }
   }, []);
 
-  const saveAppointment = async (values, setErrors, setStatus, setSubmitting) => {
+  const saveAppointment = async (
+    values,
+    setErrors,
+    setStatus,
+    setSubmitting
+  ) => {
     await apiCall("appointment/save", "post", values)
       .then((res) => {
         if (res && res.Status === "Success") {
@@ -55,19 +60,21 @@ function AddEncounters(props) {
     >
       <Formik
         initialValues={{
-          appointmentRef: editData ? editData['appointment_id'] : "",
-          hospitalRef: editData ? editData['hospital_ref'] : "",
+          appointmentRef: editData ? editData["appointment_id"] : "",
+          hospitalRef: editData ? editData["hospital_ref"] : "",
           doctorRef: doctorRef,
           patientRef: patient && patient.patientRef,
-          diagnosis: editData ? editData['diagnosis'] : "",
-          department: editData ? editData['department'] : "",
-          visitDate: editData ? moment(editData['app_date']).format("YYYY-MM-DD") : moment(new Date()).format("YYYY-MM-DD"),
-          visitTime: editData ? editData['app_time'] : '',
-          visitType: editData ? editData['visit_type'] : "",
-          appType: editData ? editData['app_type'] : "New",
-          daysPass: editData ? editData['daysPass'] : "",
-          queueNo: editData ? editData['queueNo'] : "",
-          status: editData ? editData['status'] : ""
+          diagnosis: editData ? editData["diagnosis"] : "",
+          department: editData ? editData["department"] : "",
+          visitDate: editData
+            ? moment(editData["app_date"]).format("YYYY-MM-DD")
+            : moment(new Date()).format("YYYY-MM-DD"),
+          visitTime: editData ? editData["app_time"] : "",
+          visitType: editData ? editData["visit_type"] : "",
+          appType: editData ? editData["app_type"] : "New",
+          daysPass: editData ? editData["daysPass"] : "",
+          queueNo: editData ? editData["queueNo"] : "",
+          status: editData ? editData["status"] : "",
         }}
         enableReinitialize={true}
         validationSchema={encounterFormSchema}
@@ -112,6 +119,32 @@ function AddEncounters(props) {
                   <Grid item xs={12} sm={12}>
                     <TextField
                       fullWidth
+                      id="Select State"
+                      label="Select State"
+                      value={values.diagnosis}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.diagnosis ? errors.diagnosis : ""}
+                      error={touched.diagnosis ? errors.diagnosis : ""}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      fullWidth
+                      id="Select Hospital"
+                      label="Select Hospital"
+                      value={values.diagnosis}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.diagnosis ? errors.diagnosis : ""}
+                      error={touched.diagnosis ? errors.diagnosis : ""}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={12}>
+                    <TextField
+                      fullWidth
                       id="diagnosis"
                       label="Diagnosis Type"
                       value={values.diagnosis}
@@ -121,6 +154,7 @@ function AddEncounters(props) {
                       error={touched.diagnosis ? errors.diagnosis : ""}
                     />
                   </Grid>
+
                   <Grid item xs={12} sm={12}>
                     <TextField
                       fullWidth
@@ -143,11 +177,7 @@ function AddEncounters(props) {
                         setFieldValue("visitDate", date, true);
                       }}
                       renderInput={(params) => (
-                        <MuiTextField
-                          {...params}
-                          fullWidth
-                          name="visitDate"
-                        />
+                        <MuiTextField {...params} fullWidth name="visitDate" />
                       )}
                     />
                   </Grid>
@@ -156,21 +186,24 @@ function AddEncounters(props) {
                       <TimePicker
                         ampm={false}
                         openTo="hours"
-                        views={['hours', 'minutes', 'seconds']}
+                        views={["hours", "minutes", "seconds"]}
                         inputFormat="HH:mm:ss"
                         mask="__:__:__"
                         label="visit Time"
                         value={values.visitTime}
                         onChange={(value) => {
-                          const time = new Date(value).toLocaleTimeString('en-GB');
+                          const time = new Date(value).toLocaleTimeString(
+                            "en-GB"
+                          );
                           setFieldValue("visitTime", time, true);
                         }}
-                        renderInput={(params) =>
+                        renderInput={(params) => (
                           <MuiTextField
                             {...params}
                             fullWidth
                             name="visitTime"
-                          />}
+                          />
+                        )}
                       />
                     </LocalizationProvider>
                   </Grid>
@@ -205,10 +238,8 @@ function AddEncounters(props) {
             </Box>
           </form>
         )}
-
-
       </Formik>
-    </FloatingPanel >
+    </FloatingPanel>
   );
 }
 
