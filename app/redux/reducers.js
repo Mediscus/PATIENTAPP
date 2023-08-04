@@ -23,7 +23,7 @@ import otpReducer from "./modules/otpReducer";
 export default function createReducer(injectedReducers = {}) {
   const rootReducer = combineReducers({
     form,
-    // login,
+    login,
     otp: otpReducer,
     ui: uiReducer,
     patients: patients,
@@ -31,7 +31,7 @@ export default function createReducer(injectedReducers = {}) {
     initval,
     contact,
     chat,
-    // register,
+    register,
     language: languageProviderReducer,
     router: connectRouter(history),
     ...injectedReducers,

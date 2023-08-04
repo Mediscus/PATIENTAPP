@@ -74,14 +74,14 @@ function LoginForm(props) {
 
   const handleOtpSubmit = (values, setMobileOtpSent) => {
     if (!isMobileOtpSending) {
-      setMobileOtpSending(true);
+      setMobileOtpSent(true);
       dispatch(generateOtpRequest(values));
     }
   };
 
   const handleAadharOtpSubmit = (value, setAadhaarOtpSent) => {
     if (!isAadhaarOtpSending) {
-      setAadhaarOtpSending(true);
+      setAadhaarOtpSent(true);
       dispatch(generateAadharOtpRequest(value));
     }
   };

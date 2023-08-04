@@ -1,7 +1,7 @@
 const pageTitle = [
   {
     uri: "/app/all-patient",
-    title: "New Patient",
+    title: "Patient Details",
   },
   {
     uri: "/app/all-patient/details",

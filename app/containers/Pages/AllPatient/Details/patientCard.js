@@ -1,37 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { withStyles } from "@mui/styles";
 import styles from "./settings-jss";
 import { Box, Avatar, Divider, Typography } from "@mui/material";
 import avatarApi from "dan-api/images/avatars";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 
-const patientCard = (props) => {
+const PatientCard = (props) => {
   const { classes } = props;
-  const patientDetails = useSelector((state) => state.patients.patient);
+
+  const location = useLocation();
+  const userData = location.state.userData;
+
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>
-      <Box sx={{ display: "flex", alignItems: "center" }}>
+      <Box key={userData.id} sx={{ display: "flex", alignItems: "center" }}>
         <Avatar
-          alt={patientDetails.first_name}
+          alt={userData.firstName}
           src={avatarApi[8]}
           className={classes.avatar}
         />
         <Typography variant="h6">
-          {patientDetails.first_name + " " + patientDetails.last_name}
+          {userData.firstName + " " + userData.lastName}
         </Typography>
+        <Divider className={classes.dividerVertical} orientation="vertical" />
+        <Typography variant="body2">{userData.healthId}</Typography>
+        <Divider className={classes.dividerVertical} orientation="vertical" />
+        <Typography variant="body2">
+          {`${userData.dayOfBirth}-${userData.monthOfBirth}-${userData.yearOfBirth}`}
+        </Typography>
+        <Divider className={classes.dividerVertical} orientation="vertical" />
+        <Typography variant="body2">{userData.gender}</Typography>
+        <Divider className={classes.dividerVertical} orientation="vertical" />
+        <Typography variant="body2">{userData.mobile}</Typography>
       </Box>
-      <Divider className={classes.dividerVertical} orientation="vertical" />
-      <Typography variant="body2">{patientDetails.abha_number}</Typography>
-      <Divider className={classes.dividerVertical} orientation="vertical" />
-      <Typography variant="body2">{patientDetails.dob}</Typography>
-      <Divider className={classes.dividerVertical} orientation="vertical" />
-      <Typography variant="body2">{patientDetails.gender}</Typography>
-      <Divider className={classes.dividerVertical} orientation="vertical" />
-      <Typography variant="body2">
-        {patientDetails.dial_country_code + " " + patientDetails.phone}
-      </Typography>
     </Box>
   );
 };
 
-export default withStyles(styles)(patientCard);
+export default withStyles(styles)(PatientCard);

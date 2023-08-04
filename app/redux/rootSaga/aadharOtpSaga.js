@@ -21,11 +21,11 @@ const BasePath = "api";
 // Function to call the API for generating OTP
 function* generateOtp(action) {
   try {
-    const { mobile } = action.payload;
+    const { aadhaar } = action.payload;
     const response = yield call(
       axios.post,
       `${BaseURI}/${BasePath}/aadhaar/generateOtp`,
-      { mobile }
+      { aadhaar }
     );
     yield put({ type: GENERATE_OTP_AADHAR_SUCCESS, payload: response.data });
   } catch (error) {
@@ -50,6 +50,6 @@ function* verifyOtp(action) {
 
 // Watcher saga to listen for OTP generation and verification requests
 export function* watchAadharOtpRequests() {
-  yield takeLatest(GENERATE_OTP_REQUEST, generateOtp);
-  yield takeLatest(VERIFY_OTP_REQUEST, verifyOtp);
+  // yield takeLatest(GENERATE_OTP_AADHAR_REQUEST, generateOtp);
+  // yield takeLatest(VERIFY_OTP_AADHAR_REQUEST, verifyOtp);
 }

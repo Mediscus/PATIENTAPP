@@ -93,30 +93,10 @@ function* createHealthIdSaga(action) {
   }
 }
 
-//  Aadhar otp verification
-
-function* generateAadharOtpSaga(action) {
-  try {
-    const response = yield call(
-      axios.post,
-      "http://localhost:3002/api/aadhaar/generateOtp",
-      action.payload
-    );
-    const txnId = response.data; // Assuming the OTP is returned in the response
-
-    yield put({ type: GENERATE_OTP_AADHAR_REQUEST, txnId });
-  } catch (error) {
-    yield put({ type: GENERATE_OTP_AADHAR_FAILURE, error: error.message });
-  }
-}
-
 // Watcher saga to listen for all the actions
 export function* watchOtpActions() {
   yield takeLatest(GENERATE_OTP_REQUEST, generateOtpSaga);
   yield takeLatest(RESEND_OTP_REQUEST, resendOtpSaga);
   yield takeLatest(VERIFY_OTP_REQUEST, verifyOtpSaga);
   yield takeLatest(CREATE_HEALTH_ID_REQUEST, createHealthIdSaga); // Add this line to listen for CREATE_HEALTH_ID_REQUEST
-  // adhar
-
-  yield takeLatest(GENERATE_OTP_AADHAR_REQUEST, generateAadharOtpSaga);
 }

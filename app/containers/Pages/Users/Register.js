@@ -25,16 +25,13 @@ function Register(props) {
     authLogin(values);
   };
 
-  console.log(responseData, "-------------------------");
-
-  // useEffect(() => {
-  //   if () {
-  //     // Assuming responseData contains the success data after health ID creation
-  //     setTimeout(() => {
-  //       history.push("/app/all-patient"); // Navigate to the next page using useHistory
-  //     }, 500); // simulate server latency
-  //   }
-  // }, [responseData, history]); // Include history in the dependency array
+  useEffect(() => {
+    if (responseData.state) {
+      setTimeout(() => {
+        history.push("/app/all-patient");
+      }, 500);
+    }
+  }, [responseData, history]);
 
   const title = brand.name + " - Register";
   const description = brand.desc;
