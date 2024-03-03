@@ -4,8 +4,12 @@ Frontend part of doctor portal
 # reactPatient
 
 
-command to riun the project
+command to run the project
+
+use gitbash
 
 export NODE_OPTIONS=--openssl-legacy-provider
 
 npm install --force
+
+npm start
