@@ -24,6 +24,7 @@ import {
 } from "@mui/icons-material";
 import AddEncounters from "../AllPatient/Details/Summary/Encounters/AddEncounters";
 import { addEncounter } from "../../../redux/actions/encounterActions";
+import AppointmentDetails from "./appointmentdetails";
 
 function Encounters(props) {
   const { classes, add, shadow } = props;
@@ -118,6 +119,7 @@ function Encounters(props) {
           </IconButton>
         )}
       </Box>
+
       <Divider />
       <Box p={1}>
         {apiData &&
@@ -180,6 +182,7 @@ function Encounters(props) {
             );
           })}
       </Box>
+
       {form.open && (
         <AddEncounters
           open={form.open}
@@ -196,6 +199,7 @@ function Encounters(props) {
         type={snackBar.type}
         onClose={() => setSnackBar({ ...snackBar, ["open"]: false })}
       />
+      <AppointmentDetails />
     </Paper>
   );
 }
