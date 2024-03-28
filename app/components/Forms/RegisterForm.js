@@ -102,7 +102,7 @@ function RegisterForm(props) {
     pincode: "",
     profilePhoto: "",
     subdistrictCode: "",
-    txnId: responseData.txnId.txnId,
+    txnId: "",
     villageCode: "",
     wardCode: "",
   };

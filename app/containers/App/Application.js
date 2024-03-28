@@ -17,6 +17,7 @@ import {
   Appointments,
   MyFamily,
 } from "../pageListAsync";
+import LoginDemo from "../Pages/Abha/logindemo";
 
 function Application(props) {
   const { history } = props;
@@ -40,8 +41,10 @@ function Application(props) {
         <Route path="/app/changePassword" component={ChangePassword} />
         <Route exact path="/app/pages" component={Parent} />
         <Route exact path="/app/pages/abha" component={Abha} />
+        <Route exact path="/app/pages/logindemo" component={LoginDemo} />
         <Route exact path="/app/pages/appointments" component={Appointments} />
         <Route exact path="/app/pages/myfamily" component={MyFamily} />
+
         <Route component={NotFound} />
       </Switch>
     </Dashboard>

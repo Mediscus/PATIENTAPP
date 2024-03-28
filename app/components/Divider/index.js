@@ -1,15 +1,12 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './divider-jss';
-import { withStyles } from '@mui/styles';
+import React from "react";
+import PropTypes from "prop-types";
+import styles from "./divider-jss";
+import { withStyles } from "@mui/styles";
 
 /* Gradient Divider */
-const Gradient = props => {
-  const {
-    thin,
-    classes,
-    ...rest
-  } = props;
+
+const Gradient = (props) => {
+  const { thin, classes, ...rest } = props;
   return (
     <hr className={classes.gradient} style={{ height: `${thin}` }} {...rest} />
   );
@@ -21,19 +18,15 @@ Gradient.propTypes = {
 };
 
 Gradient.defaultProps = {
-  thin: 1
+  thin: 1,
 };
 
 export const GradientDivider = withStyles(styles)(Gradient);
 
 /* Dash Divider */
 
-const Dash = props => {
-  const {
-    thin,
-    classes,
-    ...rest
-  } = props;
+const Dash = (props) => {
+  const { thin, classes, ...rest } = props;
   return (
     <hr className={classes.colorDash} style={{ height: `${thin}` }} {...rest} />
   );
@@ -45,19 +38,15 @@ Dash.propTypes = {
 };
 
 Dash.defaultProps = {
-  thin: 1
+  thin: 1,
 };
 
 export const DashDivider = withStyles(styles)(Dash);
 
 /* Shadow Divider */
 
-const Shadow = props => {
-  const {
-    classes,
-    thin,
-    ...rest
-  } = props;
+const Shadow = (props) => {
+  const { classes, thin, ...rest } = props;
   return (
     <hr className={classes.shadow} style={{ height: `${thin}` }} {...rest} />
   );
@@ -69,19 +58,15 @@ Shadow.propTypes = {
 };
 
 Shadow.defaultProps = {
-  thin: 1
+  thin: 1,
 };
 
 export const ShadowDivider = withStyles(styles)(Shadow);
 
 /* Shadow Inset */
 
-const Inset = props => {
-  const {
-    classes,
-    thin,
-    ...rest
-  } = props;
+const Inset = (props) => {
+  const { classes, thin, ...rest } = props;
   return (
     <hr className={classes.inset} style={{ height: `${thin}` }} {...rest} />
   );
@@ -93,21 +78,21 @@ Inset.propTypes = {
 };
 
 Inset.defaultProps = {
-  thin: 1
+  thin: 1,
 };
 
 export const InsetDivider = withStyles(styles)(Inset);
 
 /* Shadow FlairedEdges */
 
-export const FlairedEdges = props => {
-  const {
-    classes,
-    thin,
-    ...rest
-  } = props;
+export const FlairedEdges = (props) => {
+  const { classes, thin, ...rest } = props;
   return (
-    <hr className={classes.flairedEdges} style={{ height: `${thin}` }} {...rest} />
+    <hr
+      className={classes.flairedEdges}
+      style={{ height: `${thin}` }}
+      {...rest}
+    />
   );
 };
 
@@ -117,20 +102,20 @@ FlairedEdges.propTypes = {
 };
 
 FlairedEdges.defaultProps = {
-  thin: 1
+  thin: 1,
 };
 
 export const FlairedEdgesDivider = withStyles(styles)(FlairedEdges);
 
-export const Content = props => {
-  const {
-    classes,
-    thin,
-    content,
-    ...rest
-  } = props;
+export const Content = (props) => {
+  const { classes, thin, content, ...rest } = props;
   return (
-    <hr className={classes.content} style={{ height: `${thin}` }} data-content={content} {...rest} />
+    <hr
+      className={classes.content}
+      style={{ height: `${thin}` }}
+      data-content={content}
+      {...rest}
+    />
   );
 };
 
@@ -141,7 +126,7 @@ Content.propTypes = {
 };
 
 Content.defaultProps = {
-  thin: 1
+  thin: 1,
 };
 
 export const ContentDivider = withStyles(styles)(Content);

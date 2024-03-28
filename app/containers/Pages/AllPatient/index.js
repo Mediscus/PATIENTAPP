@@ -31,7 +31,7 @@ const AllPatient = ({ setMessage }) => {
   const closeForm = () => [setForm({ ...form, ["open"]: false })];
 
   const patientHandler = async () => {
-    const res = await axios.get("http://localhost:3002/api/patient");
+    const res = await axios.get("http://43.204.190.60:3002/api/patient");
   };
 
   useEffect(() => {

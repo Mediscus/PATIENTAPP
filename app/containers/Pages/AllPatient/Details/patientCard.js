@@ -11,7 +11,7 @@ const PatientCard = (props) => {
 
   const location = useLocation();
   // const userData = location.state.userData;
-  const userData={};
+  const userData = {};
 
   return (
     <Box sx={{ display: "flex", alignItems: "center" }}>

@@ -30,6 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   generateOtpRequest,
   resendOtpRequest,
+  resendMobileOtpRequest,
   verifyOtpRequest,
   createHealthIdRequest,
 } from "dan-redux/actions/index";
@@ -40,6 +41,7 @@ import {
 import { useHistory } from "react-router-dom";
 import { bottom } from "@popperjs/core";
 import { Formik } from "formik";
+import { create } from "jss";
 
 const LinkBtn = React.forwardRef(function LinkBtn(props, ref) {
   return <NavLink to={props.to} {...props} innerRef={ref} />;
@@ -47,6 +49,7 @@ const LinkBtn = React.forwardRef(function LinkBtn(props, ref) {
 
 function LoginForm(props) {
   const { classes } = useStyles();
+
   const [aadhaarOtpSent, setAadhaarOtpSent] = useState(false);
   const [mobileOtpSent, setMobileOtpSent] = useState(false);
 
@@ -113,16 +116,24 @@ function LoginForm(props) {
               size="small"
               className={classes.buttonLink}
               component={LinkBtn}
-              to="/register"
+              to="/loginaccount"
             >
               <Icon className={classes.icon}>arrow_forward</Icon>
-              Create new account
+              Login
             </Button>
           </div>
         </Hidden>
         <Typography variant="h4" className={classes.title} gutterBottom>
-          Sign In
+          Create ABHA Number
         </Typography>
+        <Button
+          size="small"
+          className={classes.buttonLink}
+          component={LinkBtn}
+          to="/app/pages/abha"
+        >
+          create ABHA Number
+        </Button>
         <section className={classes.socmedLogin}>
           <div className={classes.btnArea}>
             <Button
@@ -298,19 +309,99 @@ function LoginForm(props) {
                   </FormControl>
 
                   {aadhaarOtpSent && (
-                    <FormControl className={classes.formControl}>
-                      <TextField
-                        fullWidth
-                        name="aadharOtp"
-                        label="Your OTP number"
-                        placeholder="Your OTP Number"
-                        value={aadhaarOtp}
-                        onChange={(e) => setAadhaarOtp(e.target.value)} // Update the aadhaarOtp state
-                        onBlur={handleBlur}
-                        helperText={touched.aadharOtp ? errors.aadharOtp : ""}
-                        error={touched.aadharOtp && Boolean(errors.aadharOtp)}
-                      />
-                    </FormControl>
+                    <div style={{ margin: 10 }}>
+                      <FormControl className={classes.formControl}>
+                        <TextField
+                          fullWidth
+                          name="aadharOtp"
+                          label="Your Aadhar OTP number"
+                          placeholder="Your Aadhar OTP Number"
+                          value={aadhaarOtp}
+                          onChange={(e) => setAadhaarOtp(e.target.value)} // Update the aadhaarOtp state
+                          onBlur={handleBlur}
+                          helperText={touched.aadharOtp ? errors.aadharOtp : ""}
+                          error={touched.aadharOtp && Boolean(errors.aadharOtp)}
+                        />
+                      </FormControl>
+                    </div>
+                  )}
+
+                  <div className={classes.btnArea}>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      onClick={() => handleResendAadharOtp(values.aadhaar)}
+                    >
+                      Resend Aadhar OTP
+                    </Button>
+                  </div>
+                  {aadhaarOtpSent && (
+                    <div style={{ margin: 10 }}>
+                      <FormControl className={classes.formControl}>
+                        <TextField
+                          fullWidth
+                          name="mobile"
+                          label="Your Mobile Number"
+                          placeholder="Your Mobile Number"
+                          value={values.mobile}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={touched.mobile ? errors.mobile : ""}
+                          error={touched.mobile && Boolean(errors.mobile)}
+                        />
+                      </FormControl>
+                    </div>
+                  )}
+
+                  {aadhaarOtpSent && (
+                    <div style={{ margin: 10 }}>
+                      <FormControl className={classes.formControl}>
+                        <TextField
+                          fullWidth
+                          name="mobileOtp"
+                          label="Your Mobile OTP number"
+                          placeholder="Your Mobile OTP Number"
+                          value={values.mobileOtp}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={touched.mobileOtp ? errors.mobileOtp : ""}
+                          error={touched.mobileOtp && Boolean(errors.mobileOtp)}
+                        />
+                      </FormControl>
+                    </div>
+                  )}
+                  {aadhaarOtpSent && (
+                    <div className={classes.btnArea}>
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        onClick={() => handleResendMobileOtp(values.mobile)}
+                      >
+                        Resend Mobile OTP
+                      </Button>
+                    </div>
+                  )}
+
+                  {aadhaarOtpSent && (
+                    <div style={{ margin: 10 }}>
+                      <FormControl className={classes.formControl}>
+                        <TextField
+                          fullWidth
+                          name="healthcareId"
+                          label="Your Healthcare ID"
+                          placeholder="Your Healthcare ID"
+                          value={values.healthcareId}
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.healthcareId ? errors.healthcareId : ""
+                          }
+                          error={
+                            touched.healthcareId && Boolean(errors.healthcareId)
+                          }
+                        />
+                      </FormControl>
+                    </div>
                   )}
 
                   <FormControlLabel
@@ -322,7 +413,6 @@ function LoginForm(props) {
                   <a href="#" className={classes.link}>
                     Terms &amp; Condition
                   </a>
-
                   <div className={classes.btnArea}>
                     <Button variant="contained" color="primary" type="submit">
                       Continue
@@ -348,4 +438,5 @@ LoginForm.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(useStyles)(LoginForm);
+// export default withStyles(useStyles)(LoginForm);
+export default LoginForm;
