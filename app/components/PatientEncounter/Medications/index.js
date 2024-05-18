@@ -21,7 +21,6 @@ function Medications(props) {
   const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
   const openForm = () => setForm({ ...form, ["open"]: true, ["type"]: "add" });
   const closeForm = () => [setForm({ ...form, ["open"]: false })];
-
   const [column, setColumn] = useState([
     { field: "form", headerName: "Form", width: 170 },
     { field: "brandName", headerName: "Brand Name", width: 170 },
