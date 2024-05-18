@@ -120,7 +120,7 @@ function AddEncounters(props) {
                     <TextField
                       fullWidth
                       id="Select State"
-                      label="Select State"
+                      label="Select "
                       value={values.diagnosis}
                       onChange={handleChange}
                       onBlur={handleBlur}

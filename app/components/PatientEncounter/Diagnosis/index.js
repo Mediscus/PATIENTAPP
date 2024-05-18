@@ -1,168 +1,150 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
 import { Grid, IconButton, Paper, Typography, Box } from "@mui/material";
-import classNames from "classnames";
-import apiCall from "dan-redux/apiInterface";
-import AddDiagnosis from "./AddDiagnosis";
-import { useParams } from "react-router-dom";
 import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
-import moment from "moment";
 import { Add } from "@mui/icons-material";
+import moment from "moment";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import { useParams } from "react-router-dom";
+import withStyles from "@mui/styles/withStyles";
+import classNames from "classnames";
+import AddDiagnosis from "./AddDiagnosis";
 import { CustomSnackbar } from "dan-components";
-import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 
-function Diagnosis(props) {
+const Diagnosis = (props) => {
   const { classes, encounterData } = props;
   const patientRef = useParams();
   const gridStyle = useMemo(() => ({ height: "318px", width: "100%" }), []);
-  const [apiData, setApiData] = useState([]);
-  const [form, setForm] = useState({ open: false, data: null, type: 'add' });
-  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "", });
-  const openForm = () => setForm({ ...form, ["open"]: true, ['type']: 'add' });
-  const closeForm = () => [setForm({ ...form, ["open"]: false })];
+  const [rowData, setRowData] = useState([]);
+  const [form, setForm] = useState({ open: false, data: null, type: "add" });
+  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
+  const [showGrid, setShowGrid] = useState(false);
 
-  useEffect(() => {
-    getDiagnosis();
-  }, []);
+  const openForm = () => setForm({ open: true, type: "add", data: null });
+  const closeForm = () => setForm({ open: false, type: "add", data: null });
 
-  const callBackResponse = (refresh) => {
-    closeForm();
-    if (refresh) {
-      getDiagnosis();
-    }
-  }
-
-  async function getDiagnosis() {
-    if (Object.keys(patientRef).length > 0) {
-      await apiCall('ehr/diagnosis', "get", patientRef)
-        .then((res) => {
-          if (res && res.Data && res.Status === "Success") {
-            let data = res.Data;
-            setApiData(data);
-          }
-        })
-        .catch((Error) => {
-          let ErrorMessage = Error.ErrorMessage;
-          if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-            ErrorMessage = Error.ErrorMessage.join("\n");
-          }
-          handleSnackBar(true, "error", ErrorMessage);
-        });
-    }
+  const toggleGridVisibility = () => {
+    // Step 2
+    setShowGrid(!showGrid);
+  };
+  const handleSnackBar = (open, type, msg) => {
+    setSnackBar({ open, type, msg });
   };
 
-  const handleDelete = async (id, patientRef) => {
-    let prepareData = {
-      patientRef: patientRef,
-      diagnosisRef: id
-    }
-    if (prepareData) {
-      if (
-        confirm("Are You Sure You Want To Delete This Data") == true
-      ) {
-        await apiCall(
-          'ehr/diagnosis',
-          "delete", prepareData
-        )
-          .then((res) => {
-            if (res && res.Data && res.Status === "Success") {
-              let data = res.Data;
-              handleSnackBar(true, "success", "Data Deleted Successffuly");
-              getDiagnosis();
-            }
-          })
-          .catch((Error) => {
-            let ErrorMessage = Error.ErrorMessage;
-            if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-              ErrorMessage = Error.ErrorMessage.join("\n");
-            }
-            handleSnackBar(true, "error", ErrorMessage);
-          });
+  const fetchDiagnosisData = useCallback(async () => {
+    try {
+      const response = await fetch(
+        "https://hapi.fhir.org/baseR4/Condition?_lastUpdated=gt2024-02-15"
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } else alert("Patient Id Not Found");
+      const data = await response.json();
+      const formattedData = data.entry.map((entry) => ({
+        id: entry.resource.id,
+        stauts: "active",
+        // status: entry.resource.clinicalStatus?.coding[0]?.display || "Unknown",
+        // diagnosis: entry.resource.code?.coding[0]?.display || "Unknown",
+        // onsetDateTime: entry.resource.onsetDateTime || "Unknown",
+        // recorder: entry.resource.recorder?.reference || "Unknown",
+      }));
+      setRowData(formattedData);
+    } catch (error) {
+      handleSnackBar(
+        true,
+        "error",
+        `Error fetching diagnosis data: ${error.message}`
+      );
+    }
+  }, []);
 
+  useEffect(() => {
+    fetchDiagnosisData();
+  }, [fetchDiagnosisData]);
+
+  const handleDelete = async (id) => {
+    try {
+      if (confirm("Are you sure you want to delete this data?")) {
+        await apiCall("ehr/diagnosis", "delete", {
+          patientRef,
+          diagnosisRef: id,
+        });
+        handleSnackBar(true, "success", "Data deleted successfully");
+        fetchDiagnosisData();
+      }
+    } catch (error) {
+      handleSnackBar(true, "error", `Error deleting data: ${error.message}`);
+    }
   };
 
   const handleEdit = (data) => {
-    setForm({ ...form, ["data"]: data, ["open"]: true, ['type']: 'edit' });
+    setForm({ open: true, data, type: "edit" });
   };
 
   const columns = [
+    { field: "id", headerName: "ID", width: 150 },
+    { field: "status", headerName: "Status", width: 200 },
+    { field: "diagnosis", headerName: "Diagnosis", width: 250 },
     {
-      field: 'diagnosisName',
-      headerName: 'Diagnosis Name',
-      width: 250,
-    },
-    {
-      field: 'sequence',
-      headerName: 'Sequence',
-      width: 250,
-    },
-    {
-      field: 'fromDate',
-      headerName: 'From Date',
+      field: "onsetDateTime",
+      headerName: "Onset Date",
       width: 200,
       valueGetter: (params) =>
-        `${moment(params.row.from_date).format('DD-MM-YYYY')}`,
+        moment(params.row.onsetDateTime).format("DD-MM-YYYY"),
     },
+    { field: "recorder", headerName: "Recorder", width: 200 },
     {
-      field: 'status',
-      headerName: 'Status',
-      width: 200,
-    },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      type: 'actions',
+      field: "actions",
+      headerName: "Actions",
+      type: "actions",
       width: 150,
       getActions: (params) => [
-        <>
-          {/*  <GridActionsCellItem icon={<VisibilityOutlinedIcon />} onClick={() => { }} label="View" title="View" /> */}
-          <GridActionsCellItem icon={<EditOutlinedIcon />} onClick={() => handleEdit(params.row)} label="Edit" title="Edit" />
-          <GridActionsCellItem icon={<DeleteOutlineOutlinedIcon />} onClick={() => handleDelete(params.row.diagnosisRef, params.row.patientRef)} label="Delete" title="Delete" />
-        </>
-      ]
-    }
+        <GridActionsCellItem
+          key="edit"
+          icon={<EditOutlinedIcon />}
+          onClick={() => handleEdit(params.row)}
+          label="Edit"
+          title="Edit"
+        />,
+        <GridActionsCellItem
+          key="delete"
+          icon={<DeleteOutlineOutlinedIcon />}
+          onClick={() => handleDelete(params.row.id)}
+          label="Delete"
+          title="Delete"
+        />,
+      ],
+    },
   ];
-
-  const handleSnackBar = (open, type, msg) => {
-    setSnackBar({ ...snackBar, ["open"]: open, ["type"]: type, ["msg"]: msg });
-  };
-
-  const handleMessage = (type, msg) => {
-    handleSnackBar(true, type, msg);
-  };
 
   return (
     <Grid item xs={12} md={12}>
       <Paper className={classNames(classes.root)} elevation={1}>
-        <Box style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "10px",
-        }}>
-          <Typography variant="h6" component={"span"}>
-            Diagnosis
-          </Typography>
-          <IconButton color="secondary" onClick={() => openForm()} size="large">
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "5px",
+          }}
+        >
+          <Typography variant="h6">Diagnosis</Typography>
+          <IconButton color="secondary" onClick={openForm} size="large">
             <Add />
           </IconButton>
         </Box>
-        <div style={gridStyle} >
-          <DataGrid
-            rows={apiData}
-            getRowId={(row) => row.diagnosisRef}
-            columns={columns}
-            pageSize={5}
-            showCellRightBorder={true}
-            rowsPerPageOptions={[5]}
-            disableSelectionOnClick
-          />
-        </div>
+        <Box onClick={toggleGridVisibility} style={{ cursor: "pointer" }}>
+          {" "}
+          <Typography variant="body1">
+            Click here to {showGrid ? "hide" : "show"} data
+          </Typography>
+        </Box>
+        {showGrid && (
+          <div style={gridStyle}>
+            <DataGrid rows={rowData} columns={columns} pageSize={4} />
+          </div>
+        )}
       </Paper>
       {form.open && (
         <AddDiagnosis
@@ -171,38 +153,31 @@ function Diagnosis(props) {
           type={form.type}
           encounterData={encounterData}
           closeForm={closeForm}
-          callBack={callBackResponse}
-          setMessage={(type, msg) => handleMessage(type, msg)}
+          callBack={fetchDiagnosisData}
+          setMessage={handleSnackBar}
         />
       )}
       <CustomSnackbar
         open={snackBar.open}
         msg={snackBar.msg}
         type={snackBar.type}
-        onClose={() => setSnackBar({ ...snackBar, ["open"]: false })}
+        onClose={() => setSnackBar({ open: false, type: "", msg: "" })}
       />
     </Grid>
   );
-}
+};
 
 Diagnosis.propTypes = {
   classes: PropTypes.object.isRequired,
+  encounterData: PropTypes.object,
 };
 
 const styles = (theme) => ({
   root: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2),
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
+    padding: theme.spacing(3),
     marginBottom: theme.spacing(3),
     boxShadow: theme.shade.light,
     color: theme.palette.text.primary,
-    [theme.breakpoints.up("sm")]: {
-      paddingLeft: theme.spacing(3),
-      paddingRight: theme.spacing(3),
-    },
-
   },
 });
 

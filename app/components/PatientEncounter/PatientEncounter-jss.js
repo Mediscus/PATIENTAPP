@@ -1,7 +1,9 @@
-import { red, orange, blue, cyan } from "@mui/material/colors";
-import { lighten, darken, alpha } from "@mui/system";
+import red from "@material-ui/core/colors/red";
+import orange from "@material-ui/core/colors/orange";
+import blue from "@material-ui/core/colors/indigo";
+import cyan from "@material-ui/core/colors/cyan";
+import { lighten, darken, alpha } from "@material-ui/core/styles";
 const drawerWidth = 240;
-
 const styles = (theme) => ({
   root: {
     flexGrow: 1,
@@ -18,6 +20,12 @@ const styles = (theme) => ({
     marginBottom: theme.spacing(3),
     borderRadius: theme.rounded.medium,
     boxShadow: theme.shade.light,
+  },
+  rounded: {
+    medium: "8px",
+  },
+  shade: {
+    light: "0 2px 4px rgba(0, 0, 0, 0.1)",
   },
   iconRed: {
     color: red[500],

@@ -20,6 +20,12 @@ import ObservationGeneralAssessment from "./ObservationGeneralAssessment";
 import ObservationLifestyle from "./ObservationLifestyle";
 import ObservationPhysicalActivity from "./ObservationPhysicalActivity";
 import FlowSheets from "../../../../../components/PatientEncounter/FlowSheets";
+import Medications from "../../../../../components/PatientEncounter/Medications";
+import AddDiagnosis from "../../../../../components/PatientEncounter/Diagnosis/AddDiagnosis";
+import Diagnosis from "../../../../../components/PatientEncounter/Diagnosis";
+import LabPrescriptionTable from "./../../../../../components/PatientEncounter/LabPrescriptions/LabPrescriptionTable";
+import AddLabPrescription from "../../../../../components/PatientEncounter/LabPrescriptions/AddLabPrescription";
+import LabPrescriptions from "../../../../../components/PatientEncounter/LabPrescriptions";
 
 function Status(props) {
   const title = brand.name + " - Patient Summary";
@@ -39,7 +45,7 @@ function Status(props) {
       <Grid container spacing={3}>
         <Grid item md={encounter ? 12 : 4} xs={12}>
           {/* <FlowSheets add={add} shadow={visible} /> */}
-          {/*  <Diagnosis add={add} shadow={visible} /> */}
+
           <PersonalHistory add={add} shadow={visible} />
           <ObservationLifestyle add={add} shadow={visible} />
         </Grid>
@@ -48,7 +54,7 @@ function Status(props) {
           <SocialHistory add={add} shadow={visible} />
           <Allergies add={add} shadow={visible} />
           <FamilyHistory add={add} shadow={visible} />
-          {/* <Medications add={add} shadow={visible} /> */}
+          <Medications add={add} shadow={visible} />
           <VaccinationsHistory add={add} shadow={visible} />
           <TravelHistory add={add} shadow={visible} />
           <PastHistory add={add} shadow={visible} />
@@ -59,6 +65,8 @@ function Status(props) {
 
         <Grid item md={encounter ? 12 : 4} xs={12}>
           <Encounters add={add} shadow={visible} />
+          <Diagnosis add={add} shadow={visible} />
+          <LabPrescriptions add={add} shadow={visible} />
           <Messages add={add} shadow={visible} />
           {/* <Appointments add={add} shadow={visible} /> */}
           <MenstrualHistory add={add} shadow={visible} />

@@ -7,12 +7,13 @@ const LabPrescriptionTable = () => {
   const [rowData, setRowData] = useState([]);
 
   const [column, setColumn] = useState([
-    { field: "id", headerName: 'ID', width: 170 },
-    { field: "investigation", headerName: 'Investigation', width: 170 },
-    { field: "investigation_type", headerName: 'Type', width: 170 },
-    { field: "details", headerName: 'Details', width: 170 },
-    { field: "date", headerName: 'Date', width: 170 },
-    { field: "specialInstruction", headerName: 'Instruction', width: 170 },
+    { field: "id" },
+    { field: "status" },
+    { field: "intent" },
+    { field: "investigation" },
+    { field: "priority" },
+    { field: "details" },
+    { field: "date" },
   ]);
 
   return (

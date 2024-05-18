@@ -10,200 +10,184 @@ import { useParams } from "react-router-dom";
 import { diagnosisFormSchema } from "dan-api/schema";
 import { DatePicker, TextField } from "dan-components";
 import { Box, Button, Grid } from "@mui/material";
+import MenuItem from "@mui/material";
 import { useDispatch } from "react-redux";
-
+import MomentUtils from "@date-io/moment";
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
+import axios from "axios";
 function AddDiagnosisForm(props) {
   const patient = useParams();
   const { closeForm, encounterData, data, callBack, setMessage } = props;
-  const { height } = useWindowDimensions();
+  const { classes, inputChange } = props;
+  const { height, width } = useWindowDimensions();
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [popupOpen, setPopupOpen] = useState(false);
 
-  const postDiagnosis = async (
-    values,
-    setErrors,
-    setStatus,
-    setSubmitting
-  ) => {
-    await apiCall("ehr/diagnosis", "post", values)
-      .then((res) => {
-        if (res && res.Status === "Success") {
-          setMessage("success", "Data saved successfully!");
-          setStatus({ success: true });
-          callBack(true);
-        }
-      })
-      .catch((Error) => {
-        let ErrorMessage = Error.ErrorMessage;
-        if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-          ErrorMessage = Error.ErrorMessage.join("\n");
-        }
-        setMessage("error", ErrorMessage);
-      });
+  const [formData, setFormData] = useState({
+    DiagnosesName: "",
+    StartDate: "",
+    OnsetYear: "",
+    Status: "",
+    AddedByDr: "",
+    Sequence: "",
+    file: "",
+  });
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
+  const handleChange = (field) => (event) => {
+    setFormData({
+      ...formData,
+      [field]: event.target.value,
+    });
+  };
+
+  const handleDiagnosesForm = () => {
+    setOpenDiagnosesForm(true);
+  };
+
+  const submitForm = () => {
+    alert("Data Submit");
+    console.log("formData", formData);
+  };
+
+  const handleFormSubmit = async () => {
+    try {
+      const postData = {
+        resourceType: "Condition",
+        Status: "active",
+        clinicalStatus: {
+          coding: [
+            {
+              display: formData.Status,
+            },
+          ],
+        },
+        code: {
+          coding: [
+            {
+              display: formData.DiagnosesName,
+            },
+          ],
+        },
+        subject: {
+          reference: "Patient/39254",
+        },
+        onsetDateTime: selectedDate,
+        recorder: {
+          reference: formData.AddedByDr,
+        },
+      };
+      console.log("postData:", postData);
+
+      const response = await axios.post(
+        "https://hapi.fhir.org/baseR4/Condition?_lastUpdated=gt2024-05-16",
+        postData
+      );
+
+      console.log("postData:", postData);
+      console.log("API Response:", response.data);
+
+      alert("Data submitted successfully!");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error submitting data. Please try again.");
+    }
   };
 
   return (
-    <Formik
-      initialValues={{
-        patientRef: patient && patient.patientRef,
-        encounterRef: encounterData.appointment_id,
-        diagnosisRef: data ? data['diagnosisRef'] : '',
-        diagnosisName: data ? data['diagnosisName'] : '',
-        fromDate: data ? moment(data['fromDate']).format("YYYY-MM-DD") : moment(new Date()).format("YYYY-MM-DD"),
-        onsetYear: data ? data['onsetYear'] : '',
-        status: data ? data['status'] : '',
-        doctorRef: data ? data['doctorRef'] : '',
-        sequence: data ? data['sequence'] : '',
-        reports: data ? data['reports'] : '',
-      }}
-      enableReinitialize={true}
-      validationSchema={diagnosisFormSchema}
-      onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-        postDiagnosis(values, setErrors, setStatus, setSubmitting);
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justify: "space-between",
       }}
     >
-      {({
-        errors,
-        handleBlur,
-        handleChange,
-        handleSubmit,
-        isSubmitting,
-        touched,
-        setFieldValue,
-        setTouched,
-        values,
-      }) => (
-        <form onSubmit={handleSubmit}>
-          <div
-            className={css.bodyForm}
-            style={{
-              height: height - 180,
-              maxHeight: height - 180,
-              overflow: "auto",
-              padding: "8px !important",
-            }}
-          >
-            <Grid
-              container
-              spacing={2}
-              justifyContent="space-between"
-              alignItems="center"
+      <div
+        className={css.bodyForm}
+        style={{
+          height: height - 176,
+          maxHeight: height - 176,
+          overflow: "auto",
+        }}
+      >
+        <Grid
+          container
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid item sm={12}>
+            <TextField
+              fullWidth
+              label="Enter diagnosis name"
+              placeholder="Pneumonia"
+              value={formData.DiagnosesName}
+              onChange={handleChange("DiagnosesName")}
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              fullWidth
+              label="Added Reference"
+              placeholder="Added Reference"
+              value={formData.AddedByDr}
+              onChange={handleChange("AddedByDr")}
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <MuiPickersUtilsProvider utils={MomentUtils}>
+              <KeyboardDatePicker
+                label="Start Date"
+                format="DD/MM/YYYY"
+                placeholder="10/10/2018"
+                value={selectedDate}
+                onChange={handleDateChange}
+                animateYearScrolling={false}
+                style={{ width: "100%" }}
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              fullWidth
+              label="Sequence"
+              placeholder="testing data"
+              value={formData.Sequence}
+              onChange={handleChange("Sequence")}
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <Button
+              variant="contained"
+              component="label"
+              size="large"
+              style={{ marginTop: 15, width: "100%" }}
             >
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="diagnosisName"
-                  label="Diagnosis Name"
-                  placeholder="Enter Diagnosis Name"
-                  value={values.diagnosisName}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={
-                    touched.diagnosisName ? errors.diagnosisName : ""
-                  }
-                  error={touched.diagnosisName ? errors.diagnosisName : ""}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <DatePicker
-                  inputFormat="YYYY-MM-DD"
-                  label="From Date"
-                  value={values.fromDate}
-                  onChange={(value) => {
-                    const date = moment(value).format("YYYY-MM-DD");
-                    setFieldValue("fromDate", date, true);
-                  }}
-                  renderInput={(params) => (
-                    <MuiTextField
-                      {...params}
-                      fullWidth
-                      name="fromDate"
-                      variant="standard"
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="onsetYear"
-                  label="Onset Year"
-                  placeholder="Enter Onset Year"
-                  value={values.onsetYear}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={touched.onsetYear ? errors.onsetYear : ""}
-                  error={touched.onsetYear ? errors.onsetYear : ""}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="status"
-                  label="Status"
-                  placeholder="Enter Status"
-                  value={values.status}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={touched.status ? errors.status : ""}
-                  error={touched.status ? errors.status : ""}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="doctorRef"
-                  label="Docator Reference"
-                  placeholder="Enter Docator Reference"
-                  value={values.doctorRef}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={touched.doctorRef ? errors.doctorRef : ""}
-                  error={touched.doctorRef ? errors.doctorRef : ""}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="sequence"
-                  label="Sequence"
-                  placeholder="Enter Sequence"
-                  value={values.sequence}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={touched.sequence ? errors.sequence : ""}
-                  error={touched.sequence ? errors.sequence : ""}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="reports"
-                  label="Reports"
-                  placeholder="Enter Reports"
-                  value={values.reports}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  helperText={touched.reports ? errors.reports : ""}
-                  error={touched.reports ? errors.reports : ""}
-                />
-              </Grid>
-            </Grid>
-          </div>
-          <div className={css.buttonArea}>
-            <Button type="button" onClick={() => closeForm()}>Discard</Button>
-            <Button variant="contained" color="secondary" type="submit">
-              Save&nbsp;
-              <Send />
+              Attach Report
+              <input hidden accept="image/*" multiple type="file" />
             </Button>
-          </div>
-        </form>
-      )}
-    </Formik>
+          </Grid>
+        </Grid>
+      </div>
+      <div className={css.buttonArea}>
+        <Button type="button">Discard</Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleFormSubmit}
+        >
+          Save&nbsp;
+          <Send />
+        </Button>
+      </div>
+    </Box>
   );
 }
 

@@ -10,10 +10,10 @@ import {
   Typography,
   TextField,
   Grid,
+  withStyles,
   Paper,
   InputBase,
   Checkbox,
-  FormControlLabel,
   Table,
   TableBody,
   TableRow,
@@ -22,9 +22,8 @@ import {
   TableFooter,
   MenuItem,
   TableHead,
-} from "@mui/material";
-import { withStyles } from '@mui/styles';
-import Autocomplete from '@mui/material/Autocomplete';
+} from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 import {
   Medicines,
   Form,
@@ -32,64 +31,67 @@ import {
   AfterPlan,
 } from "dan-api/dummy/getmedicationFormData";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
-import Send from "@mui/icons-material/Send";
-import EditIcon from "@mui/icons-material/Edit";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import Search from "@mui/icons-material/Search";
-import Done from "@mui/icons-material/Done";
+import Send from "@material-ui/icons/Send";
+import EditIcon from "@material-ui/icons/Edit";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import AddIcon from "@material-ui/icons/Add";
+import DeleteIcon from "@material-ui/icons/Delete";
+import Search from "@material-ui/icons/Search";
+import Done from "@material-ui/icons/Done";
 import moment from "moment";
-import { useParams } from "react-router-dom";
+import axios from "axios";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 
-function AddMedicationForm(props) {
-  const patient = useParams();
-  const { classes, closeForm } = props;
-  const { height } = useWindowDimensions();
+function AddMedication(props) {
+  const { classes, inputChange } = props;
+  const { height, width } = useWindowDimensions();
   const [editable, setEditable] = useState(["gen0"]);
   const [tapperredEdit, setTapperredEdit] = useState(["ap0"]);
   const [showAfterChangeInput, setShowAfterChangeInput] = useState(false);
+  const [ssd, setSsd] = useState(false);
   const [perDayDose, setPerDayDose] = useState(3);
   const [perDaySchedule, setPerDaySchedule] = useState(8);
   const [singleDose, setSingleDose] = useState([]);
   const [search, setSearch] = useState("");
   const [FakeStateData, setFakeStateData] = useState("");
+  const [value, setValue] = useState("d");
 
   const [formData, setFormData] = useState({
-    patientRef: patient.patientRef,
-    medicationRef: '',
-    form: '',
-    brandName: "",
-    genericName: [{ name: "", strength: "" }],
-    singleState: "",
-    wheneverNeeded: "",
-    frequency: "3",
-    usesSchedule: [{ time: "", dose: "" }],
-    route: "Oral",
-    duration: "2 week",
-    afterPlan: "Tapperred",
-    toBeTapperred: [{ strength: "", dose: "", durations: "" }],
-    linkedDiagnosis: "",
-    administration: "administrater",
+    resourceType: "MedicationRequest",
+    Form: "",
+    Generic: [{ name: "", strength: "" }],
+    Tapperred: [{ strength: "", dose: "", durations: "" }],
+    Strength: "",
+    BrandName: "",
+    Route: "",
+    additionalInstruction: "",
+    After: "",
+    Link: "",
+    Condition: "",
+    frequency: "",
+    dosageInstruction: "",
+    doseAndRate: "",
+    period: "",
+    periodUnit: "",
   });
 
   const handleChange = (name) => (event) => {
-    if (name == 'singleState' || name == 'wheneverNeeded') {
-      setFormData({
-        ...formData,
-        [name]: event.target.checked,
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [name]: event.target.value,
-      });
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: event.target.value,
+    }));
+  };
+  const handleChangeR = (event) => {
+    setValue(event.target.value);
   };
 
   const handleFormChange = (name) => (event) => {
-    setFormData({ ...formData, ["form"]: event.target.value });
+    setFormData({ ...formData, ["Form"]: event.target.value });
   };
 
   const handleBrandChange = (event, value) => {
@@ -101,21 +103,23 @@ function AddMedicationForm(props) {
   };
 
   const handleGenericChange = (name, index) => (event) => {
-    let fdg = formData.genericName;
+    let fdg = formData.Generic;
     let generic = fdg[index];
     fdg[index] = { ...generic, [name]: event.target.value };
-    setFormData({ ...formData, ["genericName"]: fdg });
+    setFormData({ ...formData, ["Generic"]: fdg });
   };
 
   const handleTapperredChange = (name, index) => (event) => {
-    let fdg = formData.toBeTapperred;
+    let fdg = formData.Tapperred;
     let tapperred = fdg[index];
     fdg[index] = { ...tapperred, [name]: event.target.value };
-    setFormData({ ...formData, ["toBeTapperred"]: fdg });
+    setFormData((prevData) => ({ ...prevData, Tapperred: fdg }));
   };
-
   const handleRouteChange = (name) => (event) => {
-    setFormData({ ...formData, ["route"]: event.target.value });
+    setFormData({
+      ...formData,
+      [name]: event.target.value,
+    });
   };
 
   const handleAfterChange = (name) => (event) => {
@@ -124,15 +128,29 @@ function AddMedicationForm(props) {
     } else {
       setShowAfterChangeInput(false);
     }
-    setFormData({ ...formData, ["afterPlan"]: event.target.value });
+    setFormData({ ...formData, ["After"]: event.target.value });
   };
 
-  // Generic
+  const handleDiagnosesForm = () => {
+    setOpenDiagnosesForm(true);
+  };
+
+  const submitForm = () => {
+    alert("Data Submit");
+  };
+
   const handleGenericNameSave = (ind, editableList) => {
     if (editableList.includes(ind)) {
       editableList = editableList.filter((itm) => itm != ind);
     }
     setEditable(editableList);
+  };
+
+  const handleTapperredSave = (ind, editableList) => {
+    if (editableList.includes(ind)) {
+      editableList = editableList.filter((itm) => itm != ind);
+    }
+    setTapperredEdit(editableList);
   };
 
   const handleEditGeneric = (ind) => {
@@ -144,16 +162,82 @@ function AddMedicationForm(props) {
     setFakeStateData(new Date().getTime());
   };
 
+  const handleEditTapperred = (ind) => {
+    let editableTapperred = tapperredEdit;
+    if (!editableTapperred.includes(ind)) {
+      editableTapperred.push(ind);
+      setTapperredEdit(editableTapperred);
+    }
+    setFakeStateData(new Date().getTime());
+  };
+
   const handleDeleteGeneric = (ind) => {
-    let fd = formData.genericName;
-    delete fd[ind];
-    setFormData({ ...formData, ["genericName"]: fd });
+    let fd = [...formData.Generic];
+    fd.splice(ind, 1);
+    setFormData({ ...formData, ["Generic"]: fd });
+  };
+
+  const handleDeleteTapperred = (ind) => {
+    let fd = formData.Tapperred.filter((item, index) => index !== ind);
+    setFormData({ ...formData, ["Tapperred"]: fd });
+  };
+
+  const handleFormSubmit = async () => {
+    try {
+      const postData = {
+        resourceType: "MedicationRequest",
+        dosageInstruction: [
+          {
+            text: "one tablet at once",
+            additionalInstruction: [
+              {
+                coding: [
+                  {
+                    display: formData.additionalInstruction,
+                  },
+                ],
+              },
+            ],
+
+            route: {
+              coding: [
+                {
+                  display: formData.Route,
+                },
+              ],
+            },
+            timing: {
+              repeat: {
+                frequency: perDayDose,
+                period: formData.period,
+                periodUnit: value,
+              },
+            },
+          },
+        ],
+      };
+      console.log("postData:", postData);
+      console.log("selected value", value);
+
+      const response = await axios.post(
+        "https://hapi.fhir.org/baseR4/MedicationRequest?_lastUpdated=gt2024-02-10",
+        postData
+      );
+
+      console.log("postData:", postData);
+      console.log("API Response:", response.data);
+
+      alert("Data submitted successfully!");
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error submitting data. Please try again.");
+    }
   };
 
   const renderGenericName = () => {
     let output = [];
-    if (formData.genericName && formData.genericName.length > 0) {
-      formData.genericName.map((option, ind) => {
+    if (formData.Generic && formData.Generic.length > 0) {
+      formData.Generic.map((option, ind) => {
         output[ind] = (
           <TableRow key={"genD" + ind}>
             <TableCell style={{ width: 350 }}>
@@ -194,21 +278,21 @@ function AddMedicationForm(props) {
                   style={{ padding: 5 }}
                   disabled={option.name == "" ? true : false}
                   onClick={() => handleGenericNameSave("gen" + ind, editable)}
-                  size="large">
+                >
                   <Done />
                 </IconButton>
               ) : (
                 <IconButton
                   style={{ padding: 5 }}
                   onClick={() => handleEditGeneric("gen" + ind)}
-                  size="large">
+                >
                   <EditIcon />
                 </IconButton>
               )}
               <IconButton
                 style={{ padding: 5 }}
                 onClick={() => handleDeleteGeneric(ind)}
-                size="large">
+              >
                 <DeleteIcon />
               </IconButton>
             </TableCell>
@@ -219,41 +303,10 @@ function AddMedicationForm(props) {
     return output;
   };
 
-  const addMoreGeneric = () => {
-    let more = { name: "", strength: "" };
-    let fd = formData.genericName;
-    fd.push(more);
-    setFormData({ ...formData, ["genericName"]: fd });
-    handleEditGeneric("gen" + (formData.genericName.length - 1));
-  };
-
-  // Tapperred
-  const handleTapperredSave = (ind, editableList) => {
-    if (editableList.includes(ind)) {
-      editableList = editableList.filter((itm) => itm != ind);
-    }
-    setTapperredEdit(editableList);
-  };
-
-  const handleEditTapperred = (ind) => {
-    let editableTapperred = tapperredEdit;
-    if (!editableTapperred.includes(ind)) {
-      editableTapperred.push(ind);
-      setTapperredEdit(editableTapperred);
-    }
-    setFakeStateData(new Date().getTime());
-  };
-
-  const handleDeleteTapperred = (ind) => {
-    let fd = formData.toBeTapperred;
-    delete fd[ind];
-    setFormData({ ...formData, ["toBeTapperred"]: fd });
-  };
-
   const renderAfterPlan = () => {
     let output = [];
-    if (formData.toBeTapperred && formData.toBeTapperred.length > 0) {
-      formData.toBeTapperred.map((option, ind) => {
+    if (formData.Tapperred && formData.Tapperred.length > 0) {
+      formData.Tapperred.map((option, ind) => {
         output[ind] = (
           <TableRow key={"ap" + ind}>
             <TableCell style={{ width: 300 }}>
@@ -263,7 +316,7 @@ function AddMedicationForm(props) {
                   label="Strength"
                   placeholder="500 mg"
                   value={option.strength}
-                  onChange={handleTapperredChange("strength", ind)}
+                  onChange={handleTapperredChange("Strength", ind)}
                 />
               ) : (
                 <Typography variant="body2" style={{ fontSize: 16 }}>
@@ -309,21 +362,21 @@ function AddMedicationForm(props) {
                   style={{ padding: 5 }}
                   disabled={option.strength == "" ? true : false}
                   onClick={() => handleTapperredSave("ap" + ind, tapperredEdit)}
-                  size="large">
+                >
                   <Done />
                 </IconButton>
               ) : (
                 <IconButton
                   style={{ padding: 5 }}
                   onClick={() => handleEditTapperred("ap" + ind)}
-                  size="large">
+                >
                   <EditIcon />
                 </IconButton>
               )}
               <IconButton
                 style={{ padding: 5 }}
                 onClick={() => handleDeleteTapperred(ind)}
-                size="large">
+              >
                 <DeleteIcon />
               </IconButton>
             </TableCell>
@@ -334,23 +387,13 @@ function AddMedicationForm(props) {
     return output;
   };
 
-  const addMoreTapperred = () => {
-    let more = { strength: "", dose: "", duration: "" };
-    let fd = formData.toBeTapperred;
-    fd.push(more);
-    setFormData({ ...formData, ["toBeTapperred"]: fd });
-    handleEditTapperred("ap" + (formData.toBeTapperred.length - 1));
+  const handleSSDChange = (name) => (event) => {
+    setSsd(event.target.checked);
   };
 
-  //
   const handlePerDayDose = (v) => {
     let pdd = perDayDose + v;
     if (pdd < 1 || pdd > 5) return false;
-    if (pdd < perDayDose) {
-      let singleDoseValue = singleDose;
-      singleDoseValue.pop();
-      setSingleDose(singleDoseValue);
-    }
     setPerDayDose(pdd);
   };
 
@@ -367,6 +410,7 @@ function AddMedicationForm(props) {
     } else {
       sd[ind] = sd[ind] + v;
     }
+
     if (sd[ind] < 0) return false;
     setSingleDose(sd);
     setFakeStateData(new Date().getTime());
@@ -387,12 +431,27 @@ function AddMedicationForm(props) {
     }
   };
 
-  const renderDose = (pdd) => {
-    let output = [];
-    for (let i = 0; i < pdd; i++) {
+  const addMoreGeneric = () => {
+    let more = { name: "", strength: "" };
+    let fd = formData.Generic;
+    fd.push(more);
+    setFormData({ ...formData, ["Generic"]: fd });
+    handleEditGeneric("gen" + (formData.Generic.length - 1));
+  };
 
+  const addMoreTapperred = () => {
+    let more = { strength: "", dose: "", duration: "" };
+    let fd = formData.Tapperred;
+    fd.push(more);
+    setFormData({ ...formData, ["Tapperred"]: fd });
+    handleEditTapperred("ap" + (formData.Tapperred.length - 1));
+  };
+
+  const renderDose = () => {
+    let output = [];
+    for (let i = 1; i <= perDayDose; i++) {
       output[i] = (
-        <Box key={'dose' + i}
+        <Box
           style={{
             display: "flex",
             flexDirection: "row",
@@ -417,7 +476,7 @@ function AddMedicationForm(props) {
                 disabled
                 className={classes.frequencyInput}
                 name="Dose"
-                value={singleDose[i] || 0}
+                value={singleDose[i] || 1}
                 //onChange={handleCommonData}
                 placeholder="Dose"
                 type="text"
@@ -434,13 +493,13 @@ function AddMedicationForm(props) {
                 <IconButton
                   style={{ padding: 1 }}
                   onClick={() => handleSingleDose(0.5, i)}
-                  size="large">
+                >
                   <ExpandLessIcon />
                 </IconButton>
                 <IconButton
                   style={{ padding: 1 }}
                   onClick={() => handleSingleDose(-0.5, i)}
-                  size="large">
+                >
                   <ExpandMoreIcon />
                 </IconButton>
               </Box>
@@ -451,7 +510,7 @@ function AddMedicationForm(props) {
               disabled
               className={classes.frequencyInput}
               name="Time"
-              value={getScheduleTime((i + 1))}
+              value={getScheduleTime(i)}
               //onChange={handleCommonData}
               placeholder="Time"
               type="text"
@@ -460,7 +519,7 @@ function AddMedicationForm(props) {
               }}
             />
           </Box>
-          {i < (pdd - 1) && (
+          {i < perDayDose && (
             <Box
               style={{
                 display: "flex",
@@ -545,8 +604,8 @@ function AddMedicationForm(props) {
               fullWidth
               label="Form"
               placeholder="Form"
-              value={formData.form}
-              onChange={handleFormChange("form")}
+              value={formData.Form}
+              onChange={handleFormChange("Form")}
             >
               {Form.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -561,8 +620,8 @@ function AddMedicationForm(props) {
               fullWidth
               label="Brand Name"
               placeholder="Dolo 650"
-              value={formData.brandName}
-              onChange={handleChange("brandName")}
+              value={formData.BrandName}
+              onChange={handleChange("BrandName")}
             />
           </Grid>
 
@@ -576,7 +635,7 @@ function AddMedicationForm(props) {
                 size="small"
                 aria-label="a dense table"
                 style={{ margin: 0 }}
-                classes={{ root: classes.tableRoot }}
+                className={{ root: classes.tableRoot }}
               >
                 <TableHead>
                   <TableRow>
@@ -606,10 +665,9 @@ function AddMedicationForm(props) {
             <FormControlLabel
               control={
                 <Checkbox
-                  name="singleState"
-                  checked={formData.singleState}
-                  onChange={handleChange("singleState")}
-                  value={"Yes"}
+                  checked={ssd}
+                  onChange={handleSSDChange("checkedB")}
+                  //value={ssd}
                   color="primary"
                 />
               }
@@ -619,10 +677,9 @@ function AddMedicationForm(props) {
             <FormControlLabel
               control={
                 <Checkbox
-                  name="wheneverNeeded"
-                  checked={formData.wheneverNeeded}
-                  onChange={handleChange("wheneverNeeded")}
-                  value={"Yes"}
+                  checked={ssd}
+                  onChange={handleSSDChange("checkedB")}
+                  //value={ssd}
                   color="primary"
                 />
               }
@@ -630,7 +687,7 @@ function AddMedicationForm(props) {
               style={{ marginTop: 15 }}
             />
 
-            {(!formData.singleState && !formData.wheneverNeeded) && (
+            {!ssd && (
               <Paper className={classes.frequencyBox}>
                 <Grid container spacing={2}>
                   <Grid
@@ -638,7 +695,6 @@ function AddMedicationForm(props) {
                     sm={12}
                     style={{ flexDirection: "row", display: "flex" }}
                   >
-                    {/* Handle Per day dose */}
                     <Box
                       style={{
                         margin: "0 5px",
@@ -647,17 +703,22 @@ function AddMedicationForm(props) {
                         alignItems: "center",
                       }}
                     >
-                      <IconButton style={{ padding: 5 }} onClick={() => handlePerDayDose(1)} size="large">
+                      <IconButton
+                        style={{ padding: 5 }}
+                        onClick={() => handlePerDayDose(1)}
+                      >
                         <ExpandLessIcon />
                       </IconButton>
                       <Typography variant="caption" noWrap>
                         {perDayDose} Time
                       </Typography>
-                      <IconButton style={{ padding: 5 }} onClick={() => handlePerDayDose(-1)} size="large">
+                      <IconButton
+                        style={{ padding: 5 }}
+                        onClick={() => handlePerDayDose(-1)}
+                      >
                         <ExpandMoreIcon />
                       </IconButton>
                     </Box>
-                    {/* handle Per Day Schedule */}
                     <Box
                       style={{
                         margin: "0 20px 0 5px",
@@ -669,7 +730,7 @@ function AddMedicationForm(props) {
                       <IconButton
                         style={{ padding: 5 }}
                         onClick={() => handlePerDaySchedule(1)}
-                        size="large">
+                      >
                         <ExpandLessIcon />
                       </IconButton>
                       <Typography variant="caption" noWrap>
@@ -678,16 +739,74 @@ function AddMedicationForm(props) {
                       <IconButton
                         style={{ padding: 5 }}
                         onClick={() => handlePerDaySchedule(-1)}
-                        size="large">
+                      >
                         <ExpandMoreIcon />
                       </IconButton>
                     </Box>
-                    {/* render Per Day dose Schedule */}
-                    {renderDose(perDayDose)}
+                    {renderDose()}
                   </Grid>
                 </Grid>
               </Paper>
             )}
+          </Grid>
+
+          <Grid item sm={12}>
+            <TextField
+              fullWidth
+              label="Period"
+              placeholder="Period"
+              value={formData.period}
+              onChange={handleChange("period")}
+            />
+          </Grid>
+
+          <Grid item sm={12}>
+            <FormControl>
+              <FormLabel
+                id="demo-controlled-radio-buttons-group"
+                component="fieldset"
+              >
+                Period Unit
+              </FormLabel>
+              <RadioGroup
+                aria-labelledby="demo-controlled-radio-buttons-group"
+                name="controlled-radio-buttons-group"
+                value={value}
+                onChange={handleChangeR}
+                row
+              >
+                <FormControlLabel
+                  value="h"
+                  control={<Radio />}
+                  label="Hours"
+                  labelPlacement="bottom"
+                />
+                <FormControlLabel
+                  value="d"
+                  control={<Radio />}
+                  label="Days"
+                  labelPlacement="bottom"
+                />
+                <FormControlLabel
+                  value="wk"
+                  control={<Radio />}
+                  label="Weeks"
+                  labelPlacement="bottom"
+                />
+                <FormControlLabel
+                  value="mo"
+                  control={<Radio />}
+                  label="Months"
+                  labelPlacement="bottom"
+                />
+                <FormControlLabel
+                  value="a"
+                  control={<Radio />}
+                  label="Year"
+                  labelPlacement="bottom"
+                />
+              </RadioGroup>
+            </FormControl>
           </Grid>
 
           <Grid item sm={6}>
@@ -696,8 +815,8 @@ function AddMedicationForm(props) {
               fullWidth
               label="Route"
               placeholder="Route"
-              value={formData.route}
-              onChange={handleRouteChange("route")}
+              value={formData.Route}
+              onChange={handleRouteChange("Route")}
             >
               {Route.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -706,25 +825,14 @@ function AddMedicationForm(props) {
               ))}
             </TextField>
           </Grid>
-
-          <Grid item sm={6}>
-            <TextField
-              fullWidth
-              label="Duration"
-              placeholder="Duration"
-              value={formData.duration}
-              onChange={handleChange("duration")}
-            />
-          </Grid>
-
           <Grid item sm={6}>
             <TextField
               select
               fullWidth
               label="After Plan"
               placeholder="After Plan"
-              value={formData.afterPlan}
-              onChange={handleAfterChange("afterPlan")}
+              value={formData.After}
+              onChange={handleAfterChange("After")}
             >
               {AfterPlan.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
@@ -734,17 +842,17 @@ function AddMedicationForm(props) {
             </TextField>
           </Grid>
 
-          <Grid item sm={6}>
+          <Grid item sm={12}>
             <TextField
               fullWidth
-              label="Link Diagnosis"
+              label="Link Condition"
               placeholder="Link"
-              value={formData.linkedDiagnosis}
-              onChange={handleChange("linkedDiagnosis")}
+              value={formData.Link}
+              onChange={handleChange("Link")}
             />
           </Grid>
 
-          {showAfterChangeInput &&
+          {showAfterChangeInput && (
             <Grid item xs={12} sm={12}>
               <TableContainer
                 component={Paper}
@@ -755,7 +863,7 @@ function AddMedicationForm(props) {
                   size="small"
                   aria-label="a dense table"
                   style={{ margin: 0 }}
-                  classes={{ root: classes.tableRoot }}
+                  className={{ root: classes.tableRoot }}
                 >
                   <TableHead>
                     <TableRow>
@@ -781,44 +889,40 @@ function AddMedicationForm(props) {
                 </Table>
               </TableContainer>
             </Grid>
-          }
+          )}
 
           <Grid item sm={12}>
             <TextField
               fullWidth
-              label="Frequency"
-              placeholder="Frequency"
-              value={formData.frequency}
-              onChange={handleChange("frequency")}
-            />
-          </Grid>
-          <Grid item sm={12}>
-            <TextField
-              fullWidth
-              label="Administration"
-              placeholder="Administration"
-              value={formData.administration}
-              onChange={handleChange("administration")}
+              label="Aadditional Instruction"
+              placeholder="additional Instruction"
+              value={formData.additionalInstruction}
+              onChange={handleChange("additionalInstruction")}
             />
           </Grid>
         </Grid>
       </div>
       <div className={css.buttonArea}>
-        <Box>
-          <Button type="button" onClick={() => closeForm()}>Discard</Button>
-          <Button variant="contained" color="secondary" onClick={() => closeForm()}>
-            Save&nbsp;
-            <Send />
-          </Button>
-        </Box>
+        <Button type="button" onClick={() => setOpenDiagnosesForm(false)}>
+          {" "}
+          Discard{" "}
+        </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={handleFormSubmit}
+        >
+          Save&nbsp;
+          <Send className={classes.sendIcon} />
+        </Button>
       </div>
     </Box>
   );
 }
 
-AddMedicationForm.propTypes = {
+AddMedication.propTypes = {
   classes: PropTypes.object.isRequired,
   //inputChange: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(AddMedicationForm);
+export default withStyles(styles)(AddMedication);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import styles from "../PatientEncounter-jss";
 import "dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css";
 import Add from "@mui/icons-material/Add";
@@ -12,22 +12,35 @@ import AddDiagnosisForm from "./AddDiagnosisForm";
 import themePalette from "dan-api/palette/themePalette";
 
 function AddDiagnosis(props) {
-  const { classes, encounterData, open, closeForm, data, type, callBack, setMessage } = props;
+  const {
+    classes,
+    encounterData,
+    open,
+    closeForm,
+    data,
+    type,
+    callBack,
+    setMessage,
+  } = props;
   const [openDiagnosesForm, setOpenDiagnosesForm] = useState(false);
   const [apiData, setApiData] = useState({});
 
   useEffect(() => {
-    if (type === 'add') {
+    if (type === "add") {
       setApiData({});
       setOpenDiagnosesForm(false);
     } else {
       setApiData(data);
       setOpenDiagnosesForm(true);
     }
-  }, [])
+  }, [type, data]);
 
   const clickAdd = () => {
-    setOpenDiagnosesForm(true)
+    setOpenDiagnosesForm(true);
+  };
+
+  const clickView = () => {
+    setOpenDiagnosesForm(false);
   };
 
   return (
@@ -55,7 +68,7 @@ function AddDiagnosis(props) {
             <Button
               color="primary"
               className={classes.button}
-              onClick={() => setOpenDiagnosesForm(false)}
+              onClick={clickView}
             >
               View
             </Button>
@@ -63,18 +76,16 @@ function AddDiagnosis(props) {
             <Button
               color="primary"
               className={classes.button}
-              onClick={() => clickAdd()}
+              onClick={clickAdd}
             >
               <Add />
               Add
             </Button>
           )}
         </Box>
-        {!openDiagnosesForm ?
-          <PrevDiagnosis
-            closeForm={closeForm}
-          />
-          :
+        {!openDiagnosesForm ? (
+          <PrevDiagnosis closeForm={closeForm} />
+        ) : (
           <AddDiagnosisForm
             data={apiData}
             type={type}
@@ -83,14 +94,21 @@ function AddDiagnosis(props) {
             closeForm={closeForm}
             encounterData={encounterData}
           />
-        }
+        )}
       </Box>
-    </FloatingPanel >
+    </FloatingPanel>
   );
 }
 
 AddDiagnosis.propTypes = {
   classes: PropTypes.object.isRequired,
+  encounterData: PropTypes.object,
+  open: PropTypes.bool,
+  closeForm: PropTypes.func,
+  data: PropTypes.object,
+  type: PropTypes.string,
+  callBack: PropTypes.func,
+  setMessage: PropTypes.func,
 };
 
 export default withStyles(styles)(AddDiagnosis);

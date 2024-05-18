@@ -1,190 +1,198 @@
-
-import React, { useEffect, useState } from "react";
-import css from "dan-styles/Form.scss";
+import React, { useState } from "react";
+import { Box, Button, Grid, MenuItem, TextField } from "@mui/material";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
-import Send from "@mui/icons-material/Send";
-import apiCall from "dan-redux/apiInterface";
+import axios from "axios";
 import moment from "moment";
-import { Formik } from "formik";
-import { TextField as MuiTextField } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { DatePicker, TextField } from "dan-components";
-import { Box, Button, Grid } from "@mui/material";
-import { useDispatch } from "react-redux";
-import { labPrescriptionFormSchema } from "dan-api/schema";
+import css from "dan-styles/Form.scss";
+import { DatePicker } from "@material-ui/pickers";
+import {
+  KeyboardDatePicker,
+  MuiPickersUtilsProvider,
+} from "@material-ui/pickers";
 
 function AddLabPrescriptionForm(props) {
-  const patient = useParams();
-  const { closeForm, encounterData, data, callBack, setMessage } = props;
-  const { height } = useWindowDimensions();
+  const { classes, inputChange } = props;
+  const { height, width } = useWindowDimensions();
+  const [selectedOrderDate, setSelectedOrderDate] = useState(new Date());
+  const [formData, setFormData] = useState({
+    Investigation: "",
+    intent: "",
+    priority: "",
+    Details: "",
+    Date: "",
+    Instruction: "",
+  });
 
-  const postPrescription = async (
-    values,
-    setErrors,
-    setStatus,
-    setSubmitting
-  ) => {
-    await apiCall("ehr/lab-prescription", "post", values)
-      .then((res) => {
-        if (res && res.Status === "Success") {
-          setMessage("success", "Data saved successfully!");
-          setStatus({ success: true });
-          callBack(true);
-        }
-      })
-      .catch((Error) => {
-        let ErrorMessage = Error.ErrorMessage;
-        if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-          ErrorMessage = Error.ErrorMessage.join("\n");
-        }
-        setMessage("error", ErrorMessage);
-      });
+  const handleChange = (name) => (event) => {
+    setFormData({
+      ...formData,
+      [name]: event.target.value,
+    });
+  };
+
+  const handleDateChange = (date) => {
+    setSelectedOrderDate(date);
+    setFormData({ ...formData, Date: selectedOrderDate });
+  };
+
+  const handleFormSubmit = async () => {
+    try {
+      const postData = {
+        resourceType: "ServiceRequest",
+        status: "active",
+        intent: formData.intent,
+        category: [
+          {
+            coding: [
+              {
+                display: formData.Investigation,
+              },
+            ],
+          },
+        ],
+        priority: formData.priority,
+        code: {
+          coding: [
+            {
+              display: formData.Details,
+            },
+          ],
+        },
+        quantityQuantity: { value: 1 },
+        authoredOn: moment(formData.Date).toISOString(),
+      };
+
+      console.log("postData:", postData);
+
+      const response = await axios.post(
+        "https://hapi.fhir.org/baseR4/ServiceRequest?_lastUpdated=gt2024-05-13",
+        postData
+      );
+
+      console.log("API Response:", response.data);
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error submitting data. Please try again.");
+    }
   };
 
   return (
-
-    <Formik
-      initialValues={{
-        patientRef: patient && patient.patientRef,
-        encounterRef: encounterData && encounterData.appointment_id,
-        prescriptionRef: data ? data['prescriptionRef'] : '',
-        investigation: data ? data['investigation'] : '',
-        orderDate: data ? moment(data['orderDate']).format("YYYY-MM-DD") : '',
-        investigationType: data ? data['investigationType'] : '',
-        details: data ? data['details'] : '',
-        instruction: data ? data['instruction'] : '',
-      }}
-      enableReinitialize={true}
-      validationSchema={labPrescriptionFormSchema}
-      onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-        postPrescription(values, setErrors, setStatus, setSubmitting);
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justify: "space-between",
       }}
     >
-      {({
-        errors,
-        handleBlur,
-        handleChange,
-        handleSubmit,
-        isSubmitting,
-        touched,
-        setFieldValue,
-        setTouched,
-        values,
-      }) => (
-        <form onSubmit={handleSubmit}>
-          <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              flexDirection: "column",
-              justify: "space-between",
-            }}
-          >
-            <div
-              className={css.bodyForm}
-              style={{
-                height: height - 175,
-                maxHeight: height - 175,
-                overflow: "auto",
-                padding: "8px !important",
-              }}
+      <div
+        className={css.bodyForm}
+        style={{
+          height: height - 140,
+          maxHeight: height - 140,
+          overflow: "auto",
+        }}
+      >
+        <Grid
+          container
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={6} sm={6}>
+            <TextField
+              fullWidth
+              label="Investigation"
+              placeholder="Investigation"
+              value={formData.Investigation}
+              onChange={handleChange("Investigation")}
+            />
+          </Grid>
+
+          <Grid item sm={6}>
+            <TextField
+              fullWidth
+              label="Intent"
+              placeholder="Intent"
+              value={formData.intent}
+              onChange={handleChange("intent")}
+              select
             >
-              <Grid
-                container
-                spacing={2}
-                justifyContent="space-between"
-                alignItems="center"
-              >
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    type="text"
-                    name="investigation"
-                    label="Investigation"
-                    placeholder="Investigation"
-                    value={values.investigation}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={
-                      touched.investigation ? errors.investigation : ""
-                    }
-                    error={touched.investigation ? errors.investigation : ""}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <DatePicker
-                    inputFormat="YYYY-MM-DD"
-                    label="Order Date"
-                    value={values.orderDate}
-                    onChange={(value) => {
-                      const date = moment(value).format("YYYY-MM-DD");
-                      setFieldValue("orderDate", date, true);
-                    }}
-                    renderInput={(params) => (
-                      <MuiTextField
-                        {...params}
-                        fullWidth
-                        name="orderDate"
-                        variant="standard"
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    type="text"
-                    name="investigationType"
-                    label="Investigation Type"
-                    placeholder="Investigation Type"
-                    value={values.investigationType}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.investigationType ? errors.investigationType : ""}
-                    error={touched.investigationType ? errors.investigationType : ""}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    type="text"
-                    name="details"
-                    label="Details"
-                    placeholder="Enter Details"
-                    value={values.details}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.details ? errors.details : ""}
-                    error={touched.details ? errors.details : ""}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={12}>
-                  <TextField
-                    fullWidth
-                    type="text"
-                    name="instruction"
-                    label="Instruction"
-                    placeholder="Enter Instruction"
-                    value={values.instruction}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    helperText={touched.instruction ? errors.instruction : ""}
-                    error={touched.instruction ? errors.instruction : ""}
-                  />
-                </Grid>
-              </Grid>
-            </div>
-            <div className={css.buttonArea}>
-              <Button type="button" onClick={() => closeForm()}>Discard</Button>
-              <Button variant="contained" color="secondary" type="submit">
-                Save&nbsp;
-                <Send />
-              </Button>
-            </div>
+              {[
+                "proposal",
+                "plan",
+                "directive",
+                "order",
+                "original-order",
+                "reflex-order",
+                "filler-order",
+                "instance-order",
+                "option",
+              ].map((option, index) => (
+                <MenuItem key={option + "-" + index} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              fullWidth
+              label="Priority"
+              placeholder="Priority"
+              value={formData.priority}
+              onChange={handleChange("priority")}
+              select
+            >
+              {["routine", "urgent", "asap", "stat"].map((option, index) => (
+                <MenuItem key={option + "-" + index} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          {/* 
+          <Grid item xs={6} sm={6}>
+            <MuiPickersUtilsProvider utils={MomentUtils}>
+              <KeyboardDatePicker
+                label="Order Date"
+                format="DD/MM/YYYY"
+                placeholder="10/10/2018"
+                value={selectedOrderDate}
+                onChange={handleDateChange}
+                animateYearScrolling={false}
+                style={{ width: "100%" }}
+              />
+            </MuiPickersUtilsProvider>
+          </Grid> */}
+          <Grid item xs={6} sm={6}>
+            <TextField
+              fullWidth
+              label="Details"
+              placeholder="Details"
+              value={formData.Details}
+              onChange={handleChange("Details")}
+            />
+          </Grid>
+        </Grid>
+      </div>
+      <div>
+        <Grid container justifyContent="space-between" alignItems="center">
+          <Button>Save as Template</Button>
+          <Box>
+            <Button type="button">Discard</Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleFormSubmit}
+            >
+              Save
+            </Button>
           </Box>
-        </form>
-      )}
-    </Formik>
+        </Grid>
+      </div>
+    </Box>
   );
 }
 

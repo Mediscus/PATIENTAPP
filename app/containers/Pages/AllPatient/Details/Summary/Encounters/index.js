@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import {
   Box,
   Divider,
@@ -18,7 +18,11 @@ import { useDispatch } from "react-redux";
 import apiCall from "dan-redux/apiInterface";
 import { CustomSnackbar, Loader } from "dan-components";
 import { useParams } from "react-router-dom";
-import { AddCircleOutlineOutlined, DeleteForever, Edit } from "@mui/icons-material";
+import {
+  AddCircleOutlineOutlined,
+  DeleteForever,
+  Edit,
+} from "@mui/icons-material";
 
 function Encounters(props) {
   const { classes, add, shadow } = props;
@@ -26,28 +30,28 @@ function Encounters(props) {
   const patient = useParams();
   const [apiData, setApiData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [form, setForm] = useState({ open: false, data: null, type: 'add' });
-  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "", });
-  const openForm = () => setForm({ ...form, ["open"]: true, ['type']: 'add' });
+  const [form, setForm] = useState({ open: false, data: null, type: "add" });
+  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
+  const openForm = () => setForm({ ...form, ["open"]: true, ["type"]: "add" });
   const closeForm = () => [setForm({ ...form, ["open"]: false })];
 
   useEffect(() => {
     getAppointment();
     return () => {
       setApiData([]);
-    }
+    };
   }, []);
 
   const callBackResponse = (refresh) => {
-    closeForm()
+    closeForm();
     if (refresh) {
       getAppointment();
     }
-  }
+  };
 
   async function getAppointment() {
     if (Object.keys(patient).length > 0) {
-      await apiCall('appointment', "get", patient)
+      await apiCall("appointment", "get", patient)
         .then((res) => {
           if (res && res.Status === "Success") {
             let data = res.Data;
@@ -63,20 +67,15 @@ function Encounters(props) {
         });
       setIsLoading(false);
     }
-  };
+  }
 
   const handleDelete = async (id) => {
     let prepareData = {
-      appointmentRef: id
-    }
+      appointmentRef: id,
+    };
     if (prepareData) {
-      if (
-        confirm("Are You Sure You Want To Delete This Data") == true
-      ) {
-        await apiCall(
-          'appointment/delete',
-          "delete", prepareData
-        )
+      if (confirm("Are You Sure You Want To Delete This Data") == true) {
+        await apiCall("appointment/delete", "delete", prepareData)
           .then((res) => {
             if (res && res.Data && res.Status === "Success") {
               handleSanackBar(true, "success", "Data Deleted Successffuly");
@@ -92,7 +91,6 @@ function Encounters(props) {
           });
       }
     } else alert("Patient Id Not Found");
-
   };
 
   const handleSanackBar = (open, type, msg) => {
@@ -100,7 +98,7 @@ function Encounters(props) {
   };
 
   const handleEdit = (data) => {
-    setForm({ ...form, ["data"]: data, ["open"]: true, ['type']: 'edit' });
+    setForm({ ...form, ["data"]: data, ["open"]: true, ["type"]: "edit" });
   };
 
   const handleMessage = (type, msg) => {
@@ -111,7 +109,7 @@ function Encounters(props) {
     <Paper className={classNames(classes.root)} elevation={shadow}>
       <Box className={classes.header}>
         <Typography variant="h6" className={classes.title}>
-          Appointments
+          Appointment
         </Typography>
         {add && (
           <IconButton color="secondary" onClick={() => openForm()} size="large">
@@ -121,61 +119,65 @@ function Encounters(props) {
       </Box>
       <Divider />
       <Box p={1}>
-        {apiData && apiData.length > 0 && apiData.map((data, index) => {
-          return (
-            <List key={index} component="nav" aria-label="main mailbox folders" >
-              <ListItem
-                button
-                onClick={() => dispatch(addEncounter(data))}
-                className={classes.listStyle}
-                classes={{
-                  root: classes.listItemRoot,
-                }}
+        {apiData &&
+          apiData.length > 0 &&
+          apiData.map((data, index) => {
+            return (
+              <List
+                key={index}
+                component="nav"
+                aria-label="main mailbox folders"
               >
-                <Typography
-                  variant="body2"
-                  style={{ fontSize: 14 }}
-                  color="primary"
-                >
-                  {data.department}
-                </Typography>
-                <Typography variant="body2" style={{ fontSize: 12 }}>
-                  {data.diagnosis}
-                </Typography>
-              </ListItem>
-              {add &&
-                <ListItemSecondaryAction
+                <ListItem
+                  button
+                  onClick={() => dispatch(addEncounter(data))}
+                  className={classes.listStyle}
                   classes={{
-                    root: classes.secondaryAction,
+                    root: classes.listItemRoot,
                   }}
                 >
-                  <IconButton
-                    color="secondary"
-                    classes={{
-                      root: classes.iconBtn,
-                    }}
-                    onClick={() => handleEdit(data)}
-                    size="small"
+                  <Typography
+                    variant="body2"
+                    style={{ fontSize: 14 }}
+                    color="primary"
                   >
-                    <Edit fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    color="secondary"
+                    {data.department}
+                  </Typography>
+                  <Typography variant="body2" style={{ fontSize: 12 }}>
+                    {data.diagnosis}
+                  </Typography>
+                </ListItem>
+                {add && (
+                  <ListItemSecondaryAction
                     classes={{
-                      root: classes.iconBtn,
+                      root: classes.secondaryAction,
                     }}
-                    onClick={() =>
-                      handleDelete(data.appointment_id)
-                    }
-                    size="small"
                   >
-                    <DeleteForever fontSize="small" />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              }
-            </List>
-          );
-        })}
+                    <IconButton
+                      color="secondary"
+                      classes={{
+                        root: classes.iconBtn,
+                      }}
+                      onClick={() => handleEdit(data)}
+                      size="small"
+                    >
+                      <Edit fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      color="secondary"
+                      classes={{
+                        root: classes.iconBtn,
+                      }}
+                      onClick={() => handleDelete(data.appointment_id)}
+                      size="small"
+                    >
+                      <DeleteForever fontSize="small" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                )}
+              </List>
+            );
+          })}
       </Box>
       {form.open && (
         <AddEncounters
@@ -210,7 +212,6 @@ Encounters.defaultProps = {
 const styles = (theme) => ({
   root: {
     marginBottom: theme.spacing(3),
-
   },
   header: {
     display: "flex",

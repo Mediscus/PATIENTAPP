@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import FloatingPanel from "../../Panel/FloatingPanel";
 import styles from "../PatientEncounter-jss";
 import "dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css";
@@ -23,11 +23,11 @@ function AddMedications(props) {
   };
 
   useEffect(() => {
-    if (type === 'add') {
+    if (type === "add") {
       setApiData({});
     } else {
       setApiData(data);
-      setOpenMedicationForm(false)
+      setOpenMedicationForm(false);
     }
   }, []);
 
@@ -72,12 +72,12 @@ function AddMedications(props) {
             </Button>
           )}
         </Box>
-        {openMedicationForm ?
+        {openMedicationForm ? (
           <PrevMedications
             closeForm={closeForm}
             encounterData={encounterData}
           />
-          :
+        ) : (
           <AddMedicationsForm
             closeForm={closeForm}
             data={apiData}
@@ -85,7 +85,7 @@ function AddMedications(props) {
             PreviewData={PreviewData}
             encounterData={encounterData}
           />
-        }
+        )}
       </Box>
     </FloatingPanel>
   );

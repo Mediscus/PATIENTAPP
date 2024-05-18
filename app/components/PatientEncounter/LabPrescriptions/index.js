@@ -1,154 +1,150 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import { Grid, IconButton, Paper, Typography, Box } from "@mui/material";
 import classNames from "classnames";
-import apiCall from "dan-redux/apiInterface";
-import { useParams } from "react-router-dom";
-import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import moment from "moment";
+import { DataGrid } from "@mui/x-data-grid";
 import { Add } from "@mui/icons-material";
 import { CustomSnackbar } from "dan-components";
 import AddLabPrescription from "./AddLabPrescription";
-import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import Divider from "@mui/material/Divider";
 
-function LabPrescriptions(props) {
-  const { classes, encounterData } = props;
-  const patientRef = useParams();
-  const gridStyle = useMemo(() => ({ height: "318px", width: "100%" }), []);
-  const [apiData, setApiData] = useState([]);
-  const [form, setForm] = useState({ open: false, data: null, type: 'add' });
-  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "", });
-  const openForm = () => setForm({ ...form, ["open"]: true, ['type']: 'add' });
-  const closeForm = () => [setForm({ ...form, ["open"]: false })];
+function LabPrescriptions({ classes, encounterData }) {
+  const gridStyle = useMemo(() => ({ height: "350px", width: "100%" }), []);
+  const [rowData, setRowData] = useState([]);
+  const [form, setForm] = useState({ open: false, data: null, type: "add" });
+  const [snackBar, setSnackBar] = useState({
+    open: false,
+    type: "",
+    msg: "",
+  });
+  const [showGrid, setShowGrid] = useState(false); // State to control grid visibility
+
+  const openForm = () => setForm({ ...form, open: true, type: "add" });
+  const closeForm = () => setForm({ ...form, open: false });
 
   useEffect(() => {
-    getPrescription();
+    fetchLabPrescriptionData();
   }, []);
 
-  const callBackResponse = (refresh) => {
-    closeForm()
-    if (refresh) {
-      getPrescription();
-    }
-  }
-
-  async function getPrescription() {
-    if (Object.keys(patientRef).length > 0) {
-      await apiCall('ehr/lab-prescription', "get", patientRef)
-        .then((res) => {
-          if (res && res.Data && res.Status === "Success") {
-            let data = res.Data;
-            setApiData(data);
-          }
-        })
-        .catch((Error) => {
-          let ErrorMessage = Error.ErrorMessage;
-          if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-            ErrorMessage = Error.ErrorMessage.join("\n");
-          }
-          handleSnackBar(true, "error", ErrorMessage);
-        });
-    }
-  };
-
-  const handleDelete = async (id, patientRef) => {
-    let prepareData = {
-      patientRef: patientRef,
-      prescriptionRef: id
-    }
-    if (prepareData) {
-      if (
-        confirm("Are You Sure You Want To Delete This Data") == true
-      ) {
-        await apiCall(
-          'ehr/lab-prescription',
-          "delete", prepareData
-        )
-          .then((res) => {
-            if (res && res.Data && res.Status === "Success") {
-              let data = res.Data;
-              handleSnackBar(true, "success", "Data Deleted Successffuly");
-              getPrescription();
-            }
-          })
-          .catch((Error) => {
-            let ErrorMessage = Error.ErrorMessage;
-            if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-              ErrorMessage = Error.ErrorMessage.join("\n");
-            }
-            handleSnackBar(true, "error", ErrorMessage);
-          });
+  const fetchLabPrescriptionData = async () => {
+    try {
+      const response = await fetch(
+        "https://hapi.fhir.org/baseR4/ServiceRequest?_lastUpdated=gt2024-05-14"
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    } else alert("Patient Id Not Found");
+      const data = await response.json();
+      console.log("Lab Prescription Data:", data);
 
+      const formattedData = data.entry.map((entry) => ({
+        id: entry.resource.id,
+        status: entry.resource.status || "",
+        intent: entry.resource.intent || "",
+        investigation:
+          entry.resource.category &&
+          entry.resource.category[0].coding &&
+          entry.resource.category[0].coding[0].display
+            ? entry.resource.category[0].coding[0].display
+            : "",
+        priority: entry.resource.priority || "",
+        details:
+          entry.resource.code &&
+          entry.resource.code.coding &&
+          entry.resource.code.coding[0].display
+            ? entry.resource.code.coding[0].display
+            : "",
+        order_date: entry.resource.authoredOn || "",
+      }));
+      setRowData(formattedData);
+    } catch (error) {
+      console.error("Error fetching lab prescription data:", error);
+    }
   };
 
   const handleEdit = (data) => {
-    setForm({ ...form, ["data"]: data, ["open"]: true, ['type']: 'edit' });
+    setForm({ ...form, data, open: true, type: "edit" });
   };
 
-  const handleSnackBar = (open, type, msg) => {
-    setSnackBar({ ...snackBar, ["open"]: open, ["type"]: type, ["msg"]: msg });
+  const handleDelete = (prescriptionRef, patientRef) => {
+    // Handle delete logic
   };
 
   const handleMessage = (type, msg) => {
-    handleSnackBar(true, type, msg);
+    setSnackBar({ ...snackBar, open: true, type, msg });
   };
 
-  const [column, setColumn] = useState([
-    { field: "investigation", headerName: 'Investigation', width: 200 },
-    { field: "investigationType", headerName: 'Type', width: 150 },
-    { field: "details", headerName: 'Details', width: 200 },
+  const toggleGridVisibility = () => {
+    setShowGrid(!showGrid); // Toggle grid visibility
+  };
+
+  const columns = [
+    { field: "id" },
+    { field: "status" },
+    { field: "intent" },
+    { field: "investigation" },
+    { field: "priority" },
+    { field: "details" },
     {
-      field: "order_date", headerName: 'Date', width: 150,
-      valueGetter: (params) =>
-        `${moment(params.row.order_date).format('DD-MM-YYYY')}`,
-    },
-    { field: "instruction", headerName: 'Instruction', width: 200 },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      type: 'actions',
+      field: "order_date",
+      headerName: "Date",
       width: 150,
-      getActions: (params) => [
-        <>
-          {/*  <GridActionsCellItem icon={<VisibilityOutlinedIcon />} onClick={() => { }} label="View" title="View" /> */}
-          <GridActionsCellItem icon={<EditOutlinedIcon />} onClick={() => handleEdit(params.row)} label="Edit" title="Edit" />
-          <GridActionsCellItem icon={<DeleteOutlineOutlinedIcon />} onClick={() => handleDelete(params.row.prescriptionRef, params.row.patientRef)} label="Delete" title="Delete" />
-        </>
-      ]
-    }
-  ]);
+      valueGetter: (params) =>
+        `${moment(params.row.order_date).format("DD-MM-YYYY")}`,
+    },
+    { field: "instruction", headerName: "Instruction", width: 200 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 150,
+      renderCell: (params) => (
+        <React.Fragment>
+          <IconButton onClick={() => handleEdit(params.row)}>
+            <EditOutlinedIcon />
+          </IconButton>
+          <IconButton
+            onClick={() =>
+              handleDelete(params.row.prescriptionRef, params.row.patientRef)
+            }
+          >
+            <DeleteOutlineOutlinedIcon />
+          </IconButton>
+        </React.Fragment>
+      ),
+    },
+  ];
 
   return (
     <Grid item xs={12} md={12}>
       <Paper className={classNames(classes.root)} elevation={1}>
-        <Box style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "10px",
-        }}>
-          <Typography variant="h6" component={"span"}>
-            Lab Prescription
-          </Typography>
-          <IconButton color="secondary" onClick={() => openForm()} size="large">
+        <Box
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "10px",
+          }}
+        >
+          <Typography variant="h6">Lab Prescription</Typography>
+          <IconButton color="secondary" onClick={openForm} size="large">
             <Add />
           </IconButton>
         </Box>
-        <div style={gridStyle} >
-          <DataGrid
-            rows={apiData}
-            getRowId={(row) => row.prescriptionRef}
-            columns={column}
-            pageSize={5}
-            showCellRightBorder={true}
-            rowsPerPageOptions={[5]}
-            disableSelectionOnClick
-          />
-        </div>
+
+        <Box onClick={toggleGridVisibility} style={{ cursor: "pointer" }}>
+          <Typography variant="body1">
+            Click here to {showGrid ? "hide" : "show"} data
+          </Typography>
+        </Box>
+        {showGrid && (
+          <div style={gridStyle}>
+            <DataGrid rows={rowData} columns={columns} pageSize={5} />
+          </div>
+        )}
       </Paper>
       {form.open && (
         <AddLabPrescription
@@ -156,8 +152,7 @@ function LabPrescriptions(props) {
           data={form.data}
           type={form.type}
           closeForm={closeForm}
-          callBack={callBackResponse}
-          setMessage={(type, msg) => handleMessage(type, msg)}
+          setMessage={handleMessage}
           encounterData={encounterData}
         />
       )}
@@ -165,7 +160,7 @@ function LabPrescriptions(props) {
         open={snackBar.open}
         msg={snackBar.msg}
         type={snackBar.type}
-        onClose={() => setSnackBar({ ...snackBar, ["open"]: false })}
+        onClose={() => setSnackBar({ ...snackBar, open: false })}
       />
     </Grid>
   );
@@ -188,7 +183,6 @@ const styles = (theme) => ({
       paddingLeft: theme.spacing(3),
       paddingRight: theme.spacing(3),
     },
-
   },
 });
 

@@ -11,7 +11,7 @@ import {
 import Grid from "@mui/material/Grid";
 import Send from "@mui/icons-material/Send";
 import css from "dan-styles/Form.scss";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import styles from "../PatientEncounter-jss";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
 import EditOutlined from "@mui/icons-material/EditOutlined";
@@ -31,15 +31,15 @@ function PrevPrescription(props) {
     templateRef: "",
     eventName: "Investigation",
     templateName: "",
-    templateData: prescriptionData
+    templateData: prescriptionData,
   });
 
   const handleDelete = (data) => {
-    console.log('data:', data)
+    console.log("data:", data);
   };
 
   const handleEdit = (data) => {
-    console.log('data:', data)
+    console.log("data:", data);
   };
 
   const handleChange = (name) => (event) => {
@@ -57,7 +57,6 @@ function PrevPrescription(props) {
     setPopupOpen(false);
   };
 
-
   return (
     <Box
       sx={{
@@ -73,41 +72,45 @@ function PrevPrescription(props) {
           border={1}
           sx={{ borderRadius: "5px", borderColor: "#E4E4E4" }}
         >
-          {prescriptionData && prescriptionData.length > 0 && prescriptionData.map((data, index) => {
-            return (
-              <Grid
-                key={data.title + "-" + index}
-                container
-                justifyContent="space-between"
-                style={{ marginTop: 10 }}
-              >
+          {prescriptionData &&
+            prescriptionData.length > 0 &&
+            prescriptionData.map((data, index) => {
+              return (
                 <Grid
-                  item
-                  xs={10}
-                  sm={10}
-                  style={{ marginTop: 5, marginLeft: 10 }}
+                  key={data.title + "-" + index}
+                  container
+                  justifyContent="space-between"
+                  style={{ marginTop: 10 }}
                 >
-                  <Typography color="primary">INVESTIGATION: {data.investigation}</Typography>
-                  <Typography>TYPE: {data.investigation_type}</Typography>
-                  <Typography>DETAILS: {data.details}</Typography>
-                  <Typography>INSTRUCTION: {data.instruction}</Typography>
+                  <Grid
+                    item
+                    xs={10}
+                    sm={10}
+                    style={{ marginTop: 5, marginLeft: 10 }}
+                  >
+                    <Typography color="primary">
+                      INVESTIGATION: {data.investigation}
+                    </Typography>
+                    <Typography>TYPE: {data.investigation_type}</Typography>
+                    <Typography>DETAILS: {data.details}</Typography>
+                    <Typography>INSTRUCTION: {data.instruction}</Typography>
+                  </Grid>
+                  <Grid item xs={1} sm={1}>
+                    <IconButton onClick={() => handleEdit(data)} size="large">
+                      <EditOutlined />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(data)} size="large">
+                      <DeleteForever />
+                    </IconButton>
+                  </Grid>
+                  <Grid xs={12} style={{ marginTop: 10 }}>
+                    <Divider />
+                  </Grid>
                 </Grid>
-                <Grid item xs={1} sm={1}>
-                  <IconButton onClick={() => handleEdit(data)} size="large">
-                    <EditOutlined />
-                  </IconButton>
-                  <IconButton onClick={() => handleDelete(data)} size="large">
-                    <DeleteForever />
-                  </IconButton>
-                </Grid>
-                <Grid xs={12} style={{ marginTop: 10 }}>
-                  <Divider />
-                </Grid>
-              </Grid>
-            );
-          })}
+              );
+            })}
         </Box>
-      </div >
+      </div>
       <Dialog
         open={popupOpen}
         onClose={handlePopupClose}
@@ -132,7 +135,7 @@ function PrevPrescription(props) {
                 type="text"
                 name="templateName"
                 value={tempData.templateName}
-                onChange={handleChange('templateName')}
+                onChange={handleChange("templateName")}
               />
             </Grid>
           </Grid>
@@ -162,15 +165,17 @@ function PrevPrescription(props) {
         >
           <Button onClick={handlePopupOpen}>Save as Template</Button>
           <Box>
-            <Button type="button" onClick={() => closeForm()}>Discard</Button>
-            <Button variant="contained" color="secondary" onClick={() => { }}>
+            <Button type="button" onClick={() => closeForm()}>
+              Discard
+            </Button>
+            <Button variant="contained" color="secondary" onClick={() => {}}>
               Save&nbsp;
               <Send className={classes.sendIcon} />
             </Button>
           </Box>
         </Grid>
       </div>
-    </Box >
+    </Box>
   );
 }
 
