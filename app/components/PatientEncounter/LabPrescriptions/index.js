@@ -33,7 +33,7 @@ function LabPrescriptions({ classes, encounterData }) {
   const fetchLabPrescriptionData = async () => {
     try {
       const response = await fetch(
-        "https://hapi.fhir.org/baseR4/ServiceRequest?_lastUpdated=gt2024-05-14"
+        "https://hapi.fhir.org/baseR4/ServiceRequest?_lastUpdated=gt2024-05-23"
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

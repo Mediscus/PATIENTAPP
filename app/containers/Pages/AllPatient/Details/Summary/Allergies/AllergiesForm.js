@@ -1,44 +1,117 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import css from "dan-styles/Form.scss";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
 import { FloatingPanel, TextField } from "dan-components";
 import { Box, Button, Grid } from "@mui/material";
-import { Formik } from "formik";
 import Send from "@mui/icons-material/Send";
-import apiCall from "dan-redux/apiInterface";
-import { allergiesFormSchema } from "dan-api/schema";
+import axios from "axios";
 import { useParams } from "react-router-dom";
 
 function AllergiesForm(props) {
-  const patient = useParams();
   const { open, closeForm, data, type, callBack, setMessage } = props;
-  const [editData, setEditData] = useState({});
   const { height } = useWindowDimensions();
+  const { patientRef } = useParams();
+
+  const [formData, setFormData] = useState({
+    verificationStatus: "",
+    type: "",
+    manifestation: "",
+    onsetPeriod: "",
+    patient: patientRef || "",
+    reaction: "",
+  });
 
   useEffect(() => {
-    if (type === "edit") {
-      setEditData(data);
-    } else {
-      setEditData({});
-    }
-  }, []);
-
-  const pastAllergies = async (values, setErrors, setStatus, setSubmitting) => {
-    await apiCall("ehr/allergies", "post", values)
-      .then((res) => {
-        if (res && res.Status === "Success") {
-          setMessage("success", "Data saved successfully!");
-          setStatus({ success: true });
-          callBack(true);
-        }
-      })
-      .catch((Error) => {
-        let ErrorMessage = Error.ErrorMessage;
-        if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-          ErrorMessage = Error.ErrorMessage.join("\n");
-        }
-        setMessage("error", ErrorMessage);
+    if (data) {
+      setFormData({
+        verificationStatus: data.verificationStatus || "",
+        type: data.type || "",
+        manifestation: data.manifestation || "",
+        onsetPeriod: data.onsetPeriod || "",
+        patient: data.patient || patientRef || "",
+        reaction: data.reaction || "",
       });
+    }
+  }, [data, patientRef]);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  };
+
+  const handleFormSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const postData = {
+        resourceType: "AllergyIntolerance",
+        verificationStatus: {
+          coding: [
+            {
+              system:
+                "http://hl7.org/fhir/ValueSet/allergyintolerance-verification",
+              code: "confirmed",
+              display: formData.verificationStatus,
+            },
+          ],
+          text: formData.verificationStatus,
+        },
+        type: formData.type,
+        code: {
+          coding: [
+            {
+              system: "2.16.840.1.113883.6.96",
+              code: "419511003",
+              display: formData.manifestation,
+            },
+          ],
+        },
+        patient: {
+          reference: `Patient/${formData.patient}`,
+        },
+        onsetPeriod: {
+          start: formData.onsetPeriod,
+        },
+        reaction: [
+          {
+            substance: {
+              coding: [
+                {
+                  system: "2.16.840.1.113883.6.88",
+                  code: "81953",
+                  display: formData.reaction,
+                },
+              ],
+            },
+            manifestation: [
+              {
+                coding: [
+                  {
+                    system: "2.16.840.1.113883.6.96",
+                    code: "247472004",
+                    display: formData.manifestation,
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+
+      console.log("postData:", postData);
+
+      const response = await axios.post(
+        "https://hapi.fhir.org/baseR4/AllergyIntolerance",
+        postData
+      );
+
+      console.log("API Response:", response.data);
+      setMessage("Allergy added successfully.");
+      closeForm();
+      if (callBack) callBack();
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Error submitting data. Please try again.");
+    }
   };
 
   return (
@@ -48,149 +121,108 @@ function AllergiesForm(props) {
       title={type === "edit" ? "Edit Allergy" : "Add Allergy"}
       extraSize={false}
     >
-      <Formik
-        initialValues={{
-          patientRef: patient && patient.patientRef,
-          allergiesRef: editData ? editData["allergies_id"] : "",
-          allergyType: editData ? editData["allergy_type"] : "",
-          selectAllergen: editData ? editData["select_allergen"] : "",
-          clinicalStatus: editData ? editData["clinical_status"] : "",
-          verificationStatus: editData ? editData["verification_status"] : "",
-          criticality: editData ? editData["criticality"] : "",
-          severity: editData ? editData["severity"] : "",
-        }}
-        enableReinitialize={true}
-        validationSchema={allergiesFormSchema}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          pastAllergies(values, setErrors, setStatus, setSubmitting);
-        }}
-      >
-        {({
-          errors,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-          isSubmitting,
-          touched,
-          values,
-        }) => (
-          <form onSubmit={handleSubmit}>
-            <Box
-              sx={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                justify: "space-between",
-              }}
+      <form onSubmit={handleFormSubmit}>
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            justify: "space-between",
+          }}
+        >
+          <div
+            className={css.bodyForm}
+            style={{
+              height: height - 140,
+              maxHeight: height - 140,
+              overflow: "auto",
+              padding: "8px !important",
+            }}
+          >
+            <Grid
+              container
+              spacing={2}
+              justifyContent="space-between"
+              alignItems="center"
             >
-              <div
-                className={css.bodyForm}
-                style={{
-                  height: height - 140,
-                  maxHeight: height - 140,
-                  overflow: "auto",
-                  padding: "8px !important",
-                }}
-              >
-                <Grid
-                  container
-                  spacing={2}
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      id="allergyType"
-                      label="Allergy Type"
-                      value={values.allergyType}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.allergyType ? errors.allergyType : ""}
-                      error={touched.allergyType ? errors.allergyType : ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      id="selectAllergen"
-                      label="Select Allergen"
-                      value={values.selectAllergen}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.selectAllergen ? errors.selectAllergen : ""}
-                      error={touched.selectAllergen ? errors.selectAllergen : ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      id="clinicalStatus"
-                      label="Clinical Status"
-                      value={values.clinicalStatus}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.clinicalStatus ? errors.clinicalStatus : ""}
-                      error={touched.clinicalStatus ? errors.clinicalStatus : ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      id="verificationStatus"
-                      label="Verification Status"
-                      value={values.verificationStatus}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.verificationStatus ? errors.verificationStatus : ""}
-                      error={touched.verificationStatus ? errors.verificationStatus : ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      id="criticality"
-                      label="Criticality"
-                      value={values.criticality}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.criticality ? errors.criticality : ""}
-                      error={touched.criticality ? errors.criticality : ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      id="severity"
-                      label="Severity"
-                      value={values.severity}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.severity ? errors.severity : ""}
-                      error={touched.severity ? errors.severity : ""}
-                    />
-                  </Grid>
-                  {/* Add more fields here */}
-                </Grid>
-              </div>
-              <div className={css.buttonArea}>
-                <Button type="button" onClick={closeForm}>
-                  Discard
-                </Button>
-                <Button
-                  disabled={isSubmitting}
-                  type="submit"
-                  variant="contained"
-                  color="secondary"
-                >
-                  Save&nbsp;
-                  <Send />
-                </Button>
-              </div>
-            </Box>
-          </form>
-        )}
-      </Formik>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  fullWidth
+                  id="verificationStatus"
+                  label="Verification Status"
+                  name="verificationStatus"
+                  value={formData.verificationStatus}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  fullWidth
+                  id="type"
+                  label="Type"
+                  name="type"
+                  value={formData.type}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  fullWidth
+                  id="manifestation"
+                  label="Manifestation"
+                  name="manifestation"
+                  value={formData.manifestation}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  fullWidth
+                  id="onsetPeriod"
+                  label="Onset Period"
+                  name="onsetPeriod"
+                  type="date"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  value={formData.onsetPeriod}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  fullWidth
+                  id="patient"
+                  label="Patient"
+                  name="patient"
+                  value={formData.patient}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  fullWidth
+                  id="reaction"
+                  label="Reaction"
+                  name="reaction"
+                  value={formData.reaction}
+                  onChange={handleChange}
+                />
+              </Grid>
+              {/* Add more fields here if needed */}
+            </Grid>
+          </div>
+          <div className={css.buttonArea}>
+            <Button type="button" onClick={closeForm}>
+              Discard
+            </Button>
+            <Button type="submit" variant="contained" color="secondary">
+              Save&nbsp;
+              <Send />
+            </Button>
+          </div>
+        </Box>
+      </form>
     </FloatingPanel>
   );
 }
