@@ -22,12 +22,14 @@ import {
   clearEncounter,
   removeEncounter,
 } from "../../../../redux/actions/encounterActions";
+import { useHistory } from "react-router-dom";
 
 function Settings(props) {
   const { classes } = props;
   const dispatch = useDispatch();
   const encounters = useSelector((state) => state.encounters.encounters);
   const [value, setValue] = React.useState(0);
+  const history = useHistory();
 
   useEffect(() => {
     if (encounters.length > 0) {
@@ -47,6 +49,10 @@ function Settings(props) {
     setValue(newValue);
   };
 
+  const handleClick = () =>{
+   history.push("/app/pages/patient-application")
+  }
+
   const title = brand.name;
   const description = brand.desc;
   return (
@@ -65,9 +71,10 @@ function Settings(props) {
           <Button
             variant="contained"
             color="secondary"
-            endIcon={<KeyboardArrowDownIcon />}
+            onClick={handleClick}
+            // endIcon={<KeyboardArrowDownIcon />}
           >
-            Action
+            Link my Health Records
           </Button>
         </Box>
       </Paper>

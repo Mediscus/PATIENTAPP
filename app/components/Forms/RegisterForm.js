@@ -174,7 +174,7 @@ function RegisterForm(props) {
             initialValues={values}
             onSubmit={(values, { resetForm, setErrors, setFieldValue }) => {
               setTimeout(() => {
-                history.push("/app/all-patient", { userData: values });
+                history.push("/app/pages/abha", { userData: values });
               }, 500);
             }}
           >

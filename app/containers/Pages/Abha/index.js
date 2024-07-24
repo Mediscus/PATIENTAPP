@@ -1,278 +1,269 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import withStyles from "@mui/styles/withStyles";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Paper,
+  Typography,
+  List,
+  ListItem,
+  ListItemSecondaryAction,
+  Button,
+  Container,
+} from "@mui/material";
 import classNames from "classnames";
-import Button from "@mui/material/Button";
-import { NavLink } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import Typography from "@mui/material/Typography";
-import FormControl from "@mui/material/FormControl";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Paper from "@mui/material/Paper";
-import Icon from "@mui/material/Icon";
-import Hidden from "@mui/material/Hidden";
-import brand from "dan-api/dummy/brand";
-import logo from "dan-images/logo.svg";
-import { loginFormSchema } from "dan-api/schemas";
-import useStyles from "./user-jss";
-import { ContentDivider } from "../../../components/Divider";
-import { Checkbox, FormHelperText, TextField, Tabs, Tab } from "@mui/material";
+import { useDispatch } from "react-redux";
+import apiCall from "dan-redux/apiInterface";
+import { CustomSnackbar, Loader } from "dan-components";
+import { useParams } from "react-router-dom";
 import {
-  Visibility,
-  VisibilityOff,
-  AllInclusive,
-  Brightness5,
-  ArrowForward,
-  People,
+  AddCircleOutlineOutlined,
+  DeleteForever,
+  Edit,
 } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  generateOtpRequest,
-  resendOtpRequest,
-  resendMobileOtpRequest,
-  verifyOtpRequest,
-  createHealthIdRequest,
-} from "dan-redux/actions/index";
-import {
-  generateAadharOtpRequest,
-  verifyAadharOtpRequest,
-} from "dan-redux/actions/aadharReg";
-import { useHistory } from "react-router-dom";
-import { bottom } from "@popperjs/core";
-import { Formik } from "formik";
-import { create } from "jss";
-import Abhacard from "./Abhacard";
+import AddEncounters from "../AllPatient/Details/Summary/Encounters/AddEncounters";
+import { addEncounter } from "../../../redux/actions/encounterActions";
+import RequestForm from "./RequestForm";
+import AbhaRequestForm from "./AbhaRequestForm";
+import ConformAuth from "./ConformAuth";
 
-const LinkBtn = React.forwardRef(function LinkBtn(props, ref) {
-  return <NavLink to={props.to} {...props} innerRef={ref} />;
-});
-
-function UserForm(props) {
-  const { classes } = useStyles();
-
-  const [aadhaarOtpSent, setAadhaarOtpSent] = useState(false);
-  const [mobileOtpSent, setMobileOtpSent] = useState(false);
-
-  const [otp, setOtp] = useState("");
-  const [aadhaarOtp, setAadhaarOtp] = useState("");
-  const [isMobileOtpSending, setMobileOtpSending] = useState(false);
-  const [isAadhaarOtpSending, setAadhaarOtpSending] = useState(false);
-
-  const history = useHistory();
-  const [tab, setTab] = useState(0);
-
-  const handleChangeTab = (_event, value) => {
-    setTab(value);
-  };
-
-  const values = {
-    mobile: "",
-  };
-  const value = {
-    aadhaar: "",
-  };
-
+function Encounters(props) {
+  const { classes, add, shadow } = props;
   const dispatch = useDispatch();
-  const responseData = useSelector((state) => state.otp);
+  const patient = useParams();
+  const [apiData, setApiData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [form, setForm] = useState({ open: false, data: null, type: "add" });
+  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
+  const [currentComponentIndex, setCurrentComponentIndex] = useState(0);
 
-  const handleOtpSubmit = (values, setMobileOtpSent) => {
-    if (!isMobileOtpSending) {
-      setMobileOtpSent(true);
-      dispatch(generateOtpRequest(values));
+  const components = [
+    <RequestForm />,
+    <AbhaRequestForm />,
+    <ConformAuth />
+  ];
+
+  const openForm = () => setForm({ ...form, ["open"]: true, ["type"]: "add" });
+  const closeForm = () => [setForm({ ...form, ["open"]: false })];
+
+  useEffect(() => {
+    getAppointment();
+    return () => {
+      setApiData([]);
+    };
+  }, []);
+
+  const callBackResponse = (refresh) => {
+    closeForm();
+    if (refresh) {
+      getAppointment();
     }
   };
 
-  const handleAadharOtpSubmit = (value, setAadhaarOtpSent) => {
-    if (!isAadhaarOtpSending) {
-      setAadhaarOtpSent(true);
-      dispatch(generateAadharOtpRequest(value));
+  async function getAppointment() {
+    if (Object.keys(patient).length > 0) {
+      await apiCall("appointment", "get", patient)
+        .then((res) => {
+          if (res && res.Status === "Success") {
+            let data = res.Data;
+            setApiData(data);
+          }
+        })
+        .catch((Error) => {
+          let ErrorMessage = Error.ErrorMessage;
+          if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
+            ErrorMessage = Error.ErrorMessage.join("\n");
+          }
+          handleSanackBar(true, "error", ErrorMessage);
+        });
+      setIsLoading(false);
     }
+  }
+
+  const handleDelete = async (id) => {
+    let prepareData = {
+      appointmentRef: id,
+    };
+    if (prepareData) {
+      if (window.confirm("Are You Sure You Want To Delete This Data")) {
+        await apiCall("appointment/delete", "delete", prepareData)
+          .then((res) => {
+            if (res && res.Data && res.Status === "Success") {
+              handleSanackBar(true, "success", "Data Deleted Successfully");
+              getAppointment();
+            }
+          })
+          .catch((Error) => {
+            let ErrorMessage = Error.ErrorMessage;
+            if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
+              ErrorMessage = Error.ErrorMessage.join("\n");
+            }
+            handleSanackBar(true, "error", ErrorMessage);
+          });
+      }
+    } else alert("Patient Id Not Found");
   };
 
-  const handleOtpVerify = () => {
-    dispatch(verifyOtpRequest(otp, responseData.txnId));
+  const handleSanackBar = (open, type, msg) => {
+    setSnackBar({ ...snackBar, ["open"]: open, ["type"]: type, ["msg"]: msg });
   };
 
-  const handleAadharOtpVerify = () => {
-    dispatch(verifyAadharOtpRequest(aadhaarOtp, responseData.txnId));
+  const handleEdit = (data) => {
+    setForm({ ...form, ["data"]: data, ["open"]: true, ["type"]: "edit" });
+  };
+
+  const handleMessage = (type, msg) => {
+    handleSanackBar(true, type, msg);
+  };
+
+  const handleNext = () => {
+    setCurrentComponentIndex((prevIndex) => (prevIndex + 1) % components.length);
   };
 
   return (
-    <>
-      <Hidden mdUp>
-        <NavLink to="/" className={classNames(classes.brand, classes.outer)}>
-          <img src={logo} alt={brand.name} />
-          {brand.name}
-        </NavLink>
-      </Hidden>
-      <Paper className={classNames(classes.paperWrap, classes.petal)}>
-        <Hidden mdDown>
-          <div className={classes.topBar}>
-            <NavLink to="/" className={classes.brand}>
-              <img src={logo} alt={brand.name} />
-              {brand.name}
-            </NavLink>
-            <Button
-              size="small"
-              className={classes.buttonLink}
-              component={LinkBtn}
-              to="/loginaccount"
-            >
-              <Icon className={classes.icon}>arrow_forward</Icon>
-              Login
-            </Button>
-          </div>
-        </Hidden>
-        <Typography variant="h4" className={classes.title} gutterBottom>
-          Create ABHA Number
+    <Paper className={classNames(classes.root)} elevation={shadow}>
+      <Box className={classes.header}>
+        <Typography variant="h6" className={classes.title}>
+          Abha
         </Typography>
+        {add && (
+          <Button variant="contained" color="primary" type="submit">
+            Get Your ABHA Card
+          </Button>
+        )}
+      </Box>
 
-        <section className={classes.socmedLogin}>
-          <div className={classes.btnArea}>
-            <Button
-              variant="outlined"
-              size="small"
-              className={classes.redBtn}
-              type="button"
-            >
-              <AllInclusive
-                className={classNames(classes.leftIcon, classes.iconSmall)}
-              />
-              Mobile Verification
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              className={classes.blueBtn}
-              type="button"
-            >
-              <Brightness5
-                className={classNames(classes.leftIcon, classes.iconSmall)}
-              />
-              Aadhar Verification
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              className={classes.cyanBtn}
-              type="button"
-            >
-              <People
-                className={classNames(classes.leftIcon, classes.iconSmall)}
-              />
-              Socmed 3
-            </Button>
-          </div>
-          <ContentDivider content="sign in with Mobile Number" />
-        </section>
-        <Tabs
-          value={tab}
-          onChange={handleChangeTab}
-          indicatorColor="secondary"
-          textColor="secondary"
-          centered
-          className={classes.tab}
+      <Divider />
+      
+      {/* Render the current component based on the index */}
+      <Container>
+        {components[currentComponentIndex]}
+      </Container>
+
+      <Box display="flex" justifyContent="flex-end" mt={2}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleNext}
         >
-          <Tab label="Mobile Number" />
-          <Tab label="Aadhar Card" />
-        </Tabs>
-        {tab === 0 && (
-          <Formik
-            initialValues={values}
-            // validationSchema={loginFormSchema}
-            onSubmit={(values, { resetForm, setErrors }) => {
-              if (mobileOtpSent) {
-                handleOtpVerify();
-                setTimeout(() => {
-                  history.push("/register");
-                }, 500); // simulate server latency
-              } else {
-                handleOtpSubmit(values, setMobileOtpSent);
-              }
-            }}
-          >
-            {({
-              values,
-              errors,
-              touched,
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              isSubmitting,
-              setFieldValue,
-              /* and other goodies */
-            }) => (
-              <section className={classes.formWrap}>
-                <form onSubmit={handleSubmit}>
-                  <div style={{ margin: 10 }}>
-                    <FormControl className={classes.formControl}>
-                      <TextField
-                        fullWidth
-                        name="mobile"
-                        label="Your Mobile Number"
-                        placeholder="Your Mobile Number"
-                        value={values.mobile}
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                        helperText={touched.mobile ? errors.mobile : ""}
-                        error={touched.mobile && Boolean(errors.mobile)}
-                      />
-                    </FormControl>
-                  </div>
+          Next
+        </Button>
+      </Box>
 
-                  {mobileOtpSent && (
-                    <div style={{ margin: 10 }}>
-                      <FormControl className={classes.formControl}>
-                        <TextField
-                          fullWidth
-                          name="otp"
-                          label="Your OTP number"
-                          placeholder="Your OTP Number"
-                          value={otp}
-                          onChange={(e) => setOtp(e.target.value)} // Update the otp state
-                          onBlur={handleBlur}
-                          helperText={touched.otp ? errors.otp : ""}
-                          error={touched.otp && Boolean(errors.otp)}
-                        />
-                      </FormControl>
-                    </div>
-                  )}
+      <Box p={1}>
+        {apiData &&
+          apiData.length > 0 &&
+          apiData.map((data, index) => (
+            <List
+              key={index}
+              component="nav"
+              aria-label="main mailbox folders"
+            >
+              <ListItem
+                button
+                onClick={() => dispatch(addEncounter(data))}
+                className={classes.listStyle}
+                classes={{
+                  root: classes.listItemRoot,
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  style={{ fontSize: 14 }}
+                  color="primary"
+                >
+                  {data.department}
+                </Typography>
+                <Typography variant="body2" style={{ fontSize: 12 }}>
+                  {data.diagnosis}
+                </Typography>
+              </ListItem>
+              {add && (
+                <ListItemSecondaryAction
+                  classes={{
+                    root: classes.secondaryAction,
+                  }}
+                >
+                  <IconButton
+                    color="secondary"
+                    classes={{
+                      root: classes.iconBtn,
+                    }}
+                    onClick={() => handleEdit(data)}
+                    size="small"
+                  >
+                    <Edit fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    color="secondary"
+                    classes={{
+                      root: classes.iconBtn,
+                    }}
+                    onClick={() => handleDelete(data.appointment_id)}
+                    size="small"
+                  >
+                    <DeleteForever fontSize="small" />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              )}
+            </List>
+          ))}
+      </Box>
 
-                  <div className={classes.btnArea}>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                      type="submit"
-                    >
-                      Continue
-                      <ArrowForward
-                        className={classNames(
-                          classes.rightIcon,
-                          classes.iconSmall
-                        )}
-                      />
-                    </Button>
-                  </div>
-                </form>
-              </section>
-            )}
-          </Formik>
-        )}
-        {tab === 1 && (
-          <>
-            <Abhacard />
-          </>
-        )}
-      </Paper>
-    </>
+      {form.open && (
+        <AddEncounters
+          open={form.open}
+          data={form.data}
+          type={form.type}
+          closeForm={closeForm}
+          callBack={callBackResponse}
+          setMessage={(type, msg) => handleMessage(type, msg)}
+        />
+      )}
+      <CustomSnackbar
+        open={snackBar.open}
+        msg={snackBar.msg}
+        type={snackBar.type}
+        onClose={() => setSnackBar({ ...snackBar, ["open"]: false })}
+      />
+    </Paper>
   );
 }
 
-UserForm.propTypes = {
+Encounters.propTypes = {
   classes: PropTypes.object.isRequired,
+  add: PropTypes.bool.isRequired,
+  shadow: PropTypes.number.isRequired,
 };
 
-// export default withStyles(useStyles)(LoginForm);
-export default UserForm;
+Encounters.defaultProps = {
+  add: true,
+  shadow: 1,
+};
+
+const styles = (theme) => ({
+  root: {
+    marginBottom: theme.spacing(3),
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  title: {
+    padding: "5px 10px",
+  },
+  listStyle: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+  },
+  listItemRoot: {
+    paddingTop: "0px",
+    paddingBottom: "0px",
+    paddingLeft: "5px",
+  },
+});
+
+export default withStyles(styles)(Encounters);

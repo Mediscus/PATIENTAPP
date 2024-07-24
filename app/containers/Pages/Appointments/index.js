@@ -25,6 +25,7 @@ import {
 import AddEncounters from "../AllPatient/Details/Summary/Encounters/AddEncounters";
 import { addEncounter } from "../../../redux/actions/encounterActions";
 import AppointmentDetails from "./appointmentdetails";
+import QRScanner from "../Abha/QRScanner";
 
 function Encounters(props) {
   const { classes, add, shadow } = props;
@@ -109,6 +110,7 @@ function Encounters(props) {
 
   return (
     <Paper className={classNames(classes.root)} elevation={shadow}>
+      <QRScanner />
       <Box className={classes.header}>
         <Typography variant="h6" className={classes.title}>
           Appointments
