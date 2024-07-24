@@ -1,88 +1,78 @@
 import React, { useEffect, useState } from "react";
-import css from "dan-styles/Form.scss";
-import "dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css";
-import useWindowDimensions from "dan-utils/useWindowDimensions";
-import { FloatingPanel, TextField, DatePicker } from "dan-components";
 import { Box, Button, Grid } from "@mui/material";
+import { FloatingPanel, TextField, DatePicker } from "dan-components";
 import Send from "@mui/icons-material/Send";
 import { TextField as MuiTextField } from "@mui/material";
-import { socialHistoryFormSchema } from "dan-api/schema";
 import { Formik } from "formik";
-import apiCall from "dan-redux/apiInterface";
 import moment from "moment";
 import { useParams } from "react-router-dom";
+import apiCall from "dan-redux/apiInterface";
+import { socialHistoryFormSchema } from "dan-api/schema";
+import useWindowDimensions from "dan-utils/useWindowDimensions";
+import css from "dan-styles/Form.scss";
 
 function SocialHistoryForm(props) {
-  const patient = useParams();
   const { open, closeForm, data, type, callBack, setMessage } = props;
+  const patient = useParams();
   const [editData, setEditData] = useState({});
   const { height } = useWindowDimensions();
 
-
   useEffect(() => {
-    if (type == 'edit') {
-      setEditData(data)
+    if (type === "edit") {
+      setEditData(data);
     } else {
-      setEditData({})
+      setEditData({});
     }
-  }, []);
+  }, [type, data]);
 
-  const postFamilyHistory = async (
+  const postSocialHistory = async (
     values,
     setErrors,
     setStatus,
     setSubmitting
   ) => {
-    await apiCall("ehr/social-history", "post", values)
-      .then((res) => {
-        if (res && res.Status === "Success") {
-          setMessage("success", "Date Saved Successfully!");
-          setStatus({ success: true });
-          callBack(true);
-        }
-      })
-      .catch((Error) => {
-        let ErrorMessage = Error.ErrorMessage;
-        if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-          ErrorMessage = Error.ErrorMessage.join("\n");
-        }
-        setMessage("error", ErrorMessage);
-      });
+    try {
+      const res = await apiCall("ehr/social-history", "post", values);
+      if (res && res.Status === "Success") {
+        setMessage("success", "Data Saved Successfully!");
+        setStatus({ success: true });
+        callBack(true);
+      }
+    } catch (error) {
+      setMessage("error", error.ErrorMessage);
+    }
+    setSubmitting(false);
   };
 
   return (
-    <FloatingPanel
-      openForm={open}
-      closeForm={closeForm}
-      title="Social History"
-      extraSize={false}
-    >
+    <FloatingPanel openForm={open} closeForm={closeForm} title="Social History">
       <Formik
         initialValues={{
-          patientRef: patient && patient.patientRef,
-          socialRef: editData ? editData['social_id'] : "",
-          activityName: editData ? editData['activity_name'] : "",
-          fromDate: editData ? moment(editData['from_date']).format("YYYY-MM-DD") : moment(new Date()).format("YYYY-MM-DD"),
-          toDate: editData ? moment(editData['to_date']).format("YYYY-MM-DD") : moment(new Date()).format("YYYY-MM-DD"),
-          comment: editData ? editData['comment'] : "",
-          status: editData ? editData['status'] : "",
-        }
-        }
-        enableReinitialize={true}
-        validationSchema={socialHistoryFormSchema}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          postFamilyHistory(values, setErrors, setStatus, setSubmitting);
+          patientRef: patient.patientRef || "",
+          socialRef: editData.social_id || "",
+          activityName: editData.activity_name || "",
+          fromDate: editData.from_date
+            ? moment(editData.from_date).format("YYYY-MM-DD")
+            : moment().format("YYYY-MM-DD"),
+          toDate: editData.to_date
+            ? moment(editData.to_date).format("YYYY-MM-DD")
+            : moment().format("YYYY-MM-DD"),
+          comment: editData.comment || "",
+          status: editData.status || "",
         }}
+        enableReinitialize
+        validationSchema={socialHistoryFormSchema}
+        onSubmit={postSocialHistory}
       >
         {({
           errors,
           handleBlur,
           handleChange,
           handleSubmit,
-          isSubmitting,
           touched,
           setFieldValue,
           values,
+          isSubmitting,
         }) => (
           <form onSubmit={handleSubmit}>
             <Box
@@ -90,7 +80,7 @@ function SocialHistoryForm(props) {
                 flex: 1,
                 display: "flex",
                 flexDirection: "column",
-                justify: "space-between",
+                justifyContent: "space-between",
               }}
             >
               <div
@@ -118,10 +108,10 @@ function SocialHistoryForm(props) {
                       value={values.activityName}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={
-                        touched.activityName ? errors.activityName : ""
+                      helperText={touched.activityName && errors.activityName}
+                      error={
+                        touched.activityName && Boolean(errors.activityName)
                       }
-                      error={touched.activityName ? errors.activityName : ""}
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -129,15 +119,17 @@ function SocialHistoryForm(props) {
                       inputFormat="YYYY-MM-DD"
                       label="From Date"
                       value={values.fromDate}
-                      onChange={(value) => {
-                        const date = moment(value).format("YYYY-MM-DD");
-                        setFieldValue("fromDate", date, true);
-                      }}
+                      onChange={(value) =>
+                        setFieldValue(
+                          "fromDate",
+                          moment(value).format("YYYY-MM-DD"),
+                          true
+                        )
+                      }
                       renderInput={(params) => (
                         <MuiTextField
                           {...params}
                           fullWidth
-                          name="fromDate"
                           variant="standard"
                         />
                       )}
@@ -148,15 +140,17 @@ function SocialHistoryForm(props) {
                       inputFormat="YYYY-MM-DD"
                       label="To Date"
                       value={values.toDate}
-                      onChange={(value) => {
-                        const date = moment(value).format("YYYY-MM-DD");
-                        setFieldValue("toDate", date, true);
-                      }}
+                      onChange={(value) =>
+                        setFieldValue(
+                          "toDate",
+                          moment(value).format("YYYY-MM-DD"),
+                          true
+                        )
+                      }
                       renderInput={(params) => (
                         <MuiTextField
                           {...params}
                           fullWidth
-                          name="toDate"
                           variant="standard"
                         />
                       )}
@@ -171,8 +165,8 @@ function SocialHistoryForm(props) {
                       value={values.status}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.status ? errors.status : ""}
-                      error={touched.status ? errors.status : ""}
+                      helperText={touched.status && errors.status}
+                      error={touched.status && Boolean(errors.status)}
                     />
                   </Grid>
                   <Grid item xs={12} sm={12}>
@@ -184,8 +178,8 @@ function SocialHistoryForm(props) {
                       value={values.comment}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.comment ? errors.comment : ""}
-                      error={touched.comment ? errors.comment : ""}
+                      helperText={touched.comment && errors.comment}
+                      error={touched.comment && Boolean(errors.comment)}
                     />
                   </Grid>
                 </Grid>
@@ -194,9 +188,13 @@ function SocialHistoryForm(props) {
                 <Button type="button" onClick={closeForm}>
                   Discard
                 </Button>
-                <Button type="submit" variant="contained" color="secondary">
-                  Save&nbsp;
-                  <Send />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                  disabled={isSubmitting}
+                >
+                  Save <Send />
                 </Button>
               </div>
             </Box>
@@ -206,4 +204,5 @@ function SocialHistoryForm(props) {
     </FloatingPanel>
   );
 }
+
 export default SocialHistoryForm;

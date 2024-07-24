@@ -20,18 +20,9 @@ function VaccinationsHistoryForm(props) {
     occurrenceDateTime: "",
     patient: "",
     encounter: "",
-    primarySource: "",
   });
-
-  const handleChange = (name) => (event) => {
-    setFormData({
-      ...formData,
-      [name]: event.target.value,
-    });
-  };
-
   const formatDateTime = (datetime) => {
-    const date = new Date(datetime);
+    const date = new Date(datetime)
     const offset = -date.getTimezoneOffset();
     const sign = offset >= 0 ? "+" : "-";
     const pad = (num) => (num < 10 ? "0" + num : num);
@@ -55,41 +46,43 @@ function VaccinationsHistoryForm(props) {
     );
   };
 
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
+  const handleChange = (field) => (event) => {
+    setFormData({
+      ...formData,
+      [field]: event.target.value,
+    });
+  };
 
-    const postData = {
-      resourceType: "Immunization",
-      status: "completed",
-      vaccineCode: {
-        coding: [
-          {
-            code: formData.vaccineCode,
-          },
-        ],
-        text: formData.vaccineName,
-      },
-      patient: {
-        reference: "Patient/49006",
-      },
-      encounter: {
-        reference: "Encounter/49229",
-      },
-      occurrenceDateTime: formatDateTime(formData.occurrenceDateTime),
-      primarySource: formData.primarySource,
-    };
-
+  const handleFormSubmit = async () => {
     try {
+      const postData = {
+        resourceType: "Immunization",
+        vaccineCode: {
+          coding: [
+            {
+              code: formData.vaccineCode,
+            },
+          ],
+        },
+        text: formData.vaccineName,
+        patient: {
+          reference: "Patient/49006",
+        },
+        encounter: {
+          reference: "Encounter/49229",
+        },
+        occurrenceDateTime: formatDateTime(formData.occurrenceDateTime),
+      };
+
       console.log("postData:", postData);
 
       const response = await axios.post(
-        "https://hapi.fhir.org/baseR4/Immunization?_lastUpdated=gt2024-05-23",
+        "https://hapi.fhir.org/baseR4/Immunization",
         postData
       );
 
       console.log("API Response:", response.data);
-      setMessage("Data submitted successfully");
-      closeForm();
+      alert("Data submitted successfully!");
     } catch (error) {
       console.error("Error:", error);
       alert("Error submitting data. Please try again.");
@@ -103,86 +96,77 @@ function VaccinationsHistoryForm(props) {
       title="Vaccinations History"
       extraSize={false}
     >
-      <form onSubmit={handleFormSubmit}>
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            justify: "space-between",
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+        }}
+      >
+        <div
+          className={css.bodyForm}
+          style={{
+            height: height - 140,
+            maxHeight: height - 140,
+            overflow: "auto",
+            padding: "8px",
           }}
         >
-          <div
-            className={css.bodyForm}
-            style={{
-              height: height - 140,
-              maxHeight: height - 140,
-              overflow: "auto",
-              padding: "8px !important",
-            }}
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
           >
-            <Grid
-              container
-              spacing={2}
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="vaccineCode"
-                  label="Vaccine Code"
-                  placeholder="Enter Vaccine Code"
-                  value={formData.vaccineCode}
-                  onChange={handleChange("vaccineCode")}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="vaccineName"
-                  label="Vaccine Name"
-                  placeholder="Enter Vaccine Name"
-                  value={formData.vaccineName}
-                  onChange={handleChange("vaccineName")}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  type="datetime-local"
-                  name="occurrenceDateTime"
-                  label="Occurrence DateTime"
-                  value={formData.occurrenceDateTime}
-                  onChange={handleChange("occurrenceDateTime")}
-                />
-              </Grid>
-              <Grid item xs={12} sm={12}>
-                <TextField
-                  fullWidth
-                  type="text"
-                  name="primarySource"
-                  label="Primary Source"
-                  placeholder="Enter Primary Source"
-                  value={formData.primarySource}
-                  onChange={handleChange("primarySource")}
-                />
-              </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="vaccineCode"
+                label="Vaccine Code"
+                placeholder="Enter Vaccine Code"
+                value={formData.vaccineCode}
+                onChange={handleChange("vaccineCode")}
+              />
             </Grid>
-          </div>
-          <div className={css.buttonArea}>
-            <Button type="button" onClick={closeForm}>
-              Discard
-            </Button>
-            <Button type="submit" variant="contained" color="secondary">
-              Save&nbsp;
-              <Send />
-            </Button>
-          </div>
-        </Box>
-      </form>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="vaccineName"
+                label="Vaccine Name"
+                placeholder="Enter Vaccine Name"
+                value={formData.vaccineName}
+                onChange={handleChange("vaccineName")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="datetime-local"
+                name="occurrenceDateTime"
+                label="Occurrence DateTime"
+                value={formData.occurrenceDateTime}
+                onChange={handleChange("occurrenceDateTime")}
+              />
+            </Grid>
+          </Grid>
+        </div>
+        <div className={css.buttonArea}>
+          <Button type="button" onClick={closeForm}>
+            Discard
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleFormSubmit}
+          >
+            Save&nbsp;
+            <Send />
+          </Button>
+        </div>
+      </Box>
     </FloatingPanel>
   );
 }

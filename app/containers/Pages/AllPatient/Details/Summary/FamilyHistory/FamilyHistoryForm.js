@@ -10,6 +10,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
 import moment from "moment";
 import { useParams } from "react-router-dom";
+import { gender } from "./../../../../../../api/dummy/DropdownData";
 
 function AddFamilyHistory(props) {
   const { open, closeForm, data, callBack, setMessage } = props;
@@ -17,37 +18,16 @@ function AddFamilyHistory(props) {
   const { patientRef } = useParams();
 
   const [formData, setFormData] = useState({
-    patientRef: patientRef || "",
     familyRef: "",
     relationship: "",
-    sex: "",
+    gender: "",
     bornDate: "",
     deceasedBoolean: "",
-    condition: "",
+    decease: "",
     onsetAge: "",
   });
 
-  useEffect(() => {
-    if (data) {
-      setFormData({
-        patientRef: data.patientRef || "",
-        familyRef: data.familyRef || "",
-        relationship: data.relationship || "",
-        sex: data.sex || "",
-        bornDate: data.bornDate
-          ? moment(data.bornDate).format("YYYY-MM-DD")
-          : "",
-        deceasedBoolean: data.deceasedBoolean || "",
-        condition: data.condition || "",
-        onsetAge: data.onsetAge || "",
-      });
-    }
-  }, [data]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
+  5;
 
   const handleAutocompleteChange = (name, value) => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
@@ -58,12 +38,17 @@ function AddFamilyHistory(props) {
     setFormData((prevState) => ({ ...prevState, [name]: date }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleChange = (field) => (event) => {
+    setFormData({
+      ...formData,
+      [field]: event.target.value,
+    });
+  };
+
+  const handleFormSubmit = async () => {
     try {
       const postData = {
         resourceType: "FamilyMemberHistory",
-        status: "completed",
         relationship: {
           coding: [
             {
@@ -72,8 +57,11 @@ function AddFamilyHistory(props) {
           ],
           text: formData.relationship,
         },
-        sex: {
-          text: formData.sex,
+        gender: {
+          text: formData.gender,
+        },
+        onsetAge: {
+          value: formData.onsetAge,
         },
         bornDate: formData.bornDate,
         deceasedBoolean: formData.deceasedBoolean === "true",
@@ -82,7 +70,7 @@ function AddFamilyHistory(props) {
             code: {
               coding: [
                 {
-                  display: formData.condition,
+                  display: formData.decease,
                 },
               ],
             },
@@ -91,22 +79,17 @@ function AddFamilyHistory(props) {
       };
 
       console.log("postData:", postData);
-
       const response = await axios.post(
         "https://hapi.fhir.org/baseR4/FamilyMemberHistory",
         postData
       );
-
       console.log("API Response:", response.data);
-      setMessage("Family history added successfully.");
-      closeForm();
-      if (callBack) callBack();
+      alert("Data submitted successfully!");
     } catch (error) {
       console.error("Error:", error);
       alert("Error submitting data. Please try again.");
     }
   };
-
   return (
     <FloatingPanel
       openForm={open}
@@ -114,127 +97,111 @@ function AddFamilyHistory(props) {
       title="Family History"
       extraSize={false}
     >
-      <form onSubmit={handleSubmit}>
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            flexDirection: "column",
-            justify: "space-between",
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justify: "space-between",
+        }}
+      >
+        <div
+          className={css.bodyForm}
+          style={{
+            height: height - 176,
+            maxHeight: height - 176,
+            overflow: "auto",
           }}
         >
-          <div
-            className={css.bodyForm}
-            style={{
-              height: height - 140,
-              maxHeight: height - 140,
-              overflow: "auto",
-              padding: "8px !important",
-            }}
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
           >
-            <Grid
-              container
-              spacing={2}
-              justifyContent="space-between"
-              alignItems="center"
-            >
-              <Grid item xs={12} sm={12}>
-                <Autocomplete
-                  name="relationship"
-                  options={[
-                    "Father",
-                    "Mother",
-                    "Brother",
-                    "Sister",
-                    "Grand Father",
-                    "Grand Mother",
-                    "Spouse",
-                  ]}
-                  value={formData.relationship}
-                  onChange={(event, value) =>
-                    handleAutocompleteChange("relationship", value)
-                  }
-                  renderInput={(params) => (
-                    <MuiTextField
-                      {...params}
-                      variant="standard"
-                      label="Relationship"
-                      placeholder="Select Relationship"
-                    />
-                  )}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="sex"
-                  label="Gender"
-                  placeholder="Enter Gender"
-                  value={formData.sex}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="deceasedBoolean"
-                  label="Deceased"
-                  placeholder="Enter Deceased Status"
-                  value={formData.deceasedBoolean}
-                  onChange={handleChange}
-                />
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="condition"
-                  label="Condition"
-                  placeholder="Enter Condition"
-                  value={formData.condition}
-                  onChange={handleChange}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <DatePicker
-                  inputFormat="YYYY-MM-DD"
-                  label="Date Of Birth"
-                  value={formData.bornDate}
-                  onChange={(value) => handleDateChange("bornDate", value)}
-                  renderInput={(params) => (
-                    <MuiTextField
-                      {...params}
-                      fullWidth
-                      name="bornDate"
-                      variant="standard"
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  name="onsetAge"
-                  label="Age"
-                  placeholder="Enter Age"
-                  value={formData.onsetAge}
-                  onChange={handleChange}
-                />
-              </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="relationship"
+                label="relationship"
+                placeholder="relationship"
+                value={formData.relationship}
+                onChange={handleChange("relationship")}
+              />
             </Grid>
-          </div>
-          <div className={css.buttonArea}>
-            <Button type="button" onClick={closeForm}>
-              Discard
-            </Button>
-            <Button type="submit" variant="contained" color="secondary">
-              Save&nbsp;
-              <Send />
-            </Button>
-          </div>
-        </Box>
-      </form>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="gender"
+                label="Gender"
+                placeholder="gender"
+                value={formData.gender}
+                onChange={handleChange("gender")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="deceasedBoolean"
+                label="deceasedBoolean"
+                placeholder="deceasedBoolean"
+                value={formData.deceasedBoolean}
+                onChange={handleChange("deceasedBoolean")}
+              />
+            </Grid>
+
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="date"
+                name="bornDate"
+                label="bornDate"
+                placeholder="Enter Born Date"
+                value={formData.bornDate}
+                onChange={handleChange("bornDate")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="number"
+                name="onsetAge"
+                label="onsetAge"
+                placeholder="Enter onsetAge"
+                value={formData.onsetAge}
+                onChange={handleChange("onsetAge")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="decease"
+                label="decease"
+                placeholder="decease"
+                value={formData.decease}
+                onChange={handleChange("decease")}
+              />
+            </Grid>
+          </Grid>
+        </div>
+        <div className={css.buttonArea}>
+          <Button type="button" onClick={closeForm}>
+            Discard
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleFormSubmit}
+          >
+            Save&nbsp;
+            <Send />
+          </Button>
+        </div>
+      </Box>
     </FloatingPanel>
   );
 }

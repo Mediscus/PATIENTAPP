@@ -30,7 +30,7 @@ function AddDiagnosisForm(props) {
     DiagnosesName: "",
     StartDate: "",
     OnsetYear: "",
-    Status: "",
+    // Status: "",
     AddedByDr: "",
     Sequence: "",
     file: "",
@@ -61,13 +61,13 @@ function AddDiagnosisForm(props) {
       const postData = {
         resourceType: "Condition",
         Status: "active",
-        clinicalStatus: {
-          coding: [
-            {
-              display: formData.Status,
-            },
-          ],
-        },
+        // clinicalStatus: {
+        //   coding: [
+        //     {
+        //       display: formData.Status,
+        //     },
+        //   ],
+        // },
         code: {
           coding: [
             {
@@ -86,7 +86,7 @@ function AddDiagnosisForm(props) {
       console.log("postData:", postData);
 
       const response = await axios.post(
-        "https://hapi.fhir.org/baseR4/Condition?_lastUpdated=gt2024-05-16",
+        "https://hapi.fhir.org/baseR4/Condition?_lastUpdated=gt2024-07-02",
         postData
       );
 

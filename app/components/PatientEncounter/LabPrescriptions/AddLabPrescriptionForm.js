@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Box, Button, Grid, MenuItem, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  MenuItem,
+  TextField,
+  FloatingPanel,
+} from "@mui/material";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
 import axios from "axios";
 import moment from "moment";
@@ -10,6 +17,7 @@ import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
+import { Formik } from "formik";
 
 function AddLabPrescriptionForm(props) {
   const { classes, inputChange } = props;
@@ -80,19 +88,21 @@ function AddLabPrescriptionForm(props) {
   return (
     <FloatingPanel
       openForm={open}
-      closeForm={closeForm}
+      // closeForm={closeForm}
       title="Vaccinactions History"
       extraSize={false}
     >
       <Formik
-        initialValues={{
-          patientRef: patient && patient.patientRef,
-          vaccinationRef: editData ? editData["vaccination_id"] : "",
-          vaccinationName: editData ? editData["vaccination_name"] : "",
-          againstDisease: editData ? editData["against_disease"] : "",
-          schedule: editData ? editData["schedule"] : "",
-          status: editData ? editData["status"] : "",
-        }}
+        initialValues={
+          {
+            // patientRef: patient && patient.patientRef,
+            // vaccinationRef: editData ? editData["vaccination_id"] : "",
+            // vaccinationName: editData ? editData["vaccination_name"] : "",
+            // againstDisease: editData ? editData["against_disease"] : "",
+            // schedule: editData ? editData["schedule"] : "",
+            // status: editData ? editData["status"] : "",
+          }
+        }
         enableReinitialize={true}
         validationSchema={vaccinationHistoryFormSchema}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {

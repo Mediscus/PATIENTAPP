@@ -3,54 +3,72 @@ import PropTypes from "prop-types";
 import css from "dan-styles/Form.scss";
 import { Box, Button, Grid } from "@mui/material";
 import Send from "@mui/icons-material/Send";
-import Autocomplete from "@mui/material/Autocomplete";
-import useWindowDimensions from "dan-utils/useWindowDimensions";
-import { FloatingPanel, TextField } from "dan-components";
-import apiCall from "dan-redux/apiInterface";
+import { TextField } from "@mui/material";
+import { FloatingPanel } from "dan-components";
 import { Formik } from "formik";
-// import { personalHistorySchema } from "dan-api/schema";
 import { useParams } from "react-router-dom";
+import useWindowDimensions from "dan-utils/useWindowDimensions";
+import axios from "axios";
 
 function AddObservationGeneralAssessment(props) {
-  const patient = useParams();
   const { open, closeForm, data, callBack, setMessage } = props;
-  const [editData, setEditData] = useState({});
+  const [editData, setEditData] = useState(data);
   const { height } = useWindowDimensions();
 
-  useEffect(() => {
-    setEditData(data);
-  }, []);
+  const [formData, setFormData] = useState({
+    smokingStatus: "",
+    smokingSince: "",
+    smokingQuantity: "",
+    effectiveDateTime: "",
+    valueCodeableConcept: "",
+  });
 
-  const postPersonalHistory = async (
-    values,
-    setErrors,
-    setStatus,
-    setSubmitting
-  ) => {
+  const handleChange = (field) => (event) => {
+    setFormData({
+      ...formData,
+      [field]: event.target.value,
+    });
+  };
+
+  const handleFormSubmit = async () => {
     try {
-      const res = await apiCall(
-        "http://localhost:8000/fhir/observation/create_observation_lifestyle/",
-        "post",
-        values
+      const postData = {
+        resourceType: "Observation",
+        status: formData.smokingStatus,
+        code: {
+          text: formData.smokingSince,
+        },
+        subject: {
+          reference: "Patient/593372",
+        },
+        effectiveDateTime: formData.effectiveDateTime,
+        performer: [
+          {
+            reference: "Organization/44787710",
+          },
+        ],
+        valueCodeableConcept: {
+          coding: [
+            {
+              display: formData.valueCodeableConcept,
+            },
+          ],
+          text: formData.valueCodeableConcept,
+        },
+      };
+
+      console.log("postData:", postData);
+
+      const response = await axios.post(
+        "https://hapi.fhir.org/baseR4/Observation",
+        postData
       );
-      //   if (res && res.Status === "Success") {
-      setMessage("success", "Data saved Successfully!");
-      setStatus({ success: true });
-      callBack(true);
-      //   }
+
+      console.log("API Response:", response.data);
+      alert("Data submitted successfully!");
     } catch (error) {
-      console.log("Error:", error);
-      let errorMessage = error.message;
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.ErrorMessage
-      ) {
-        errorMessage = error.response.data.ErrorMessage;
-      }
-      setMessage("error", errorMessage);
-    } finally {
-      setSubmitting(false);
+      console.error("Error:", error);
+      alert("Error submitting data. Please try again.");
     }
   };
 
@@ -62,140 +80,88 @@ function AddObservationGeneralAssessment(props) {
       title="Personal History"
       extraSize={false}
     >
-      <Formik
-        initialValues={{
-          resourceType: "",
-          id: "1",
-          meta: {
-            profile: [""],
-          },
-          text: {
-            status: "",
-            div: "",
-          },
-          status: "",
-          code: {
-            coding: [
-              {
-                system: "",
-                code: "",
-                display: "",
-              },
-            ],
-            text: "",
-          },
-          subject: {
-            reference: "",
-          },
-          performer: [
-            {
-              reference: "",
-            },
-          ],
-          valueQuantity: {
-            value: "",
-            unit: "",
-            system: "",
-            code: "",
-          },
-        }}
-        enableReinitialize={true}
-        // validationSchema={personalHistorySchema}
-        onSubmit={(values, { setErrors, setStatus, setSubmitting }) => {
-          postPersonalHistory(values, setErrors, setStatus, setSubmitting);
+      <Box
+        sx={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justify: "space-between",
         }}
       >
-        {({
-          errors,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-          isSubmitting,
-          touched,
-          setTextField,
-          values,
-        }) => (
-          <form onSubmit={handleSubmit}>
-            <Box
-              sx={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                justify: "space-between",
-              }}
-            >
-              <div
-                className={css.bodyForm}
-                style={{
-                  height: height - 140,
-                  maxHeight: height - 140,
-                  overflow: "auto",
-                }}
-              >
-                <Grid
-                  container
-                  spacing={2}
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      type="text"
-                      name="status"
-                      label="Status"
-                      placeholder="Enter status"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      type="text"
-                      name="smokingStatus"
-                      label="Smoking status"
-                      placeholder="Enter smoking status"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      type="date"
-                      name="smokingSince"
-                      // label="Smoking since"
-                      placeholder="Enter smoking since"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      type="number"
-                      name="smokingQuantity"
-                      label="Smoking quantity"
-                      placeholder="Enter smoking quantity"
-                    />
-                  </Grid>
-
-                  {/* "put here" */}
-                </Grid>
-              </div>
-              <div className={css.buttonArea}>
-                <Button type="button" onClick={closeForm}>
-                  Discard
-                </Button>
-                <Button
-                  variant="contained"
-                  color="secondary"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  Save&nbsp;
-                  <Send style={{ marginLeft: 10 }} />
-                </Button>
-              </div>
-            </Box>
-          </form>
-        )}
-      </Formik>
+        <div
+          className={css.bodyForm}
+          style={{
+            height: height - 176,
+            maxHeight: height - 176,
+            overflow: "auto",
+          }}
+        >
+          <Grid
+            container
+            spacing={2}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="smokingSince"
+                label="smokingSince"
+                placeholder="Enter smokingSince"
+                value={formData.smokingSince}
+                onChange={handleChange("smokingSince")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="valueCodeableConcept"
+                label="valueCodeableConcept"
+                placeholder="Enter valueCodeableConcept"
+                value={formData.valueCodeableConcept}
+                onChange={handleChange("valueCodeableConcept")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="date"
+                name="effectiveDateTime"
+                label="effectiveDateTime"
+                placeholder="Enter    effectiveDateTime"
+                value={formData.effectiveDateTime}
+                onChange={handleChange("    effectiveDateTime")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="number"
+                name="smokingQuantity"
+                label="Smoking quantity"
+                placeholder="Enter smoking quantity"
+                value={formData.smokingQuantity}
+                onChange={handleChange("smokingQuantity")}
+              />
+            </Grid>
+          </Grid>
+        </div>
+        <div className={css.buttonArea}>
+          <Button type="button" onClick={closeForm}>
+            Discard
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={handleFormSubmit}
+          >
+            Save&nbsp;
+            <Send />
+          </Button>
+        </div>
+      </Box>
     </FloatingPanel>
   );
 }
