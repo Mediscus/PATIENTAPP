@@ -9,8 +9,9 @@ import {
   ListItem,
   IconButton,
   ListItemSecondaryAction,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
-import AllergiesForm from "./AllergiesForm";
 import {
   AddCircleOutlineOutlined,
   DeleteForever,
@@ -21,17 +22,31 @@ import apiCall from "dan-redux/apiInterface";
 import { CustomSnackbar, Loader } from "dan-components";
 import { withStyles } from "@mui/styles";
 import { useParams } from "react-router-dom";
+import AllergiesForm from "./AllergiesForm";
+import {
+  SET_ALLERGY_LIST,
+  SET_NO_KNOWN_ALLERGY,
+} from "../../../../../../redux/constants/AllergyActionType";
+import { useDispatch, useSelector } from "react-redux";
+import { getNoKnownAllergyList } from "./AllergyAction";
 
 function Allergies(props) {
   const patient = useParams();
+  const dispatch = useDispatch();
   const { classes, add, shadow } = props;
   const [apiData, setApiData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [form, setForm] = useState({ open: false, data: null, type: "add" });
   const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
   const openForm = () => setForm({ ...form, ["open"]: true, ["type"]: "add" });
-  const closeForm = () => [setForm({ ...form, ["open"]: false })];
-
+  const closeForm = () => {
+    setForm({ ...form, ["open"]: false });
+    dispatch({
+      type: SET_NO_KNOWN_ALLERGY,
+      payload: false,
+    });
+  };
+  const { isNoKnownAllergy } = useSelector((state) => state.allergy);
   useEffect(() => {
     getAllergies();
     return () => {
@@ -102,6 +117,14 @@ function Allergies(props) {
   const handleMessage = (type, msg) => {
     handleSanackBar(true, type, msg);
   };
+  const handleIsNoKnownAllergy = () => {
+    openForm();
+    getNoKnownAllergyList(dispatch);
+    dispatch({
+      type: SET_NO_KNOWN_ALLERGY,
+      payload: !isNoKnownAllergy,
+    });
+  };
 
   return (
     <Paper className={classes.root} elevation={shadow}>
@@ -116,7 +139,23 @@ function Allergies(props) {
         )}
       </Box>
       <Divider />
-
+      <Box
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          paddingLeft: 10,
+        }}
+      >
+        No known allergy or intolerance.
+        {/* <IconButton
+          color="secondary"
+          onClick={() => handleIsNoKnownAllergy()}
+          size="large"
+        >
+          <AddCircleOutlineOutlined />
+        </IconButton> */}
+      </Box>
       <Box p={1}>
         <Loader isLoading={isLoading} />
         {apiData &&
