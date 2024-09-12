@@ -7,6 +7,11 @@ import { FloatingPanel, TextField } from "dan-components";
 import { Box, Button, Grid } from "@mui/material";
 import Send from "@mui/icons-material/Send";
 import { useParams } from "react-router-dom";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 import axios from "axios";
 
 function VaccinationsHistoryForm(props) {
@@ -18,11 +23,15 @@ function VaccinationsHistoryForm(props) {
     vaccineCode: "",
     vaccineName: "",
     occurrenceDateTime: "",
-    patient: "",
+    patientref: "",
+    location: "",
     encounter: "",
+    lotnumber: "",
+    expirationdate: "",
+    vaccineroute: "",
   });
   const formatDateTime = (datetime) => {
-    const date = new Date(datetime)
+    const date = new Date(datetime);
     const offset = -date.getTimezoneOffset();
     const sign = offset >= 0 ? "+" : "-";
     const pad = (num) => (num < 10 ? "0" + num : num);
@@ -130,6 +139,7 @@ function VaccinationsHistoryForm(props) {
                 onChange={handleChange("vaccineCode")}
               />
             </Grid>
+
             <Grid item xs={12} sm={12}>
               <TextField
                 fullWidth
@@ -144,11 +154,76 @@ function VaccinationsHistoryForm(props) {
             <Grid item xs={12} sm={12}>
               <TextField
                 fullWidth
+                type="text"
+                name="Vaccine Route"
+                label="vaccine Route"
+                placeholder="Vaccine Route"
+                value={formData.vaccineroute}
+                onChange={handleChange("vaccineroute")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="Patient Name"
+                label="Patient Name"
+                placeholder="Patient Name"
+                value={formData.patientref}
+                onChange={handleChange("patientref")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="vaccineCode"
+                label="Lot Number"
+                placeholder="Lot Number"
+                value={formData.lotnumber}
+                onChange={handleChange("lotnumber")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="Location"
+                label="Location"
+                placeholder="Location Name"
+                value={formData.location}
+                onChange={handleChange("location")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
                 type="datetime-local"
                 name="occurrenceDateTime"
                 label="Occurrence DateTime"
                 value={formData.occurrenceDateTime}
                 onChange={handleChange("occurrenceDateTime")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="datetime-local"
+                name="expiration Date"
+                label="expiration Date"
+                value={formData.expirationdate}
+                onChange={handleChange("expirationdate")}
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="Manufacturer"
+                label="Manufacturer"
+                placeholder="Manufacturer ()"
+                value={formData.manufacturer}
+                onChange={handleChange("manufacturer")}
               />
             </Grid>
           </Grid>

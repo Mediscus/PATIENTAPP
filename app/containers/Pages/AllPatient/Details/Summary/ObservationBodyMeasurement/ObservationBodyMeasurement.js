@@ -1,5 +1,4 @@
 import FlowSheets from "../../../../../../components/PatientEncounter/FlowSheets";
-
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import css from "dan-styles/Form.scss";
@@ -10,7 +9,6 @@ import useWindowDimensions from "dan-utils/useWindowDimensions";
 import { FloatingPanel, TextField } from "dan-components";
 import apiCall from "dan-redux/apiInterface";
 import { Formik } from "formik";
-// import { personalHistorySchema } from "dan-api/schema";
 import { useParams } from "react-router-dom";
 
 function AddObservationGeneralAssessment(props) {
@@ -35,11 +33,10 @@ function AddObservationGeneralAssessment(props) {
         "post",
         values
       );
-      //   if (res && res.Status === "Success") {
+
       setMessage("success", "Data saved Successfully!");
       setStatus({ success: true });
       callBack(true);
-      //   }
     } catch (error) {
       console.log("Error:", error);
       let errorMessage = error.message;

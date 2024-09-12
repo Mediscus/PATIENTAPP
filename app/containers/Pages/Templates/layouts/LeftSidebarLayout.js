@@ -80,10 +80,7 @@ function LeftSidebarLayout(props) {
             />
           )}
           <Fade in={pageLoaded} {...(pageLoaded ? { timeout: 700 } : {})}>
-            <div className={!pageLoaded ? classes.hideApp : ""}>
-              {/* Application content will load here */}
-              {children}
-            </div>
+            <div className={!pageLoaded ? classes.hideApp : ""}>{children}</div>
           </Fade>
         </section>
       </main>

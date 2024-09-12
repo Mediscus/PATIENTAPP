@@ -1,17 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { PropTypes } from 'prop-types';
-import classNames from 'classnames';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { withStyles } from '@mui/styles';
-import { GuideSlider } from 'dan-components';
-import { toggleAction, openAction, playTransitionAction } from 'dan-redux/actions/uiActions';
-import LeftSidebarLayout from './layouts/LeftSidebarLayout';
-import RightSidebarLayout from './layouts/RightSidebarLayout';
-import LeftSidebarBigLayout from './layouts/LeftSidebarBigLayout';
-import DropMenuLayout from './layouts/DropMenuLayout';
-import MegaMenuLayout from './layouts/MegaMenuLayout';
-import styles from './appStyles-jss';
+import React, { useState, useEffect } from "react";
+import { PropTypes } from "prop-types";
+import classNames from "classnames";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { withStyles } from "@mui/styles";
+import { GuideSlider } from "dan-components";
+import {
+  toggleAction,
+  openAction,
+  playTransitionAction,
+} from "dan-redux/actions/uiActions";
+import LeftSidebarLayout from "./layouts/LeftSidebarLayout";
+import RightSidebarLayout from "./layouts/RightSidebarLayout";
+import LeftSidebarBigLayout from "./layouts/LeftSidebarBigLayout";
+import DropMenuLayout from "./layouts/DropMenuLayout";
+import MegaMenuLayout from "./layouts/MegaMenuLayout";
+import styles from "./appStyles-jss";
 
 function Dashboard(props) {
   // Initial header style
@@ -66,46 +70,50 @@ function Dashboard(props) {
     deco,
     bgPosition,
     layout,
-    changeMode
+    changeMode,
   } = props;
-  const titleException = ['/app', '/app/crm-dashboard', '/app/crypto-dashboard', '/app/all-patient/details'];
-  const parts = history.location.pathname.split('/');
-  const place = parts[parts.length - 1].replace('-', ' ');
+  const titleException = [
+    "/app",
+    "/app/crm-dashboard",
+    "/app/crypto-dashboard",
+    "/app/all-patient/details",
+  ];
+  const parts = history.location.pathname.split("/");
+  const place = parts[parts.length - 1].replace("-", " ");
   return (
     <div
       style={{ minHeight: appHeight }}
-      className={
-        classNames(
-          classes.appFrameInner,
-          layout === 'top-navigation' || layout === 'mega-menu' ? classes.topNav : classes.sideNav,
-          mode === 'dark' ? 'dark-mode' : 'light-mode'
-        )
-      }
+      className={classNames(
+        classes.appFrameInner,
+        layout === "top-navigation" || layout === "mega-menu"
+          ? classes.topNav
+          : classes.sideNav,
+        mode === "dark" ? "dark-mode" : "light-mode"
+      )}
     >
       <GuideSlider openGuide={openGuide} closeGuide={handleCloseGuide} />
-      { /* Left Sidebar Layout */
-        layout === 'left-sidebar' && (
-          <LeftSidebarLayout
-            history={history}
-            toggleDrawer={toggleDrawer}
-            loadTransition={loadTransition}
-            changeMode={changeMode}
-            sidebarOpen={sidebarOpen}
-            pageLoaded={pageLoaded}
-            mode={mode}
-            gradient={gradient}
-            deco={deco}
-            bgPosition={bgPosition}
-            place={place}
-            titleException={titleException}
-            handleOpenGuide={handleOpenGuide}
-          >
-            {children}
-          </LeftSidebarLayout>
-        )
-      }
-      { /* Left Big-Sidebar Layout */
-        layout === 'big-sidebar' && (
+      {layout === "left-sidebar" && (
+        <LeftSidebarLayout
+          history={history}
+          toggleDrawer={toggleDrawer}
+          loadTransition={loadTransition}
+          changeMode={changeMode}
+          sidebarOpen={sidebarOpen}
+          pageLoaded={pageLoaded}
+          mode={mode}
+          gradient={gradient}
+          deco={deco}
+          bgPosition={bgPosition}
+          place={place}
+          titleException={titleException}
+          handleOpenGuide={handleOpenGuide}
+        >
+          {children}
+        </LeftSidebarLayout>
+      )}
+      {
+        /* Left Big-Sidebar Layout */
+        layout === "big-sidebar" && (
           <LeftSidebarBigLayout
             history={history}
             toggleDrawer={toggleDrawer}
@@ -125,8 +133,9 @@ function Dashboard(props) {
           </LeftSidebarBigLayout>
         )
       }
-      { /* Right Sidebar Layout */
-        layout === 'right-sidebar' && (
+      {
+        /* Right Sidebar Layout */
+        layout === "right-sidebar" && (
           <RightSidebarLayout
             history={history}
             toggleDrawer={toggleDrawer}
@@ -146,8 +155,9 @@ function Dashboard(props) {
           </RightSidebarLayout>
         )
       }
-      { /* Top Bar with Dropdown Menu */
-        layout === 'top-navigation' && (
+      {
+        /* Top Bar with Dropdown Menu */
+        layout === "top-navigation" && (
           <DropMenuLayout
             history={history}
             toggleDrawer={toggleDrawer}
@@ -167,8 +177,9 @@ function Dashboard(props) {
           </DropMenuLayout>
         )
       }
-      { /* Top Bar with Mega Menu */
-        layout === 'mega-menu' && (
+      {
+        /* Top Bar with Mega Menu */
+        layout === "mega-menu" && (
           <MegaMenuLayout
             history={history}
             toggleDrawer={toggleDrawer}
@@ -206,10 +217,10 @@ Dashboard.propTypes = {
   gradient: PropTypes.bool.isRequired,
   deco: PropTypes.bool.isRequired,
   bgPosition: PropTypes.string.isRequired,
-  layout: PropTypes.string.isRequired
+  layout: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   sidebarOpen: state.ui.sidebarOpen,
   pageLoaded: state.ui.pageLoaded,
   mode: state.ui.type,
@@ -219,15 +230,12 @@ const mapStateToProps = state => ({
   bgPosition: state.ui.bgPosition,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   toggleDrawer: () => dispatch(toggleAction),
   initialOpen: bindActionCreators(openAction, dispatch),
   loadTransition: bindActionCreators(playTransitionAction, dispatch),
 });
 
-const DashboardMaped = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Dashboard);
+const DashboardMaped = connect(mapStateToProps, mapDispatchToProps)(Dashboard);
 
-export default (withStyles(styles)(DashboardMaped));
+export default withStyles(styles)(DashboardMaped);
