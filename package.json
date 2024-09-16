@@ -139,6 +139,7 @@
     "jss-rtl": "^0.3.0",
     "keycode": "^2.2.0",
     "lodash": "^4.17.20",
+    "lodash.debounce": "^4.0.8",
     "minimist": "^1.2.5",
     "moment": "^2.29.4",
     "organism-react-scroll-nav": "^0.15.0",
@@ -181,6 +182,7 @@
     "redux-immutable": "4.0.0",
     "redux-persist": "^6.0.0",
     "redux-saga": "1.0.2",
+    "redux-thunk": "^3.1.0",
     "regenerator-runtime": "^0.13.11",
     "remark-gfm": "^1.0.0",
     "reselect": "4.0.0",
@@ -189,6 +191,7 @@
     "slick-carousel": "^1.8.1",
     "tss-react": "^4.6.1",
     "tunnel-agent": "^0.6.0",
+    "uuid": "^10.0.0",
     "warning": "4.0.2",
     "yup": "^0.32.11"
   },

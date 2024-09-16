@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useState, useCallback } from "react";
 import css from "dan-styles/Form.scss";
 import "dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
@@ -7,244 +6,301 @@ import { FloatingPanel, TextField } from "dan-components";
 import { Box, Button, Grid } from "@mui/material";
 import Send from "@mui/icons-material/Send";
 import { useParams } from "react-router-dom";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
-import axios from "axios";
 
 function VaccinationsHistoryForm(props) {
   const { open, closeForm, setMessage } = props;
   const { patientRef } = useParams();
   const { height } = useWindowDimensions();
 
-  const [formData, setFormData] = useState({
-    vaccineCode: "",
-    vaccineName: "",
-    occurrenceDateTime: "",
-    patientref: "",
-    location: "",
-    encounter: "",
-    lotnumber: "",
-    expirationdate: "",
-    vaccineroute: "",
-  });
-  const formatDateTime = (datetime) => {
-    const date = new Date(datetime);
-    const offset = -date.getTimezoneOffset();
-    const sign = offset >= 0 ? "+" : "-";
-    const pad = (num) => (num < 10 ? "0" + num : num);
+  const {
+    allergyList,
+    allergyListLoader,
+    substanceList,
+    substanceListLoader,
+    occuranceReasonList,
+    occuranceListLoader,
+    exposureRouteList,
+    exposureRouteListLoader,
+    isNoKnownAllergy,
+  } = useSelector((state) => state.allergy);
 
-    return (
-      date.getFullYear() +
-      "-" +
-      pad(date.getMonth() + 1) +
-      "-" +
-      pad(date.getDate()) +
-      "T" +
-      pad(date.getHours()) +
-      ":" +
-      pad(date.getMinutes()) +
-      ":" +
-      pad(date.getSeconds()) +
-      sign +
-      pad(Math.floor(Math.abs(offset) / 60)) +
-      ":" +
-      pad(Math.abs(offset) % 60)
-    );
+  const clinicalStatusList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"
+  );
+  const varificationStatusList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergyintolerance-verification"
+  );
+  const allergyTypeList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
+  );
+  const allergyCatList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergy-intolerance-category"
+  );
+  const criticalityList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"
+  );
+  const sevarityList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/reaction-event-severity"
+  );
+
+  useEffect(() => {
+    if (!isNoKnownAllergy) allergyListResult(allergyValue);
+  }, [allergyValue]);
+
+  const handleAllergyDebounceFun = (ipValue) => {
+    getAllergyList(dispatch, ipValue);
   };
 
-  const handleChange = (field) => (event) => {
-    setFormData({
-      ...formData,
-      [field]: event.target.value,
-    });
+  const allergyListResult = useCallback(
+    _debounce(handleAllergyDebounceFun, 200),
+    []
+  );
+
+  useEffect(() => {
+    substanceListResult(substanceValue);
+  }, [substanceValue]);
+
+  const handleSubstaceDebounceFun = (ipValue) => {
+    getSubstanceList(dispatch, ipValue);
   };
 
-  const handleFormSubmit = async () => {
-    try {
-      const postData = {
-        resourceType: "Immunization",
-        vaccineCode: {
-          coding: [
-            {
-              code: formData.vaccineCode,
-            },
-          ],
-        },
-        text: formData.vaccineName,
-        patient: {
-          reference: "Patient/49006",
-        },
-        encounter: {
-          reference: "Encounter/49229",
-        },
-        occurrenceDateTime: formatDateTime(formData.occurrenceDateTime),
-      };
+  const substanceListResult = useCallback(
+    _debounce(handleSubstaceDebounceFun, 200),
+    []
+  );
 
-      console.log("postData:", postData);
+  useEffect(() => {
+    occuranceReasonListResult(occuranceReasonValue);
+  }, [occuranceReasonValue]);
 
-      const response = await axios.post(
-        "https://hapi.fhir.org/baseR4/Immunization",
-        postData
-      );
+  const handleOccuranceReasonDebounceFun = (ipValue) => {
+    getClinicalFindingList(dispatch, ipValue);
+  };
 
-      console.log("API Response:", response.data);
-      alert("Data submitted successfully!");
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error submitting data. Please try again.");
+  const occuranceReasonListResult = useCallback(
+    _debounce(handleOccuranceReasonDebounceFun, 200),
+    []
+  );
+
+  useEffect(() => {
+    exposureRouteListResult(exposureRouteValue);
+  }, [exposureRouteValue]);
+
+  const handleExposureRouteDebounceFun = (ipValue) => {
+    getExposureRouteList(dispatch, ipValue);
+  };
+
+  const exposureRouteListResult = useCallback(
+    _debounce(handleExposureRouteDebounceFun, 200),
+    []
+  );
+
+  useEffect(() => {
+    if (type == "edit") {
+      setEditData(data);
+    } else {
+      setEditData({});
     }
-  };
+  }, []);
 
   return (
-    <FloatingPanel
-      openForm={open}
-      closeForm={closeForm}
-      title="Vaccinations History"
-      extraSize={false}
-    >
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          className={css.bodyForm}
-          style={{
-            height: height - 140,
-            maxHeight: height - 140,
-            overflow: "auto",
-            padding: "8px",
-          }}
-        >
-          <Grid
-            container
-            spacing={2}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="vaccineCode"
-                label="Vaccine Code"
-                placeholder="Enter Vaccine Code"
-                value={formData.vaccineCode}
-                onChange={handleChange("vaccineCode")}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="vaccineName"
-                label="Vaccine Name"
-                placeholder="Enter Vaccine Name"
-                value={formData.vaccineName}
-                onChange={handleChange("vaccineName")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="Vaccine Route"
-                label="vaccine Route"
-                placeholder="Vaccine Route"
-                value={formData.vaccineroute}
-                onChange={handleChange("vaccineroute")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="Patient Name"
-                label="Patient Name"
-                placeholder="Patient Name"
-                value={formData.patientref}
-                onChange={handleChange("patientref")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="vaccineCode"
-                label="Lot Number"
-                placeholder="Lot Number"
-                value={formData.lotnumber}
-                onChange={handleChange("lotnumber")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="Location"
-                label="Location"
-                placeholder="Location Name"
-                value={formData.location}
-                onChange={handleChange("location")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="datetime-local"
-                name="occurrenceDateTime"
-                label="Occurrence DateTime"
-                value={formData.occurrenceDateTime}
-                onChange={handleChange("occurrenceDateTime")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="datetime-local"
-                name="expiration Date"
-                label="expiration Date"
-                value={formData.expirationdate}
-                onChange={handleChange("expirationdate")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="Manufacturer"
-                label="Manufacturer"
-                placeholder="Manufacturer ()"
-                value={formData.manufacturer}
-                onChange={handleChange("manufacturer")}
-              />
-            </Grid>
-          </Grid>
-        </div>
-        <div className={css.buttonArea}>
-          <Button type="button" onClick={closeForm}>
-            Discard
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleFormSubmit}
-          >
-            Save&nbsp;
-            <Send />
-          </Button>
-        </div>
-      </Box>
-    </FloatingPanel>
+    date.getFullYear() +
+    "-" +
+    pad(date.getMonth() + 1) +
+    "-" +
+    pad(date.getDate()) +
+    "T" +
+    pad(date.getHours()) +
+    ":" +
+    pad(date.getMinutes()) +
+    ":" +
+    pad(date.getSeconds()) +
+    sign +
+    pad(Math.floor(Math.abs(offset) / 60)) +
+    ":" +
+    pad(Math.abs(offset) % 60)
   );
 }
+
+const handleChange = (field) => (event) => {
+  setFormData({
+    ...formData,
+    [field]: event.target.value,
+  });
+};
+
+const handleFormSubmit = async () => {
+  try {
+    const postData = {
+      resourceType: "Immunization",
+      vaccineCode: {
+        coding: [
+          {
+            code: formData.vaccineCode,
+          },
+        ],
+      },
+      text: formData.vaccineName,
+      patient: {
+        reference: "Patient/49006",
+      },
+      encounter: {
+        reference: "Encounter/49229",
+      },
+      occurrenceDateTime: formatDateTime(formData.occurrenceDateTime),
+    };
+
+    console.log("postData:", postData);
+
+    const response = await axios.post(
+      "https://hapi.fhir.org/baseR4/Immunization",
+      postData
+    );
+
+    console.log("API Response:", response.data);
+    alert("Data submitted successfully!");
+  } catch (error) {
+    console.error("Error:", error);
+    alert("Error submitting data. Please try again.");
+  }
+};
+
+return (
+  <FloatingPanel
+    openForm={open}
+    closeForm={closeForm}
+    title="Vaccinations History"
+    extraSize={false}
+  >
+    <Formik
+      initialValues={{
+        patientRef: patient && patient.patientRef,
+        vaccinationRef: editData ? editData["vaccination_id"] : "",
+        vaccinationName: editData ? editData["vaccination_name"] : "",
+        againstDisease: editData ? editData["against_disease"] : "",
+        schedule: editData ? editData["schedule"] : "",
+        status: editData ? editData["status"] : "",
+      }}
+      enableReinitialize={true}
+      validationSchema={vaccinationHistoryFormSchema}
+      onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+        postFamilyHistory(values, setErrors, setStatus, setSubmitting);
+      }}
+    >
+      {({
+        errors,
+        handleBlur,
+        handleChange,
+        handleSubmit,
+        isSubmitting,
+        touched,
+        setFieldValue,
+        values,
+      }) => (
+        <form onSubmit={handleSubmit}>
+          <Box
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justify: "space-between",
+            }}
+          >
+            <div
+              className={css.bodyForm}
+              style={{
+                height: height - 140,
+                maxHeight: height - 140,
+                overflow: "auto",
+                padding: "8px !important",
+              }}
+            >
+              <Grid
+                container
+                spacing={2}
+                justifyContent="space-between"
+                alignItems="center"
+              >
+                <Grid item xs={12} sm={12}>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    name="vaccinationName"
+                    label="Vaccination Name"
+                    placeholder="Enter Vaccination Name"
+                    value={values.vaccinationName}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={
+                      touched.vaccinationName ? errors.vaccinationName : ""
+                    }
+                    error={
+                      touched.vaccinationName ? errors.vaccinationName : ""
+                    }
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    name="againstDisease"
+                    label="Against Disease"
+                    placeholder="Enter Against Disease"
+                    value={values.againstDisease}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={
+                      touched.againstDisease ? errors.againstDisease : ""
+                    }
+                    error={touched.againstDisease ? errors.againstDisease : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    name="schedule"
+                    label="Schedule"
+                    placeholder="Enter Schedule"
+                    value={values.schedule}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={touched.schedule ? errors.schedule : ""}
+                    error={touched.schedule ? errors.schedule : ""}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    name="status"
+                    label="Status"
+                    placeholder="Enter Status"
+                    value={values.status}
+                    onChange={handleChange}
+                    onBlur={handleBlur}
+                    helperText={touched.status ? errors.status : ""}
+                    error={touched.status ? errors.status : ""}
+                  />
+                </Grid>
+              </Grid>
+            </div>
+            <div className={css.buttonArea}>
+              <Button type="button" onClick={closeForm}>
+                Discard
+              </Button>
+              <Button type="submit" variant="contained" color="secondary">
+                Save&nbsp;
+                <Send />
+              </Button>
+            </div>
+          </Box>
+        </form>
+      )}
+    </Formik>
+  </FloatingPanel>
+);
+
 
 VaccinationsHistoryForm.propTypes = {
   open: PropTypes.bool.isRequired,

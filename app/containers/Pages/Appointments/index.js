@@ -12,6 +12,7 @@ import {
   ListItemSecondaryAction,
 } from "@mui/material";
 import classNames from "classnames";
+import axios from "axios";
 
 import { useDispatch } from "react-redux";
 import apiCall from "dan-redux/apiInterface";
@@ -25,6 +26,7 @@ import {
 import AddEncounters from "../AllPatient/Details/Summary/Encounters/AddEncounters";
 import { addEncounter } from "../../../redux/actions/encounterActions";
 import AppointmentDetails from "./appointmentdetails";
+import QRScanner from "../Abha/QRScanner";
 
 function Encounters(props) {
   const { classes, add, shadow } = props;
@@ -36,7 +38,6 @@ function Encounters(props) {
   const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
   const openForm = () => setForm({ ...form, ["open"]: true, ["type"]: "add" });
   const closeForm = () => [setForm({ ...form, ["open"]: false })];
-
   useEffect(() => {
     getAppointment();
     return () => {
@@ -106,9 +107,62 @@ function Encounters(props) {
   const handleMessage = (type, msg) => {
     handleSanackBar(true, type, msg);
   };
+  // useEffect(() => {
+  //   const apiFetch = async () => {
+  //     try {
+  //       const resp = await fetch(
+  //         "http://api.mediscus.app/abdm-hs/callback/v0.5/users/auth/on-fetch-modes",
+  //         {
+  //           method: "GET",
+  //           // headers: {
+  //           //   "Content-Type": "application/json",
+  //           // },
+  //         }
+  //       );
+  //       console.log(resp.json());
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   };
+  //   apiFetch();
+  //   // fetchData();
+  // }, []);
 
+  // async function getCallbackData() {
+  //   try {
+  //     const response = await axios.get(
+  //       "https://api.mediscus.app/abdm-hs/callback/v0.5/users/auth/on-fetch-modes"
+  //     );
+  //     console.log("Response Data:", response.data);
+  //   } catch (error) {
+  //     console.error("Error:", error.message);
+  //     // Handle specific errors
+  //     if (error.response) {
+  //       console.error("Response Data:", error.response.data);
+  //       console.error("Response Status:", error.response.status);
+  //       console.error("Response Headers:", error.response.headers);
+  //     } else if (error.request) {
+  //       console.error("Request Data:", error.request);
+  //     }
+  //   }
+  // }
+
+  // getCallbackData();
+
+  async function fetchData() {
+    try {
+      const response = await axios.get(
+        // "http://api.mediscus.app/abdm-hs/callback/v0.5/users/auth/on-fetch-modes"
+        "http://api.mediscus.app/abdm-hs/callback/v0.5/users/auth/on-fetch-modes"
+      );
+      console.log("response", response.data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
   return (
     <Paper className={classNames(classes.root)} elevation={shadow}>
+      <QRScanner />
       <Box className={classes.header}>
         <Typography variant="h6" className={classes.title}>
           Appointments

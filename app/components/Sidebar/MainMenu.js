@@ -16,11 +16,15 @@ import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import styles from './sidebar-jss';
 
-const LinkBtn = React.forwardRef(function LinkBtn(props, ref) { // eslint-disable-line
-  return <NavLink to={props.to} {...props} innerRef={ref} />; // eslint-disable-line
+const LinkBtn = React.forwardRef(function LinkBtn(props, ref) { 
+  return <NavLink to={props.to} {...props} innerRef={ref} />; 
 });
 
-// eslint-disable-next-line
+const sortMenuItems = (menuArray) => {
+  return menuArray.sort((a, b) => a.name.localeCompare(b.name));
+};
+
+
 function MainMenu(props) {
   const handleClick = () => {
     const { toggleDrawerOpen, loadTransition } = props;
@@ -76,7 +80,7 @@ function MainMenu(props) {
               unmountOnExit
             >
               <List className={classes.dense} component="nav" dense>
-                {getMenus(item.child, 'key')}
+                {getMenus(item.child)}
               </List>
             </Collapse>
           )}
@@ -113,6 +117,7 @@ function MainMenu(props) {
       </ListItem>
     );
   });
+
   return (
     <div>
       {getMenus(dataMenu)}

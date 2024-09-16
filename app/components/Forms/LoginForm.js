@@ -116,10 +116,10 @@ function LoginForm(props) {
               size="small"
               className={classes.buttonLink}
               component={LinkBtn}
-              to="/loginaccount"
+              to="/register"
             >
               <Icon className={classes.icon}>arrow_forward</Icon>
-              Login
+              Register
             </Button>
           </div>
         </Hidden>
@@ -180,14 +180,15 @@ function LoginForm(props) {
           centered
           className={classes.tab}
         >
-          <Tab label="Mobile Number" />
-          <Tab label="Aadhar Card" />
+          <Tab label=" Aadhar Card" />
+          <Tab label="Mobile Number " />
         </Tabs>
-        {tab === 0 && (
+        {tab === 1 && (
           <Formik
             initialValues={values}
             // validationSchema={loginFormSchema}
             onSubmit={(values, { resetForm, setErrors }) => {
+              console.log(values , "mbile otp")
               if (mobileOtpSent) {
                 handleOtpVerify();
                 setTimeout(() => {
@@ -266,12 +267,14 @@ function LoginForm(props) {
             )}
           </Formik>
         )}
-        {tab === 1 && (
+        {tab === 0 && (
           <Formik
             initialValues={value}
             // validationSchema={registerFormSchema}
             onSubmit={(value, { resetForm, setErrors }) => {
+              console.log(value , "addhar otp")
               if (aadhaarOtpSent) {
+                console.log(values)
                 handleAadharOtpVerify();
                 setTimeout(() => {
                   history.push("/register");

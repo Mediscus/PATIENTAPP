@@ -4,6 +4,7 @@ import blue from "@material-ui/core/colors/indigo";
 import cyan from "@material-ui/core/colors/cyan";
 import { lighten, darken, alpha } from "@material-ui/core/styles";
 const drawerWidth = 240;
+
 const styles = (theme) => ({
   root: {
     flexGrow: 1,
@@ -18,8 +19,8 @@ const styles = (theme) => ({
     overflow: "hidden",
     display: "flex",
     marginBottom: theme.spacing(3),
-    borderRadius: theme.rounded.medium,
-    boxShadow: theme.shade.light,
+    borderRadius: theme.rounded ? theme.rounded.medium : 10,
+    boxShadow: theme.shade ? theme.shade.light : "",
   },
   rounded: {
     medium: "8px",
@@ -57,7 +58,7 @@ const styles = (theme) => ({
     fontFamily: theme.typography.fontFamily,
     position: "relative",
     color: theme.palette.text.secondary,
-    borderRadius: theme.rounded.big,
+    borderRadius: theme.rounded ? theme.rounded.big : 10,
     boxShadow: theme.shadows[2],
     background: theme.palette.background.paper,
     border: `1px solid ${theme.palette.primary.main}`,
@@ -203,7 +204,7 @@ const styles = (theme) => ({
     marginBottom: 20,
     alignItems: "center",
     padding: "0 20px",
-    borderRadius: theme.rounded.medium,
+    borderRadius: theme.rounded ? theme.rounded.medium : 10,
   },
   category: {
     fontSize: 12,

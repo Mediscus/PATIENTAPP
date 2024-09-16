@@ -52,12 +52,20 @@ export const Appointments = loadable(() => import("./Pages/Appointments"), {
   fallback: <Loading />,
 });
 
+export const PatientApplication = loadable(() => import("./Pages/PatientApplication"), {
+  fallback: <Loading />,
+});
+
 export const MyFamily = loadable(() => import("./Pages/My Family"), {
   fallback: <Loading />,
 });
 
 //User Profilex
 export const Profile = loadable(() => import("./Pages/UserProfile"), {
+  fallback: <Loading />,
+});
+
+export const Settings = loadable(() => import("./Pages/Settings"), {
   fallback: <Loading />,
 });
 

@@ -16,6 +16,8 @@ import {
   NotFound,
   Appointments,
   MyFamily,
+  PatientApplication,
+  Settings
 } from "../pageListAsync";
 import LoginDemo from "../Pages/Abha/logindemo";
 
@@ -44,6 +46,8 @@ function Application(props) {
         <Route exact path="/app/pages/logindemo" component={LoginDemo} />
         <Route exact path="/app/pages/appointments" component={Appointments} />
         <Route exact path="/app/pages/myfamily" component={MyFamily} />
+        <Route exact path="/app/pages/patient-application" component={PatientApplication} />
+        <Route exact path="/app/pages/Settings" component={Settings} />
 
         <Route component={NotFound} />
       </Switch>

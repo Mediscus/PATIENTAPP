@@ -1,198 +1,115 @@
-import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardHeader,
-  CircularProgress,
-} from "@mui/material";
-import TextField from "@mui/material/TextField";
+import React, { useState } from 'react';
+import { TextField, Button, Box, Typography, Paper, CircularProgress } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { useHistory } from "react-router-dom";
 
-const LoginAccount = () => {
-  const [selectedButton, setSelectedButton] = useState(null);
+const useStyles = makeStyles((theme) => ({
+  root: {
+    padding: theme.spacing(4),
+    maxWidth: '600px',
+    margin: 'auto',
+    marginTop: theme.spacing(5),
+  },
+  paper: {
+    padding: theme.spacing(4),
+    maxWidth: 400,
+    width: '100%',
+    textAlign: 'center',
+  },
+  form: {
+    marginTop: theme.spacing(2),
+  },
+  input: {
+    marginBottom: theme.spacing(2),
+  },
+  button: {
+    marginTop: theme.spacing(3),
+  },
+  error: {
+    color: theme.palette.error.main,
+    marginTop: theme.spacing(1),
+  },
+}));
 
-  const handleButtonClick = (buttonName) => {
-    setSelectedButton(buttonName);
-  };
+const Login = () => {
+  const classes = useStyles();
+  const [clientId, setClientId] = useState('');
+  const [clientSecret, setClientSecret] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const history = useHistory();
 
-  const handleSubmit = () => {
-    // Perform submit logic here
-    setSelectedButton(null);
+  const handleLogin = async () => {
+    history.push("/app/pages/abha");
+    setLoading(true);
+    setError('');
+    try {
+      const response = await fetch('https://dev.abdm.gov.in/gateway/v0.5/sessions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ clientId, clientSecret }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      console.log('Login successful:', data);
+      
+      // Handle successful login, e.g., save token, redirect, etc.
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        width: 1000,
-      }}
-    >
-      <Card sx={{ maxWidth: 550 }}>
-        <CardContent>
-
-          <Typography variant="h5" gutterBottom>
-            Hello!
-          </Typography>
-          <Typography variant="h5" gutterBottom>
-            Test ABHA
-          </Typography>
-
-          <Grid container spacing={2} direction="column">
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Enter Username"
-                placeholder="Enter Username"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Enter Password"
-                placeholder="Enter Password"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Enter Mobile Number"
-                placeholder="Enter Mobile Number"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Set PIN"
-                placeholder="Enter 4 digit Number"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={() => handleButtonClick("login")}
-              >
-                Login
-              </Button>
-            </Grid>
-            <Typography
-              variant="body1"
-              style={{ marginTop: "2px", textAlign: "center" }}
-            >
-              OR
+    <Box className={classes.root}>
+      <Paper className={classes.paper} elevation={3}>
+        <Typography variant="h4" gutterBottom>
+          Login
+        </Typography>
+        <form className={classes.form} noValidate autoComplete="off">
+          <TextField
+            label="Client ID"
+            // variant="outlined"
+            value={clientId}
+            onChange={(e) => setClientId(e.target.value)}
+            fullWidth
+            className={classes.input}
+          />
+          <TextField
+            label="Client Secret"
+            // variant="outlined"
+            type="password"
+            value={clientSecret}
+            onChange={(e) => setClientSecret(e.target.value)}
+            fullWidth
+            className={classes.input}
+          />
+          {error && (
+            <Typography className={classes.error} variant="body2">
+              {error}
             </Typography>
-            <Grid item xs={12}>
-              <Button
-                variant="outlined"
-                size="large"
-                fullWidth
-                onClick={() => handleButtonClick("abhaAddress")}
-              >
-                Login with ABHA Address
-              </Button>
-            </Grid>
-            {selectedButton === "abhaAddress" && (
-              <>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Enter Abha Address"
-                    placeholder="Enter Abha Address"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-              </>
-            )}
-
-            <Grid item xs={12}>
-              <Button
-                variant="outlined"
-                size="large"
-                fullWidth
-                onClick={() => handleButtonClick("abhaNumber")}
-              >
-                Login with ABHA Number
-              </Button>
-            </Grid>
-            {selectedButton === "abhaNumber" && (
-              <>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Enter Abha Number"
-                    placeholder="Enter Abha Number"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-              </>
-            )}
-            <Grid item xs={12}>
-              <Button
-                variant="outlined"
-                size="large"
-                fullWidth
-                onClick={() => handleButtonClick("emailid")}
-              >
-                Login with Email Id
-              </Button>
-            </Grid>
-            {selectedButton === "emailid" && (
-              <>
-                <Grid item xs={12}>
-                  <TextField
-                    fullWidth
-                    label="Enter Email Id"
-                    placeholder="Enter Email Id"
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={handleSubmit}
-                  >
-                    Submit
-                  </Button>
-                </Grid>
-              </>
-            )}
-          </Grid>
-
-          <Typography variant="body1" style={{ marginTop: "10px" }}>
-            Don't Have An Account?
-          </Typography>
-          <Button variant="text" color="primary">
-            Register
+          )}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleLogin}
+            disabled={loading}
+            fullWidth
+            className={classes.button}
+          >
+            {loading ? <CircularProgress size={24} /> : 'Login'}
           </Button>
-        </CardContent>
-      </Card>
+        </form>
+      </Paper>
     </Box>
   );
 };
 
-export default LoginAccount;
+export default Login;

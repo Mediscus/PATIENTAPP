@@ -9,18 +9,39 @@ module.exports = [
   // },
   //All Patient
   {
+    key: "abha",
+    name: "ABHA",
+    icon: "ion-ios-apps-outline",
+    linkParent: "/app/pages/abha",
+    title: true,
+  },
+  {
     key: "allpatient",
-    name: "Dashboard",
-    icon: "ion-ios-home-outline",
+    name: "Summary",
+    icon: "ion-ios-folder-outline",
     linkParent: "/app/all-patient",
     title: true,
   },
+  // {
+  //   key: "allpatient",
+  //   name: "Dashboard",
+  //   icon: "ion-ios-home-outline",
+  //   linkParent: "/app/all-patient",
+  //   title: true,
+  // },
 
   {
     key: "myfamily",
     name: "My Family",
     icon: "ion-ios-contacts-outline",
     linkParent: "/app/pages/myfamily",
+    title: true,
+  },
+  {
+    key: "patientapplication",
+    name: "patientApplication",
+    icon: "ion-ios-contacts-outline",
+    linkParent: "/app/pages/patient-application",
     title: true,
   },
   {
@@ -38,13 +59,6 @@ module.exports = [
     title: true,
   },
   {
-    key: "abha",
-    name: "ABHA",
-    icon: "ion-ios-apps-outline",
-    linkParent: "/app/pages/abha",
-    title: true,
-  },
-  {
     key: "settings",
     name: "Settings",
     icon: "ion-ios-settings-outline",
@@ -59,4 +73,5 @@ module.exports = [
     linkParent: "/app/pages/chat",
     title: true,
   },
+
 ];
