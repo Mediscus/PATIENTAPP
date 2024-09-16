@@ -149,89 +149,6 @@ function AllergiesForm(props) {
     }
   }, []);
 
-  // const pastAllergies = async (values, setErrors, setStatus, setSubmitting) => {
-  //   console.log("values", values);
-  //   try {
-  //     const allergyIntolerance = {
-  //       resourceType: "AllergyIntolerance",
-  //       id: "example-01", // we can replace this with a dynamic value if needed
-  //       meta: {
-  //         profile: [
-  //           "https://nrces.in/ndhm/fhir/r4/StructureDefinition/AllergyIntolerance",
-  //         ],
-  //       },
-  //       text: {
-  //         status: "generated",
-  //         div: `<div xmlns="http://www.w3.org/1999/xhtml"><p>${
-  //           values.description || "No description provided"
-  //         }</p><p>recordedDate:${
-  //           new Date().toISOString().split("T")[0]
-  //         }</p></div>`,
-  //       },
-  //       clinicalStatus: {
-  //         coding: [
-  //           {
-  //             system: values.clinicalStatus.system,
-  //             code: values.clinicalStatus.code,
-  //             display: values.clinicalStatus.display,
-  //           },
-  //         ],
-  //       },
-  //       verificationStatus: {
-  //         coding: [
-  //           {
-  //             system: values.verificationStatus.system,
-  //             code: values.verificationStatus.code,
-  //             display: values.verificationStatus.display,
-  //           },
-  //         ],
-  //       },
-  //       code: {
-  //         coding: [
-  //           {
-  //             system: "http://snomed.info/sct",
-  //             code: values.substance.conceptId,
-  //             display: values.substance.term,
-  //           },
-  //         ],
-  //         text: values.substance.term,
-  //       },
-  //       patient: {
-  //         reference: "Patient/example-01", // Replace with actual patient reference
-  //       },
-  //       recordedDate: new Date().toISOString(),
-  //       recorder: {
-  //         reference: "Practitioner/example-01", // Replace with actual recorder reference
-  //       },
-  //       note: [
-  //         {
-  //           text: "The patient reports an allergy to " + values.substance.term,
-  //         },
-  //       ],
-  //     };
-
-  //     console.log(allergyIntolerance);
-  //     console.log(JSON.stringify(allergyIntolerance));
-  //       // await apiCall("ehr/allergies", "post", values)
-  //       //   .then((res) => {
-  //       //     if (res && res.Status === "Success") {
-  //       //       setMessage("success", "Data saved successfully!");
-  //       //       setStatus({ success: true });
-  //       //       callBack(true);
-  //       //     }
-  //       //   })
-  //       //   .catch((Error) => {
-  //       //     let ErrorMessage = Error.ErrorMessage;
-  //       //     if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-  //       //       ErrorMessage = Error.ErrorMessage.join("\n");
-  //       //     }
-  //       //     setMessage("error", ErrorMessage);
-  //       //   });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const pastAllergies = async (values, setErrors, setStatus, setSubmitting) => {
     console.log("values", values);
     try {
@@ -274,9 +191,9 @@ function AllergiesForm(props) {
           ],
         },
         patient: {
-          reference: "Patient/example", // Can be dynamic if you have patient data
+          reference: "Patient/example",
         },
-        recordedDate: new Date().toISOString(), // Or use values.recordedDate if provided
+        recordedDate: new Date().toISOString(),
         reaction: [
           {
             substance: {
@@ -299,7 +216,7 @@ function AllergiesForm(props) {
                 ],
               },
             ],
-            severity: values.severity.code, // Example: "moderate"
+            severity: values.severity.code, 
             exposureRoute: {
               coding: [
                 {

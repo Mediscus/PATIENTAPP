@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { useEffect, useState, useCallback } from "react";
 import css from "dan-styles/Form.scss";
 import "dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
@@ -11,18 +10,100 @@ import { Formik } from "formik";
 import apiCall from "dan-redux/apiInterface";
 import { useParams } from "react-router-dom";
 
-
 function VaccinationsHistoryForm(props) {
   const patient = useParams();
   const { open, closeForm, data, type, callBack, setMessage } = props;
   const [editData, setEditData] = useState({});
   const { height } = useWindowDimensions();
 
+  const {
+    allergyList,
+    allergyListLoader,
+    substanceList,
+    substanceListLoader,
+    occuranceReasonList,
+    occuranceListLoader,
+    exposureRouteList,
+    exposureRouteListLoader,
+    isNoKnownAllergy,
+  } = useSelector((state) => state.allergy);
+
+  const clinicalStatusList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"
+  );
+  const varificationStatusList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergyintolerance-verification"
+  );
+  const allergyTypeList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
+  );
+  const allergyCatList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergy-intolerance-category"
+  );
+  const criticalityList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/allergy-intolerance-criticality"
+  );
+  const sevarityList = useDropDownValues(
+    "http://hl7.org/fhir/ValueSet/reaction-event-severity"
+  );
+
   useEffect(() => {
-    if (type == 'edit') {
-      setEditData(data)
+    if (!isNoKnownAllergy) allergyListResult(allergyValue);
+  }, [allergyValue]);
+
+  const handleAllergyDebounceFun = (ipValue) => {
+    getAllergyList(dispatch, ipValue);
+  };
+
+  const allergyListResult = useCallback(
+    _debounce(handleAllergyDebounceFun, 200),
+    []
+  );
+
+  useEffect(() => {
+    substanceListResult(substanceValue);
+  }, [substanceValue]);
+
+  const handleSubstaceDebounceFun = (ipValue) => {
+    getSubstanceList(dispatch, ipValue);
+  };
+
+  const substanceListResult = useCallback(
+    _debounce(handleSubstaceDebounceFun, 200),
+    []
+  );
+
+  useEffect(() => {
+    occuranceReasonListResult(occuranceReasonValue);
+  }, [occuranceReasonValue]);
+
+  const handleOccuranceReasonDebounceFun = (ipValue) => {
+    getClinicalFindingList(dispatch, ipValue);
+  };
+
+  const occuranceReasonListResult = useCallback(
+    _debounce(handleOccuranceReasonDebounceFun, 200),
+    []
+  );
+
+  useEffect(() => {
+    exposureRouteListResult(exposureRouteValue);
+  }, [exposureRouteValue]);
+
+  const handleExposureRouteDebounceFun = (ipValue) => {
+    getExposureRouteList(dispatch, ipValue);
+  };
+
+  const exposureRouteListResult = useCallback(
+    _debounce(handleExposureRouteDebounceFun, 200),
+    []
+  );
+
+  useEffect(() => {
+    if (type == "edit") {
+      setEditData(data);
     } else {
-      setEditData({})
+      setEditData({});
     }
   }, []);
 
@@ -59,11 +140,11 @@ function VaccinationsHistoryForm(props) {
       <Formik
         initialValues={{
           patientRef: patient && patient.patientRef,
-          vaccinationRef: editData ? editData['vaccination_id'] : '',
-          vaccinationName: editData ? editData['vaccination_name'] : '',
-          againstDisease: editData ? editData['against_disease'] : '',
-          schedule: editData ? editData['schedule'] : '',
-          status: editData ? editData['status'] : '',
+          vaccinationRef: editData ? editData["vaccination_id"] : "",
+          vaccinationName: editData ? editData["vaccination_name"] : "",
+          againstDisease: editData ? editData["against_disease"] : "",
+          schedule: editData ? editData["schedule"] : "",
+          status: editData ? editData["status"] : "",
         }}
         enableReinitialize={true}
         validationSchema={vaccinationHistoryFormSchema}
@@ -115,8 +196,12 @@ function VaccinationsHistoryForm(props) {
                       value={values.vaccinationName}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.vaccinationName ? errors.vaccinationName : ""}
-                      error={touched.vaccinationName ? errors.vaccinationName : ""}
+                      helperText={
+                        touched.vaccinationName ? errors.vaccinationName : ""
+                      }
+                      error={
+                        touched.vaccinationName ? errors.vaccinationName : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>
@@ -129,8 +214,12 @@ function VaccinationsHistoryForm(props) {
                       value={values.againstDisease}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      helperText={touched.againstDisease ? errors.againstDisease : ""}
-                      error={touched.againstDisease ? errors.againstDisease : ""}
+                      helperText={
+                        touched.againstDisease ? errors.againstDisease : ""
+                      }
+                      error={
+                        touched.againstDisease ? errors.againstDisease : ""
+                      }
                     />
                   </Grid>
                   <Grid item xs={12} sm={6}>

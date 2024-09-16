@@ -22,7 +22,7 @@ import apiCall from "dan-redux/apiInterface";
 import { CustomSnackbar, Loader } from "dan-components";
 import { withStyles } from "@mui/styles";
 import { useParams } from "react-router-dom";
-import AllergiesForm from "./AllergiesForm";
+import AllergiesForm from "./AllergiesForm.jsx";
 import {
   SET_ALLERGY_LIST,
   SET_NO_KNOWN_ALLERGY,
