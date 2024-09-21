@@ -14,8 +14,6 @@ import {
 } from "@mui/material";
 import { Formik } from "formik";
 import Send from "@mui/icons-material/Send";
-import apiCall from "dan-redux/apiInterface";
-import { allergiesFormSchema } from "dan-api/schema";
 import { useParams } from "react-router-dom";
 import styles from "../../../../Pages-jss";
 import { withStyles } from "@mui/styles";
@@ -28,10 +26,6 @@ import {
   getClinicalFindingList,
   getExposureRouteList,
 } from "./AllergyAction";
-import {
-  SET_ALLERGY_LIST,
-  SET_NO_KNOWN_ALLERGY,
-} from "../../../../../../redux/constants/AllergyActionType";
 
 function AllergiesForm(props) {
   const patient = useParams();
@@ -50,6 +44,7 @@ function AllergiesForm(props) {
     exposureRoute: null,
     description: "",
   };
+
   const [editData, setEditData] = useState({});
   const [allergyDetails, setAllergyDetails] = useState(initialState);
 
@@ -73,9 +68,11 @@ function AllergiesForm(props) {
   const clinicalStatusList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"
   );
+
   const varificationStatusList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/allergyintolerance-verification"
   );
+
   const allergyTypeList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
   );
@@ -216,7 +213,7 @@ function AllergiesForm(props) {
                 ],
               },
             ],
-            severity: values.severity.code, 
+            severity: values.severity.code,
             exposureRoute: {
               coding: [
                 {
@@ -231,7 +228,6 @@ function AllergiesForm(props) {
         ],
       };
 
-      // Log the transformed JSON structure for debugging
       console.log(allergyIntolerance);
       console.log(JSON.stringify(allergyIntolerance));
 

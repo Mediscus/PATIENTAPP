@@ -177,4 +177,3 @@ PrevMedications.propTypes = {
 };
 
 export default withStyles(styles)(PrevMedications);
- 
