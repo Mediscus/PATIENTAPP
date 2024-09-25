@@ -6,16 +6,12 @@ import {
   Autocomplete,
   Box,
   Button,
-  Checkbox,
   CircularProgress,
-  FormControlLabel,
   Grid,
   TextField as MuiTextField,
 } from "@mui/material";
 import { Formik } from "formik";
 import Send from "@mui/icons-material/Send";
-import apiCall from "dan-redux/apiInterface";
-import { allergiesFormSchema } from "dan-api/schema";
 import { useParams } from "react-router-dom";
 import styles from "../../../../Pages-jss";
 import { withStyles } from "@mui/styles";
@@ -28,10 +24,6 @@ import {
   getClinicalFindingList,
   getExposureRouteList,
 } from "./AllergyAction";
-import {
-  SET_ALLERGY_LIST,
-  SET_NO_KNOWN_ALLERGY,
-} from "../../../../../../redux/constants/AllergyActionType";
 
 function AllergiesForm(props) {
   const patient = useParams();
@@ -67,7 +59,6 @@ function AllergiesForm(props) {
     occuranceListLoader,
     exposureRouteList,
     exposureRouteListLoader,
-    isNoKnownAllergy,
   } = useSelector((state) => state.allergy);
 
   const clinicalStatusList = useDropDownValues(
@@ -90,7 +81,7 @@ function AllergiesForm(props) {
   );
 
   useEffect(() => {
-    if (!isNoKnownAllergy) allergyListResult(allergyValue);
+    allergyListResult(allergyValue);
   }, [allergyValue]);
 
   const handleAllergyDebounceFun = (ipValue) => {
@@ -149,91 +140,8 @@ function AllergiesForm(props) {
     }
   }, []);
 
-  // const pastAllergies = async (values, setErrors, setStatus, setSubmitting) => {
-  //   console.log("values", values);
-  //   try {
-  //     const allergyIntolerance = {
-  //       resourceType: "AllergyIntolerance",
-  //       id: "example-01", // we can replace this with a dynamic value if needed
-  //       meta: {
-  //         profile: [
-  //           "https://nrces.in/ndhm/fhir/r4/StructureDefinition/AllergyIntolerance",
-  //         ],
-  //       },
-  //       text: {
-  //         status: "generated",
-  //         div: `<div xmlns="http://www.w3.org/1999/xhtml"><p>${
-  //           values.description || "No description provided"
-  //         }</p><p>recordedDate:${
-  //           new Date().toISOString().split("T")[0]
-  //         }</p></div>`,
-  //       },
-  //       clinicalStatus: {
-  //         coding: [
-  //           {
-  //             system: values.clinicalStatus.system,
-  //             code: values.clinicalStatus.code,
-  //             display: values.clinicalStatus.display,
-  //           },
-  //         ],
-  //       },
-  //       verificationStatus: {
-  //         coding: [
-  //           {
-  //             system: values.verificationStatus.system,
-  //             code: values.verificationStatus.code,
-  //             display: values.verificationStatus.display,
-  //           },
-  //         ],
-  //       },
-  //       code: {
-  //         coding: [
-  //           {
-  //             system: "http://snomed.info/sct",
-  //             code: values.substance.conceptId,
-  //             display: values.substance.term,
-  //           },
-  //         ],
-  //         text: values.substance.term,
-  //       },
-  //       patient: {
-  //         reference: "Patient/example-01", // Replace with actual patient reference
-  //       },
-  //       recordedDate: new Date().toISOString(),
-  //       recorder: {
-  //         reference: "Practitioner/example-01", // Replace with actual recorder reference
-  //       },
-  //       note: [
-  //         {
-  //           text: "The patient reports an allergy to " + values.substance.term,
-  //         },
-  //       ],
-  //     };
-
-  //     console.log(allergyIntolerance);
-  //     console.log(JSON.stringify(allergyIntolerance));
-  //       // await apiCall("ehr/allergies", "post", values)
-  //       //   .then((res) => {
-  //       //     if (res && res.Status === "Success") {
-  //       //       setMessage("success", "Data saved successfully!");
-  //       //       setStatus({ success: true });
-  //       //       callBack(true);
-  //       //     }
-  //       //   })
-  //       //   .catch((Error) => {
-  //       //     let ErrorMessage = Error.ErrorMessage;
-  //       //     if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
-  //       //       ErrorMessage = Error.ErrorMessage.join("\n");
-  //       //     }
-  //       //     setMessage("error", ErrorMessage);
-  //       //   });
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
-  const pastAllergies = async (values, setErrors, setStatus, setSubmitting) => {
-    console.log("values", values);
+  const postAllergies = async (values, setErrors, setStatus, setSubmitting) => {
+    console.log("values", allergyDetails);
     try {
       // Extract necessary values from input
       const allergyIntolerance = {
@@ -246,30 +154,30 @@ function AllergiesForm(props) {
         clinicalStatus: {
           coding: [
             {
-              system: values.clinicalStatus.system,
-              code: values.clinicalStatus.code,
-              display: values.clinicalStatus.display,
+              system: allergyDetails.clinicalStatus.system,
+              code: allergyDetails.clinicalStatus.code,
+              display: allergyDetails.clinicalStatus.display,
             },
           ],
         },
         verificationStatus: {
           coding: [
             {
-              system: values.verificationStatus.system,
-              code: values.verificationStatus.code,
-              display: values.verificationStatus.display,
+              system: allergyDetails.verificationStatus.system,
+              code: allergyDetails.verificationStatus.code,
+              display: allergyDetails.verificationStatus.display,
             },
           ],
         },
-        type: values.allergyIntoleranceType.code, // Example: "allergy"
-        category: [values.allergyIntoleranceCategory.code], // Example: "medication"
-        criticality: values.criticality.code, // Example: "low"
+        type: allergyDetails.allergyIntoleranceType.code, // Example: "allergy"
+        category: [allergyDetails.allergyIntoleranceCategory.code], // Example: "medication"
+        criticality: allergyDetails.criticality.code, // Example: "low"
         code: {
           coding: [
             {
               system: "http://snomed.info/sct", // SNOMED system for substance
-              code: values.allergy.conceptId, // Example: substance ID
-              display: values.allergy.term, // Example: substance name
+              code: allergyDetails.allergy.conceptId, // Example: substance ID
+              display: allergyDetails.allergy.term, // Example: substance name
             },
           ],
         },
@@ -283,8 +191,8 @@ function AllergiesForm(props) {
               coding: [
                 {
                   system: "http://snomed.info/sct",
-                  code: values.substance.conceptId,
-                  display: values.substance.term,
+                  code: allergyDetails.substance.conceptId,
+                  display: allergyDetails.substance.term,
                 },
               ],
             },
@@ -293,23 +201,23 @@ function AllergiesForm(props) {
                 coding: [
                   {
                     system: "http://snomed.info/sct",
-                    code: values.allergyManifesting.conceptId,
-                    display: values.allergyManifesting.term,
+                    code: allergyDetails.allergyManifesting.conceptId,
+                    display: allergyDetails.allergyManifesting.term,
                   },
                 ],
               },
             ],
-            severity: values.severity.code, // Example: "moderate"
+            severity: allergyDetails.severity.code, // Example: "moderate"
             exposureRoute: {
               coding: [
                 {
                   system: "http://snomed.info/sct",
-                  code: values.exposureRoute.conceptId,
-                  display: values.exposureRoute.term,
+                  code: allergyDetails.exposureRoute.conceptId,
+                  display: allergyDetails.exposureRoute.term,
                 },
               ],
             },
-            description: values.description, // Description from input
+            description: allergyDetails.description, // Description from input
           },
         ],
       };
@@ -349,9 +257,7 @@ function AllergiesForm(props) {
         initialValues={{ ...allergyDetails }}
         enableReinitialize={true}
         validate={validation}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          pastAllergies(values, setErrors, setStatus, setSubmitting);
-        }}
+        onSubmit={postAllergies}
       >
         {({
           errors,
@@ -387,94 +293,56 @@ function AllergiesForm(props) {
                   alignItems="center"
                 >
                   <Grid item xs={12} sm={12}>
-                    {isNoKnownAllergy ? (
-                      <Autocomplete
-                        className={classes.AutoComplete}
-                        name="allergy"
-                        id="allergy"
-                        options={allergyList}
-                        getOptionLabel={(option) => option.preferredName || ""}
-                        isOptionEqualToValue={(option, value) =>
-                          option.id === value.id
-                        }
-                        value={allergyDetails.allergy}
-                        onChange={(e, value) =>
-                          handleAllergyChange(e, value, "allergy")
-                        }
-                        ListboxProps={{ style: { maxHeight: 150 } }}
-                        renderInput={(params) => (
-                          <MuiTextField
-                            {...params}
-                            fullWidth
-                            label={
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      options={allergyList}
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      getOptionLabel={(option) => option.term || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id || option.term === value.term
+                      }
+                      value={allergyDetails.allergy}
+                      name="allergy"
+                      id="allergy"
+                      onChange={(e, value) =>
+                        handleAllergyChange(e, value, "allergy")
+                      }
+                      onInputChange={(event, newInputValue) => {
+                        setAllergyValue(newInputValue);
+                      }}
+                      loading={allergyListLoader}
+                      noOptionsText={
+                        allergyValue.length === 0
+                          ? "Enter value for search"
+                          : "No options found"
+                      }
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          label={
+                            <>
+                              Enter Allergy
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
+                          }
+                          onBlur={handleBlur}
+                          helperText={touched.allergy ? errors.allergy : ""}
+                          error={Boolean(touched.allergy ? errors.allergy : "")}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
                               <>
-                                Enter Allergy
-                                <sup style={{ color: "red" }}>*</sup>
+                                {allergyListLoader ? (
+                                  <CircularProgress size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
                               </>
-                            }
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            helperText={touched.allergy ? errors.allergy : ""}
-                            error={Boolean(
-                              touched.allergy ? errors.allergy : ""
-                            )}
-                          />
-                        )}
-                      />
-                    ) : (
-                      <Autocomplete
-                        className={classes.AutoComplete}
-                        options={allergyList}
-                        ListboxProps={{ style: { maxHeight: 150 } }}
-                        getOptionLabel={(option) => option.term || ""}
-                        isOptionEqualToValue={(option, value) =>
-                          option.id === value.id || option.term === value.term
-                        }
-                        value={allergyDetails.allergy}
-                        name="allergy"
-                        id="allergy"
-                        onChange={(e, value) =>
-                          handleAllergyChange(e, value, "allergy")
-                        }
-                        onInputChange={(event, newInputValue) => {
-                          setAllergyValue(newInputValue);
-                        }}
-                        loading={allergyListLoader}
-                        noOptionsText={
-                          allergyValue.length === 0
-                            ? "Enter value for search"
-                            : "No options found"
-                        }
-                        renderInput={(params) => (
-                          <MuiTextField
-                            {...params}
-                            fullWidth
-                            label={
-                              <>
-                                Enter Allergy
-                                <sup style={{ color: "red" }}>*</sup>
-                              </>
-                            }
-                            onBlur={handleBlur}
-                            helperText={touched.allergy ? errors.allergy : ""}
-                            error={Boolean(
-                              touched.allergy ? errors.allergy : ""
-                            )}
-                            InputProps={{
-                              ...params.InputProps,
-                              endAdornment: (
-                                <>
-                                  {allergyListLoader ? (
-                                    <CircularProgress size={20} />
-                                  ) : null}
-                                  {params.InputProps.endAdornment}
-                                </>
-                              ),
-                            }}
-                          />
-                        )}
-                      />
-                    )}
+                            ),
+                          }}
+                        />
+                      )}
+                    />
                   </Grid>
 
                   <Grid item xs={12} sm={12}>
@@ -555,348 +423,333 @@ function AllergiesForm(props) {
                       )}
                     />
                   </Grid>
-                  {!isNoKnownAllergy && (
-                    <>
-                      <Grid item xs={12} sm={12}>
-                        <Autocomplete
-                          className={classes.AutoComplete}
-                          name="allergyIntoleranceType"
-                          options={allergyTypeList}
-                          value={allergyDetails.allergyIntoleranceType}
-                          onChange={(e, value) =>
-                            handleAllergyChange(
-                              e,
-                              value,
-                              "allergyIntoleranceType"
-                            )
-                          }
-                          getOptionLabel={(option) => option.display || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.code === value.code
-                          }
-                          ListboxProps={{ style: { maxHeight: 150 } }}
-                          renderInput={(params) => (
-                            <MuiTextField
-                              {...params}
-                              fullWidth
-                              id="allergyIntoleranceType"
-                              label={
-                                <>
-                                  Allergy Intolerance Type
-                                  <sup style={{ color: "red" }}>*</sup>
-                                </>
-                              }
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              helperText={
-                                touched.allergyIntoleranceType
-                                  ? errors.allergyIntoleranceType
-                                  : ""
-                              }
-                              error={Boolean(
-                                touched.allergyIntoleranceType
-                                  ? errors.allergyIntoleranceType
-                                  : ""
-                              )}
-                            />
-                          )}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={12}>
-                        <Autocomplete
-                          className={classes.AutoComplete}
-                          name="allergyIntoleranceCategory"
-                          options={allergyCatList}
-                          value={allergyDetails.allergyIntoleranceCategory}
-                          onChange={(e, value) =>
-                            handleAllergyChange(
-                              e,
-                              value,
-                              "allergyIntoleranceCategory"
-                            )
-                          }
-                          getOptionLabel={(option) => option.display || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.code === value.code
-                          }
-                          ListboxProps={{ style: { maxHeight: 150 } }}
-                          renderInput={(params) => (
-                            <MuiTextField
-                              {...params}
-                              fullWidth
-                              id="allergyIntoleranceCategory"
-                              label={
-                                <>
-                                  Allergy Category
-                                  <sup style={{ color: "red" }}>*</sup>
-                                </>
-                              }
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              helperText={
-                                touched.allergyIntoleranceCategory
-                                  ? errors.allergyIntoleranceCategory
-                                  : ""
-                              }
-                              error={Boolean(
-                                touched.allergyIntoleranceCategory
-                                  ? errors.allergyIntoleranceCategory
-                                  : ""
-                              )}
-                            />
-                          )}
-                        />
-                      </Grid>
 
-                      <Grid item xs={12} sm={12}>
-                        <Autocomplete
-                          className={classes.AutoComplete}
-                          options={substanceList}
-                          ListboxProps={{ style: { maxHeight: 150 } }}
-                          getOptionLabel={(option) => option.term || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      name="allergyIntoleranceType"
+                      options={allergyTypeList}
+                      value={allergyDetails.allergyIntoleranceType}
+                      onChange={(e, value) =>
+                        handleAllergyChange(e, value, "allergyIntoleranceType")
+                      }
+                      getOptionLabel={(option) => option.display || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.code === value.code
+                      }
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id="allergyIntoleranceType"
+                          label={
+                            <>
+                              Allergy Intolerance Type
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
                           }
-                          onInputChange={(event, newInputValue) => {
-                            setSubstanceValue(newInputValue);
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.allergyIntoleranceType
+                              ? errors.allergyIntoleranceType
+                              : ""
+                          }
+                          error={Boolean(
+                            touched.allergyIntoleranceType
+                              ? errors.allergyIntoleranceType
+                              : ""
+                          )}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      name="allergyIntoleranceCategory"
+                      options={allergyCatList}
+                      value={allergyDetails.allergyIntoleranceCategory}
+                      onChange={(e, value) =>
+                        handleAllergyChange(
+                          e,
+                          value,
+                          "allergyIntoleranceCategory"
+                        )
+                      }
+                      getOptionLabel={(option) => option.display || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.code === value.code
+                      }
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id="allergyIntoleranceCategory"
+                          label={
+                            <>
+                              Allergy Category
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
+                          }
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.allergyIntoleranceCategory
+                              ? errors.allergyIntoleranceCategory
+                              : ""
+                          }
+                          error={Boolean(
+                            touched.allergyIntoleranceCategory
+                              ? errors.allergyIntoleranceCategory
+                              : ""
+                          )}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      options={substanceList}
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      getOptionLabel={(option) => option.term || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      onInputChange={(event, newInputValue) => {
+                        setSubstanceValue(newInputValue);
+                      }}
+                      value={allergyDetails.substance}
+                      onChange={(e, value) =>
+                        handleAllergyChange(e, value, "substance")
+                      }
+                      loading={substanceListLoader}
+                      noOptionsText={
+                        substanceValue.length === 0
+                          ? "Enter value for search"
+                          : "No options found"
+                      }
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id="substance"
+                          label={
+                            <>
+                              Allergy Substance
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
+                          }
+                          onBlur={handleBlur}
+                          helperText={touched.substance ? errors.substance : ""}
+                          error={Boolean(
+                            touched.substance ? errors.substance : ""
+                          )}
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {substanceListLoader ? (
+                                  <CircularProgress size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
                           }}
-                          value={allergyDetails.substance}
-                          onChange={(e, value) =>
-                            handleAllergyChange(e, value, "substance")
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      name="criticality"
+                      options={criticalityList}
+                      value={allergyDetails.criticality}
+                      onChange={(e, value) =>
+                        handleAllergyChange(e, value, "criticality")
+                      }
+                      getOptionLabel={(option) => option.display || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.code === value.code
+                      }
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id="criticality"
+                          label={
+                            <>
+                              Allergy Criticality
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
                           }
-                          loading={substanceListLoader}
-                          noOptionsText={
-                            substanceValue.length === 0
-                              ? "Enter value for search"
-                              : "No options found"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.criticality ? errors.criticality : ""
                           }
-                          renderInput={(params) => (
-                            <MuiTextField
-                              {...params}
-                              fullWidth
-                              id="substance"
-                              label={
-                                <>
-                                  Allergy Substance
-                                  <sup style={{ color: "red" }}>*</sup>
-                                </>
-                              }
-                              onBlur={handleBlur}
-                              helperText={
-                                touched.substance ? errors.substance : ""
-                              }
-                              error={Boolean(
-                                touched.substance ? errors.substance : ""
-                              )}
-                              InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                  <>
-                                    {substanceListLoader ? (
-                                      <CircularProgress size={20} />
-                                    ) : null}
-                                    {params.InputProps.endAdornment}
-                                  </>
-                                ),
-                              }}
-                            />
+                          error={Boolean(
+                            touched.criticality ? errors.criticality : ""
                           )}
                         />
-                      </Grid>
-                      <Grid item xs={12} sm={12}>
-                        <Autocomplete
-                          className={classes.AutoComplete}
-                          name="criticality"
-                          options={criticalityList}
-                          value={allergyDetails.criticality}
-                          onChange={(e, value) =>
-                            handleAllergyChange(e, value, "criticality")
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      options={occuranceReasonList}
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      getOptionLabel={(option) => option.term || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      onInputChange={(event, newInputValue) => {
+                        setOccuranceReasonValue(newInputValue);
+                      }}
+                      value={allergyDetails.allergyManifesting}
+                      onChange={(e, value) =>
+                        handleAllergyChange(e, value, "allergyManifesting")
+                      }
+                      loading={occuranceListLoader}
+                      noOptionsText={
+                        occuranceReasonValue.length === 0
+                          ? "Enter value for search"
+                          : "No options found"
+                      }
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id="allergyManifesting"
+                          label={
+                            <>
+                              Allergy Occurence reason
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
                           }
-                          getOptionLabel={(option) => option.display || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.code === value.code
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.allergyManifesting
+                              ? errors.allergyManifesting
+                              : ""
                           }
-                          ListboxProps={{ style: { maxHeight: 150 } }}
-                          renderInput={(params) => (
-                            <MuiTextField
-                              {...params}
-                              fullWidth
-                              id="criticality"
-                              label={
-                                <>
-                                  Allergy Criticality
-                                  <sup style={{ color: "red" }}>*</sup>
-                                </>
-                              }
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              helperText={
-                                touched.criticality ? errors.criticality : ""
-                              }
-                              error={Boolean(
-                                touched.criticality ? errors.criticality : ""
-                              )}
-                            />
+                          error={Boolean(
+                            touched.allergyManifesting
+                              ? errors.allergyManifesting
+                              : ""
                           )}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={12}>
-                        <Autocomplete
-                          className={classes.AutoComplete}
-                          options={occuranceReasonList}
-                          ListboxProps={{ style: { maxHeight: 150 } }}
-                          getOptionLabel={(option) => option.term || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
-                          }
-                          onInputChange={(event, newInputValue) => {
-                            setOccuranceReasonValue(newInputValue);
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {occuranceListLoader ? (
+                                  <CircularProgress size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
                           }}
-                          value={allergyDetails.allergyManifesting}
-                          onChange={(e, value) =>
-                            handleAllergyChange(e, value, "allergyManifesting")
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      name="severity"
+                      options={sevarityList}
+                      value={allergyDetails.severity}
+                      onChange={(e, value) =>
+                        handleAllergyChange(e, value, "severity")
+                      }
+                      getOptionLabel={(option) => option.display || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.code === value.code
+                      }
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id="severity"
+                          label={
+                            <>
+                              Allergy Severity
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
                           }
-                          loading={occuranceListLoader}
-                          noOptionsText={
-                            occuranceReasonValue.length === 0
-                              ? "Enter value for search"
-                              : "No options found"
-                          }
-                          renderInput={(params) => (
-                            <MuiTextField
-                              {...params}
-                              fullWidth
-                              id="allergyManifesting"
-                              label={
-                                <>
-                                  Allergy Occurence reason
-                                  <sup style={{ color: "red" }}>*</sup>
-                                </>
-                              }
-                              onBlur={handleBlur}
-                              helperText={
-                                touched.allergyManifesting
-                                  ? errors.allergyManifesting
-                                  : ""
-                              }
-                              error={Boolean(
-                                touched.allergyManifesting
-                                  ? errors.allergyManifesting
-                                  : ""
-                              )}
-                              InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                  <>
-                                    {occuranceListLoader ? (
-                                      <CircularProgress size={20} />
-                                    ) : null}
-                                    {params.InputProps.endAdornment}
-                                  </>
-                                ),
-                              }}
-                            />
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={touched.severity ? errors.severity : ""}
+                          error={Boolean(
+                            touched.severity ? errors.severity : ""
                           )}
                         />
-                      </Grid>
-                      <Grid item xs={12} sm={12}>
-                        <Autocomplete
-                          className={classes.AutoComplete}
-                          name="severity"
-                          options={sevarityList}
-                          value={allergyDetails.severity}
-                          onChange={(e, value) =>
-                            handleAllergyChange(e, value, "severity")
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      options={exposureRouteList}
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      getOptionLabel={(option) => option.term || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.id === value.id
+                      }
+                      onInputChange={(event, newInputValue) => {
+                        setExposureRouteValue(newInputValue);
+                      }}
+                      value={allergyDetails.exposureRoute}
+                      onChange={(e, value) =>
+                        handleAllergyChange(e, value, "exposureRoute")
+                      }
+                      loading={exposureRouteListLoader}
+                      noOptionsText={
+                        exposureRouteValue.length === 0
+                          ? "Enter value for search"
+                          : "No options found"
+                      }
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id="exposureRoute"
+                          label={
+                            <>
+                              Allergy Exposure Route
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
                           }
-                          getOptionLabel={(option) => option.display || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.code === value.code
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.exposureRoute ? errors.exposureRoute : ""
                           }
-                          ListboxProps={{ style: { maxHeight: 150 } }}
-                          renderInput={(params) => (
-                            <MuiTextField
-                              {...params}
-                              fullWidth
-                              id="severity"
-                              label={
-                                <>
-                                  Allergy Severity
-                                  <sup style={{ color: "red" }}>*</sup>
-                                </>
-                              }
-                              onChange={handleChange}
-                              onBlur={handleBlur}
-                              helperText={
-                                touched.severity ? errors.severity : ""
-                              }
-                              error={Boolean(
-                                touched.severity ? errors.severity : ""
-                              )}
-                            />
+                          error={Boolean(
+                            touched.exposureRoute ? errors.exposureRoute : ""
                           )}
-                        />
-                      </Grid>
-                      <Grid item xs={12} sm={12}>
-                        <Autocomplete
-                          className={classes.AutoComplete}
-                          options={exposureRouteList}
-                          ListboxProps={{ style: { maxHeight: 150 } }}
-                          getOptionLabel={(option) => option.term || ""}
-                          isOptionEqualToValue={(option, value) =>
-                            option.id === value.id
-                          }
-                          onInputChange={(event, newInputValue) => {
-                            setExposureRouteValue(newInputValue);
+                          InputProps={{
+                            ...params.InputProps,
+                            endAdornment: (
+                              <>
+                                {exposureRouteListLoader ? (
+                                  <CircularProgress size={20} />
+                                ) : null}
+                                {params.InputProps.endAdornment}
+                              </>
+                            ),
                           }}
-                          value={allergyDetails.exposureRoute}
-                          onChange={(e, value) =>
-                            handleAllergyChange(e, value, "exposureRoute")
-                          }
-                          loading={exposureRouteListLoader}
-                          noOptionsText={
-                            exposureRouteValue.length === 0
-                              ? "Enter value for search"
-                              : "No options found"
-                          }
-                          renderInput={(params) => (
-                            <MuiTextField
-                              {...params}
-                              fullWidth
-                              id="exposureRoute"
-                              label={
-                                <>
-                                  Allergy Exposure Route
-                                  <sup style={{ color: "red" }}>*</sup>
-                                </>
-                              }
-                              onBlur={handleBlur}
-                              helperText={
-                                touched.exposureRoute
-                                  ? errors.exposureRoute
-                                  : ""
-                              }
-                              error={Boolean(
-                                touched.exposureRoute
-                                  ? errors.exposureRoute
-                                  : ""
-                              )}
-                              InputProps={{
-                                ...params.InputProps,
-                                endAdornment: (
-                                  <>
-                                    {exposureRouteListLoader ? (
-                                      <CircularProgress size={20} />
-                                    ) : null}
-                                    {params.InputProps.endAdornment}
-                                  </>
-                                ),
-                              }}
-                            />
-                          )}
                         />
-                      </Grid>
-                    </>
-                  )}
+                      )}
+                    />
+                  </Grid>
 
                   <Grid item xs={12} sm={12}>
                     <TextField

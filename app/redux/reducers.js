@@ -17,6 +17,7 @@ import contact from "../containers/Pages/Contact/reducers/contactReducer";
 import encounters from "./modules/encounters";
 import otpReducer from "./modules/otpReducer";
 import AllergyReducer from "./modules/AllergyReducer";
+import DiagnosisReducer from "./modules/DiagnosisReducer";
 
 /*
  * Creates the main reducer with the dynamically injected ones
@@ -34,6 +35,7 @@ export default function createReducer(injectedReducers = {}) {
     chat,
     register,
     allergy: AllergyReducer,
+    diagnosis: DiagnosisReducer,
     language: languageProviderReducer,
     router: connectRouter(history),
     ...injectedReducers,
