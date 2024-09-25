@@ -10,6 +10,7 @@ import {
   UPDATE_SUBSTANCE_LIST_LOADER,
 } from "../../../../../../redux/constants/AllergyActionType";
 
+
 /** fun for get data of allergy list */
 export const getAllergyList = async (dispatch, ipValue) => {
   if (ipValue && ipValue.length !== 0) {

@@ -20,7 +20,6 @@ import { withStyles } from "@mui/styles";
 import { useDropDownValues } from "../../../../../../components/Common/useDropDownValues";
 import _debounce from "lodash/debounce";
 import { useDispatch, useSelector } from "react-redux";
-
 import { getVaccineCode } from "./VaccinationsAction.js";
 
 function VaccinationsHistoryForm(props) {
@@ -33,20 +32,18 @@ function VaccinationsHistoryForm(props) {
     immunizationSite: null,
     immunizationRoute: null,
     occurrenceDateTime: null,
-
     vaccineCode: null,
   };
   //immunizationRoute
 
   const [editData, setEditData] = useState({});
   const [vaccineDetails, setVaccineDetails] = useState(initialState);
-
   const { height } = useWindowDimensions();
-
   const [vaccineCode, setVaccineCode] = useState("");
-  const { vaccineCodeList, vaccineCodeLoder } = useSelector(
-    (state) => state.allergy
-  );
+
+  // const { vaccineCodeList, vaccineCodeLoder } = useSelector(
+  //   (state) => state.allergy
+  // );
 
   const immunizationStatusList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/immunization-status"
@@ -58,6 +55,10 @@ function VaccinationsHistoryForm(props) {
 
   const immunizationRouteList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/immunization-route"
+  );
+
+  const vaccineCodeList = useDropDownValues(
+    "https://nrces.in/ndhm/fhir/r4/ValueSet/ndhm-vaccine-codes"
   );
 
   useEffect(() => {
@@ -225,6 +226,43 @@ function VaccinationsHistoryForm(props) {
                       )}
                     />
                   </Grid>
+                  <Grid item xs={12} sm={12}>
+                    <Autocomplete
+                      className={classes.AutoComplete}
+                      name=" vaccineCode"
+                      options={vaccineCodeList}
+                      value={vaccineDetails.vaccineCode}
+                      onChange={(e, value) =>
+                        handleVaccineChange(e, value, " vaccineCode")
+                      }
+                      getOptionLabel={(option) => option.display || ""}
+                      isOptionEqualToValue={(option, value) =>
+                        option.code === value.code
+                      }
+                      ListboxProps={{ style: { maxHeight: 150 } }}
+                      renderInput={(params) => (
+                        <MuiTextField
+                          {...params}
+                          fullWidth
+                          id=" vaccineCode"
+                          label={
+                            <>
+                              vaccineCode
+                              <sup style={{ color: "red" }}>*</sup>
+                            </>
+                          }
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                          helperText={
+                            touched.vaccineCode ? errors.vaccineCode : ""
+                          }
+                          error={Boolean(
+                            touched.vaccineCode ? errors.vaccineCode : ""
+                          )}
+                        />
+                      )}
+                    />
+                  </Grid>
 
                   <>
                     <Grid item xs={12} sm={12}>
@@ -279,7 +317,7 @@ function VaccinationsHistoryForm(props) {
                       />
                     </Grid>
 
-                    <Grid item xs={12} sm={12}>
+                    {/* <Grid item xs={12} sm={12}>
                       <Autocomplete
                         className={classes.AutoComplete}
                         options={vaccineCodeList || []}
@@ -333,7 +371,7 @@ function VaccinationsHistoryForm(props) {
                           />
                         )}
                       />
-                    </Grid>
+                    </Grid> */}
                   </>
                 </Grid>
               </div>

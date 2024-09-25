@@ -320,12 +320,7 @@ const styles = (theme) => ({
         ? theme.palette.primary.dark
         : theme.palette.primary.light,
   },
-  // accordionSummary:{
-  //   background:
-  //   theme.palette.type === "dark"
-  //     ? theme.palette.primary.dark
-  //     : theme.palette.primary.light,
-  // },
+
   boxBg: {
     width: "100%",
     borderRadius: 8,
