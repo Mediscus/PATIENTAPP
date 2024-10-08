@@ -37,7 +37,6 @@ function ObservationPhysicalActivity(props) {
           duration: values.duration,
         }
       );
-      // Handle success response
       setMessage("success", "Data saved successfully!");
       setStatus({ success: true });
       callBack(true);

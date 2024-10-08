@@ -1,42 +1,28 @@
 import React, { useState, useEffect } from "react";
 import css from "dan-styles/Form.scss";
-import "dan-styles/vendors/react-draft-wysiwyg/react-draft-wysiwyg.css";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
-import { FloatingPanel, TextField, DatePicker } from "dan-components";
-import { TextField as MuiTextField } from "@mui/material";
-import { Box, Button, Grid } from "@mui/material";
+import { FloatingPanel, TextField } from "dan-components";
+import { Box, Button, Grid, CircularProgress, Snackbar } from "@mui/material";
 import Send from "@mui/icons-material/Send";
-import Autocomplete from "@mui/material/Autocomplete";
 import axios from "axios";
-import moment from "moment";
 import { useParams } from "react-router-dom";
-import { gender } from "./../../../../../../api/dummy/DropdownData";
 
-function AddFamilyHistory(props) {
-  const { open, closeForm, data, callBack, setMessage } = props;
+function AllergiesForm(props) {
+  const { open, closeForm, data, type, callBack, setMessage } = props;
   const { height } = useWindowDimensions();
   const { patientRef } = useParams();
 
   const [formData, setFormData] = useState({
-    familyRef: "",
-    relationship: "",
-    gender: "",
-    bornDate: "",
-    deceasedBoolean: "",
-    decease: "",
-    onsetAge: "",
+    clinicalStatus: "",
+    verificationStatus: "",
+    onsetDate: "",
+    allergyName: "",
+    reaction: "",
+    remark: "",
   });
 
-  5;
-
-  const handleAutocompleteChange = (name, value) => {
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
-
-  const handleDateChange = (name, value) => {
-    const date = moment(value).format("YYYY-MM-DD");
-    setFormData((prevState) => ({ ...prevState, [name]: date }));
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (field) => (event) => {
     setFormData({
@@ -48,41 +34,60 @@ function AddFamilyHistory(props) {
   const handleFormSubmit = async () => {
     try {
       const postData = {
-        resourceType: "FamilyMemberHistory",
-        relationship: {
+        resourceType: "AllergyIntolerance",
+        clinicalStatus: {
           coding: [
             {
-              display: formData.relationship,
+              display: formData.clinicalStatus,
             },
           ],
-          text: formData.relationship,
         },
-        gender: {
-          text: formData.gender,
+        verificationStatus: {
+          coding: [
+            {
+              display: formData.verificationStatus,
+            },
+          ],
         },
-        onsetAge: {
-          value: formData.onsetAge,
+        code: {
+          coding: [
+            {
+              display: formData.allergyName,
+            },
+          ],
         },
-        bornDate: formData.bornDate,
-        deceasedBoolean: formData.deceasedBoolean === "true",
-        condition: [
+        patient: {
+          reference: "Patient/593372",
+        },
+        recordedDate: formData.onsetDate,
+        recorder: {
+          reference: "Practitioner/1895",
+        },
+        reaction: [
           {
-            code: {
+            substance: {
               coding: [
                 {
-                  display: formData.decease,
+                  display: formData.reaction,
                 },
               ],
             },
           },
         ],
+        note: [
+          {
+            text: formData.remark,
+          },
+        ],
       };
 
       console.log("postData:", postData);
+
       const response = await axios.post(
-        "https://hapi.fhir.org/baseR4/FamilyMemberHistory",
+        "https://hapi.fhir.org/baseR4/AllergyIntolerance",
         postData
       );
+
       console.log("API Response:", response.data);
       alert("Data submitted successfully!");
     } catch (error) {
@@ -90,11 +95,13 @@ function AddFamilyHistory(props) {
       alert("Error submitting data. Please try again.");
     }
   };
+
   return (
     <FloatingPanel
       openForm={open}
       closeForm={closeForm}
-      title="Family History"
+      branch="HELLO"
+      title="Allergy"
       extraSize={false}
     >
       <Box
@@ -123,67 +130,66 @@ function AddFamilyHistory(props) {
               <TextField
                 fullWidth
                 type="text"
-                name="relationship"
-                label="relationship"
-                placeholder="relationship"
-                value={formData.relationship}
-                onChange={handleChange("relationship")}
+                name="clinicalStatus"
+                label="clinicalStatus"
+                placeholder="clinicalStatus"
+                value={formData.clinicalStatus}
+                onChange={handleChange("clinicalStatus")}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
                 fullWidth
                 type="text"
-                name="gender"
-                label="Gender"
-                placeholder="gender"
-                value={formData.gender}
-                onChange={handleChange("gender")}
+                name="verificationStatus"
+                label="verificationStatus"
+                placeholder="verificationStatus"
+                value={formData.verificationStatus}
+                onChange={handleChange("verificationStatus")}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
                 fullWidth
                 type="text"
-                name="deceasedBoolean"
-                label="deceasedBoolean"
-                placeholder="deceasedBoolean"
-                value={formData.deceasedBoolean}
-                onChange={handleChange("deceasedBoolean")}
+                name="allergyName"
+                label="name of allergy"
+                placeholder="Enter name of allergy"
+                value={formData.namesAssessment}
+                onChange={handleChange("allergyName")}
               />
             </Grid>
-
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                type="text"
+                name="reaction"
+                label="name of reaction"
+                placeholder="Enter name reaction"
+                value={formData.namesAssessment}
+                onChange={handleChange("reaction")}
+              />
+            </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
                 fullWidth
                 type="date"
-                name="bornDate"
-                label="bornDate"
-                placeholder="Enter Born Date"
-                value={formData.bornDate}
-                onChange={handleChange("bornDate")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="number"
-                name="onsetAge"
-                label="onsetAge"
-                placeholder="Enter onsetAge"
-                value={formData.onsetAge}
-                onChange={handleChange("onsetAge")}
+                name="onsetDate"
+                label="onsetDate"
+                placeholder="Enter onsetDate"
+                value={formData.effectiveDateTime}
+                onChange={handleChange("onsetDate")}
               />
             </Grid>
             <Grid item xs={12} sm={12}>
               <TextField
                 fullWidth
                 type="text"
-                name="decease"
-                label="decease"
-                placeholder="decease"
-                value={formData.decease}
-                onChange={handleChange("decease")}
+                name="remark"
+                label="remark"
+                placeholder="Remark"
+                value={formData.remark}
+                onChange={handleChange("remark")}
               />
             </Grid>
           </Grid>
@@ -206,4 +212,4 @@ function AddFamilyHistory(props) {
   );
 }
 
-export default AddFamilyHistory;
+export default AllergiesForm;

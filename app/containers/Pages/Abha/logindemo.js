@@ -13,8 +13,6 @@ import QRScanner from "./QRScanner";
 
 const LoginDemo = () => {
 
-
-
   return (
     <Box
       sx={{

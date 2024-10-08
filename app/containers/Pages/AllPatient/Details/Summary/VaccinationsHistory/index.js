@@ -10,7 +10,7 @@ import {
   IconButton,
   ListItemSecondaryAction,
 } from "@mui/material";
-import classNames from "classnames";
+import classNames from "classnames";``
 import VaccinationsHistoryForm from "./VaccinationsHistoryForm";
 import {
   AddCircleOutlineOutlined,
@@ -28,28 +28,28 @@ function VaccinationsHistory(props) {
   const { classes, add, shadow } = props;
   const [apiData, setApiData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [form, setForm] = useState({ open: false, data: null, type: 'add' });
-  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "", });
-  const openForm = () => setForm({ ...form, ["open"]: true, ['type']: 'add' });
+  const [form, setForm] = useState({ open: false, data: null, type: "add" });
+  const [snackBar, setSnackBar] = useState({ open: false, type: "", msg: "" });
+  const openForm = () => setForm({ ...form, ["open"]: true, ["type"]: "add" });
   const closeForm = () => [setForm({ ...form, ["open"]: false })];
 
   useEffect(() => {
     getVaccinationHistory();
     return () => {
       setApiData([]);
-    }
+    };
   }, []);
 
   const callBackResponse = (refresh) => {
-    closeForm()
+    closeForm();
     if (refresh) {
       getVaccinationHistory();
     }
-  }
+  };
 
   async function getVaccinationHistory() {
     if (Object.keys(patient).length > 0) {
-      await apiCall('ehr/vaccinations-history', "get", patient)
+      await apiCall("ehr/vaccinations-history", "get", patient)
         .then((res) => {
           if (res && res.Data && res.Status === "Success") {
             let data = res.Data;
@@ -64,18 +64,16 @@ function VaccinationsHistory(props) {
           handleSnackBar(true, "error", ErrorMessage);
         });
     }
-  };
+  }
 
   const handleDelete = async (id, patientRef) => {
     let prepareData = {
       patientRef: patientRef,
-      vaccinationRef: id
-    }
+      vaccinationRef: id,
+    };
     if (prepareData) {
-      if (
-        confirm("Are You Sure You Want To Delete This Data") == true
-      ) {
-        await apiCall('ehr/vaccinations-history', "delete", prepareData)
+      if (confirm("Are You Sure You Want To Delete This Data") == true) {
+        await apiCall("ehr/vaccinations-history", "delete", prepareData)
           .then((res) => {
             if (res && res.Data && res.Status === "Success") {
               let data = res.Data;
@@ -92,7 +90,6 @@ function VaccinationsHistory(props) {
           });
       }
     } else alert("Patient Id Not Found");
-
   };
 
   const handleSnackBar = (open, type, msg) => {
@@ -100,7 +97,7 @@ function VaccinationsHistory(props) {
   };
 
   const handleEdit = (data) => {
-    setForm({ ...form, ["data"]: data, ["open"]: true, ['type']: 'edit' });
+    setForm({ ...form, ["data"]: data, ["open"]: true, ["type"]: "edit" });
   };
 
   const handleMessage = (type, msg) => {
@@ -113,15 +110,16 @@ function VaccinationsHistory(props) {
         <Typography variant="h6" className={classes.title}>
           Vaccinations History
         </Typography>
-        {add &&
+        {add && (
           <IconButton color="secondary" onClick={() => openForm()} size="large">
             <AddCircleOutlineOutlined />
           </IconButton>
-        }
+        )}
       </Box>
       <Divider />
       <Box p={1}>
-        {apiData && apiData.length > 0 &&
+        {apiData &&
+          apiData.length > 0 &&
           apiData.map((data, index) => {
             return (
               <List
@@ -147,7 +145,7 @@ function VaccinationsHistory(props) {
                     {data.schedule}
                   </Typography>
                 </ListItem>
-                {add &&
+                {add && (
                   <ListItemSecondaryAction
                     classes={{
                       root: classes.secondaryAction,
@@ -159,7 +157,8 @@ function VaccinationsHistory(props) {
                         root: classes.iconBtn,
                       }}
                       onClick={() => handleEdit(data)}
-                      size="small">
+                      size="small"
+                    >
                       <Edit fontSize="small" />
                     </IconButton>
                     <IconButton
@@ -170,11 +169,12 @@ function VaccinationsHistory(props) {
                       onClick={() =>
                         handleDelete(data.vaccination_id, data.patient_ref)
                       }
-                      size="small">
+                      size="small"
+                    >
                       <DeleteForever fontSize="small" />
                     </IconButton>
                   </ListItemSecondaryAction>
-                }
+                )}
               </List>
             );
           })}
@@ -208,6 +208,5 @@ VaccinationsHistory.defaultProps = {
   add: true,
   shadow: 1,
 };
-
 
 export default withStyles(styles)(VaccinationsHistory);

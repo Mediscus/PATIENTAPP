@@ -35,7 +35,7 @@ const Diagnosis = (props) => {
   const fetchDiagnosisData = useCallback(async () => {
     try {
       const response = await fetch(
-        "https://hapi.fhir.org/baseR4/Condition?_lastUpdated=gt2024-02-15"
+        "https://hapi.fhir.org/baseR4/Condition?_lastUpdated=gt2024-07-03"
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

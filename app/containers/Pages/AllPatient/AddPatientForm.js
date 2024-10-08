@@ -60,8 +60,6 @@ const AddPatientForm = (props) => {
     >
       <Formik
         initialValues={{
-          /*  patientRef: patientRef,
-           patientId: editData ? editData['patient_id'] : '', */
           relationship: editData ? editData["relationship"] : "",
           firstName: editData ? editData["first_name"] : "",
           middleName: editData ? editData["middle_name"] : "",

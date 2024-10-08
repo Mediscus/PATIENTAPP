@@ -11,7 +11,7 @@ import {
 import Grid from "@mui/material/Grid";
 import Send from "@mui/icons-material/Send";
 import css from "dan-styles/Form.scss";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import styles from "../PatientEncounter-jss";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
 import EditOutlined from "@mui/icons-material/EditOutlined";
@@ -31,7 +31,7 @@ function PrevMedications(props) {
     templateRef: "",
     eventName: "Medication",
     templateName: "",
-    templateData: MedicationData
+    templateData: MedicationData,
   });
 
   const handleChange = (name) => (event) => {
@@ -64,38 +64,40 @@ function PrevMedications(props) {
           border={1}
           sx={{ borderRadius: "5px", borderColor: "#E4E4E4" }}
         >
-          {MedicationData && MedicationData.length > 0 && MedicationData.map((data, index) => {
-            return (
-              <Grid
-                key={data.title + "-" + index}
-                container
-                justifyContent="space-between"
-                style={{ marginTop: 10 }}
-              >
+          {MedicationData &&
+            MedicationData.length > 0 &&
+            MedicationData.map((data, index) => {
+              return (
                 <Grid
-                  item
-                  xs={10}
-                  sm={10}
-                  style={{ marginTop: 5, marginLeft: 10 }}
+                  key={data.title + "-" + index}
+                  container
+                  justifyContent="space-between"
+                  style={{ marginTop: 10 }}
                 >
-                  <Typography color="primary">{data.form}</Typography>
-                  <Typography>FORM: {data.form}</Typography>
-                  <Typography>BRAND NAME: {data.brandName}</Typography>
+                  <Grid
+                    item
+                    xs={10}
+                    sm={10}
+                    style={{ marginTop: 5, marginLeft: 10 }}
+                  >
+                    <Typography color="primary">{data.form}</Typography>
+                    <Typography>FORM: {data.form}</Typography>
+                    <Typography>BRAND NAME: {data.brandName}</Typography>
+                  </Grid>
+                  <Grid item xs={1} sm={1}>
+                    <IconButton onClick={() => {}} size="large">
+                      <EditOutlined />
+                    </IconButton>
+                    <IconButton onClick={() => {}} size="large">
+                      <DeleteForever />
+                    </IconButton>
+                  </Grid>
+                  <Grid xs={12} style={{ marginTop: 10 }}>
+                    <Divider />
+                  </Grid>
                 </Grid>
-                <Grid item xs={1} sm={1}>
-                  <IconButton onClick={() => { }} size="large">
-                    <EditOutlined />
-                  </IconButton>
-                  <IconButton onClick={() => { }} size="large">
-                    <DeleteForever />
-                  </IconButton>
-                </Grid>
-                <Grid xs={12} style={{ marginTop: 10 }}>
-                  <Divider />
-                </Grid>
-              </Grid>
-            );
-          })}
+              );
+            })}
         </Box>
       </div>
       <Dialog
@@ -122,7 +124,7 @@ function PrevMedications(props) {
                 type="text"
                 name="templateName"
                 value={tempData.templateName}
-                onChange={handleChange('templateName')}
+                onChange={handleChange("templateName")}
               />
             </Grid>
           </Grid>
@@ -152,8 +154,14 @@ function PrevMedications(props) {
         >
           <Button onClick={handlePopupOpen}>Save as Template</Button>
           <Box>
-            <Button type="button" onClick={() => closeForm()}>Discard</Button>
-            <Button variant="contained" color="secondary" onClick={() => closeForm()}>
+            <Button type="button" onClick={() => closeForm()}>
+              Discard
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => closeForm()}
+            >
               Save&nbsp;
               <Send className={classes.sendIcon} />
             </Button>
