@@ -2,7 +2,6 @@ import {
   SET_ALLERGY_LIST,
   SET_ALLERGY_SUBSTANCE_LIST,
   SET_EXPOSURE_ROUTE_LIST,
-  SET_NO_KNOWN_ALLERGY,
   SET_OCCURANCE_REASON_LIST,
   UPDATE_ALLERGY_LIST_LOADER,
   UPDATE_EXPOSURE_ROUTE_LOADER,
@@ -19,7 +18,6 @@ const initialState = {
   occuranceListLoader: false,
   exposureRouteList: [],
   exposureRouteListLoader: false,
-  isNoKnownAllergy: false,
 };
 
 function AllergyReducer(state = initialState, action) {
@@ -67,11 +65,6 @@ function AllergyReducer(state = initialState, action) {
       return {
         ...state,
         exposureRouteListLoader: action.payload,
-      };
-    case SET_NO_KNOWN_ALLERGY:
-      return {
-        ...state,
-        isNoKnownAllergy: action.payload,
       };
 
     default:
