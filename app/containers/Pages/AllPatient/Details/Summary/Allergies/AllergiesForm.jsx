@@ -42,7 +42,6 @@ function AllergiesForm(props) {
     exposureRoute: null,
     description: "",
   };
-
   const [editData, setEditData] = useState({});
   const [allergyDetails, setAllergyDetails] = useState(initialState);
 
@@ -65,11 +64,9 @@ function AllergiesForm(props) {
   const clinicalStatusList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/allergyintolerance-clinical"
   );
-
   const varificationStatusList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/allergyintolerance-verification"
   );
-
   const allergyTypeList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/allergy-intolerance-type"
   );
@@ -185,9 +182,9 @@ function AllergiesForm(props) {
           ],
         },
         patient: {
-          reference: "Patient/example",
+          reference: "Patient/example", // Can be dynamic if you have patient data
         },
-        recordedDate: new Date().toISOString(),
+        recordedDate: new Date().toISOString(), // Or use values.recordedDate if provided
         reaction: [
           {
             substance: {
@@ -225,6 +222,7 @@ function AllergiesForm(props) {
         ],
       };
 
+      // Log the transformed JSON structure for debugging
       console.log(allergyIntolerance);
       console.log(JSON.stringify(allergyIntolerance));
 

@@ -24,7 +24,6 @@ import _debounce from "lodash/debounce";
 import { useDropDownValues } from "../../Common/useDropDownValues";
 
 function AddDiagnosisForm(props) {
-  const patient = useParams();
   const dispatch = useDispatch();
   const {
     closeForm,
@@ -38,14 +37,8 @@ function AddDiagnosisForm(props) {
   } = props;
   const { height, width } = useWindowDimensions();
   // const [selectedDate, setSelectedDate] = useState(new Date());
-  const [popupOpen, setPopupOpen] = useState(false);
   const [conditionSeverityList, setConditionSeverityList] = useState([]);
-  const [formData, setFormData] = useState({
-    DiagnosisName: "",
-    AddedByDr: "",
-    Sequence: "",
-    file: "",
-  });
+
   const initialState = {
     DiagnosisName: null,
     conditionClinical: null,
@@ -56,6 +49,7 @@ function AddDiagnosisForm(props) {
     Sequence: "",
     file: "",
     selectedDate: new Date(),
+    Sequence: "",
   };
   const errInitialState = {
     DiagnosisName: "",
@@ -67,6 +61,7 @@ function AddDiagnosisForm(props) {
     Sequence: "",
     file: "",
     selectedDate: "",
+    Sequence: "",
   };
   const [diagnosisD, setDiagnosisD] = useState(initialState);
   const [errDiagnosis, setErrDiagnosis] = useState(errInitialState);
@@ -140,12 +135,6 @@ function AddDiagnosisForm(props) {
     bodySiteList,
     bodySiteListLoader,
   } = useSelector((state) => state.diagnosis);
-  const handleChange = (field) => (event) => {
-    setFormData({
-      ...formData,
-      [field]: event.target.value,
-    });
-  };
 
   useEffect(() => {
     diagnosisListResult(diagnosisValue);
@@ -173,15 +162,6 @@ function AddDiagnosisForm(props) {
     []
   );
 
-  const handleDiagnosesForm = () => {
-    setOpenDiagnosesForm(true);
-  };
-
-  const submitForm = () => {
-    alert("Data Submit");
-    console.log("formData", formData);
-  };
-
   const handleDiagnosisChange = (e, value, name) => {
     setDiagnosisD({ ...diagnosisD, [name]: value });
     setErrDiagnosis({ ...errDiagnosis, [name]: "" });
@@ -195,9 +175,8 @@ function AddDiagnosisForm(props) {
         ["selectedDate", "AddedByDr", "Sequence", "file"].findIndex(
           (e) => e !== key
         ) > -1 &&
-        diagnosisD[key] === null
+        (diagnosisD[key] === null || diagnosisD[key].length === 0)
       ) {
-        console.log(key);
         isValid = false;
         let name = key;
         switch (key) {
@@ -258,23 +237,23 @@ function AddDiagnosisForm(props) {
             },
           ],
         },
-        category: [
-          {
-            coding: [
-              {
-                system:
-                  "http://terminology.hl7.org/CodeSystem/condition-category",
-                code: "encounter-diagnosis",
-                display: "Encounter Diagnosis",
-              },
-              {
-                system: "http://snomed.info/sct",
-                code: "439401001",
-                display: "Diagnosis",
-              },
-            ],
-          },
-        ],
+        // category: [
+        //   {
+        //     coding: [
+        //       {
+        //         system:
+        //           "http://terminology.hl7.org/CodeSystem/condition-category",
+        //         code: "encounter-diagnosis",
+        //         display: "Encounter Diagnosis",
+        //       },
+        //       {
+        //         system: "http://snomed.info/sct",
+        //         code: "439401001",
+        //         display: "Diagnosis",
+        //       },
+        //     ],
+        //   },
+        // ],
         severity: {
           coding: [
             {
@@ -425,7 +404,6 @@ function AddDiagnosisForm(props) {
                         <sup style={{ color: "red" }}>*</sup>
                       </>
                     }
-                    onChange={handleChange}
                     helperText={
                       errDiagnosis.conditionClinical
                         ? errDiagnosis.conditionClinical
@@ -465,7 +443,6 @@ function AddDiagnosisForm(props) {
                         <sup style={{ color: "red" }}>*</sup>
                       </>
                     }
-                    onChange={handleChange}
                     helperText={
                       errDiagnosis.conditionVerificationStatus
                         ? errDiagnosis.conditionVerificationStatus
@@ -505,7 +482,6 @@ function AddDiagnosisForm(props) {
                         <sup style={{ color: "red" }}>*</sup>
                       </>
                     }
-                    onChange={handleChange}
                     helperText={
                       errDiagnosis.conditionSeverity
                         ? errDiagnosis.conditionSeverity
@@ -584,8 +560,10 @@ function AddDiagnosisForm(props) {
                 fullWidth
                 label="Added Reference"
                 placeholder="Added Reference"
-                value={formData.AddedByDr}
-                onChange={handleChange("AddedByDr")}
+                value={diagnosisD.AddedByDr}
+                onChange={(e) =>
+                  handleDiagnosisChange(e, e.target.value, "AddedByDr")
+                }
               />
             </Grid>
             <Grid item sm={6}>
@@ -606,8 +584,10 @@ function AddDiagnosisForm(props) {
                 fullWidth
                 label="Sequence"
                 placeholder="testing data"
-                value={formData.Sequence}
-                onChange={handleChange("Sequence")}
+                value={diagnosisD.Sequence}
+                onChange={(e) =>
+                  handleDiagnosisChange(e, e.target.value, "Sequence")
+                }
               />
             </Grid>
             <Grid item sm={6}>
