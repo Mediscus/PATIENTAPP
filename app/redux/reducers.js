@@ -17,8 +17,12 @@ import contact from "../containers/Pages/Contact/reducers/contactReducer";
 import encounters from "./modules/encounters";
 import otpReducer from "./modules/otpReducer";
 import AllergyReducer from "./modules/AllergyReducer";
+<<<<<<< HEAD
 import MedicationReducer from "./modules/MedicationReducer";
 import VaccinationReducer from "./modules/VaccinationReducer";
+=======
+import DiagnosisReducer from "./modules/DiagnosisReducer";
+>>>>>>> c72b9a7d5ecafdd9a43807b3f33c4a3708a5bf24
 
 /*
  * Creates the main reducer with the dynamically injected ones
@@ -36,8 +40,12 @@ export default function createReducer(injectedReducers = {}) {
     chat,
     register,
     allergy: AllergyReducer,
+<<<<<<< HEAD
     medication: MedicationReducer,
     vaccine: VaccinationReducer,
+=======
+    diagnosis: DiagnosisReducer,
+>>>>>>> c72b9a7d5ecafdd9a43807b3f33c4a3708a5bf24
     language: languageProviderReducer,
     router: connectRouter(history),
     ...injectedReducers,
