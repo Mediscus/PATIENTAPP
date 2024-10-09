@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import css from "dan-styles/Form.scss";
 import { Box, Button, Grid, TextField } from "@mui/material";
 import Send from "@mui/icons-material/Send";
 import { Field, Formik } from "formik";
-import { useParams } from "react-router-dom";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
 import { FloatingPanel } from "dan-components";
-import axios from "axios";
 
 function ObservationPhysicalActivity(props) {
-  const { open, closeForm, data, callBack, setMessage } = props;
+  const { open, closeForm } = props;
   const { height } = useWindowDimensions();
-  const { patient_id } = useParams();
 
   const initialValues = {
     activityType: "",
@@ -20,40 +17,6 @@ function ObservationPhysicalActivity(props) {
     dailyStepCounts: "",
     sleepDuration: "",
     nightShifts: "",
-  };
-
-  const postObservationPhysicalActivity = async (
-    values,
-    setErrors,
-    setStatus,
-    setSubmitting
-  ) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:8000/fhir/observation/create_observation_physical_activity/",
-        {
-          patient_id,
-          activity_type: values.activityType,
-          duration: values.duration,
-        }
-      );
-      setMessage("success", "Data saved successfully!");
-      setStatus({ success: true });
-      callBack(true);
-    } catch (error) {
-      console.log("Error:", error);
-      let errorMessage = error.message;
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.ErrorMessage
-      ) {
-        errorMessage = error.response.data.ErrorMessage;
-      }
-      setMessage("error", errorMessage);
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   return (
@@ -66,14 +29,9 @@ function ObservationPhysicalActivity(props) {
     >
       <Formik
         initialValues={initialValues}
-        enableReinitialize={true}
-        onSubmit={(values, { setErrors, setStatus, setSubmitting }) => {
-          postObservationPhysicalActivity(
-            values,
-            setErrors,
-            setStatus,
-            setSubmitting
-          );
+        onSubmit={(values, { setSubmitting }) => {
+          console.log("Submitted Data:", values); // Display form data in console
+          setSubmitting(false);
         }}
       >
         {({ handleSubmit, isSubmitting }) => (
@@ -196,9 +154,6 @@ function ObservationPhysicalActivity(props) {
 ObservationPhysicalActivity.propTypes = {
   open: PropTypes.bool.isRequired,
   closeForm: PropTypes.func.isRequired,
-  data: PropTypes.object.isRequired,
-  callBack: PropTypes.func.isRequired,
-  setMessage: PropTypes.func.isRequired,
 };
 
 export default ObservationPhysicalActivity;

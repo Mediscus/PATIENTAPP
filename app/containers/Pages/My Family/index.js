@@ -12,9 +12,6 @@ import {
 import { Add } from "@mui/icons-material";
 import { CustomSnackbar } from "dan-components";
 import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
-import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setPatient } from "../../../redux/actions/patientsActions";
@@ -92,22 +89,6 @@ const AllPatient = ({ setMessage }) => {
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
-        {/* <GridToolbarColumnsButton
-          variant="outlined"
-          size="medium"
-          color="primary"
-        />
-        <GridToolbarFilterButton
-          variant="outlined"
-          size="large"
-          color="primary"
-          sx={{ p: 0.7, mx: 1 }}
-        />
-        <GridToolbarDensitySelector
-          variant="outlined"
-          color="primary"
-          size="medium"
-        /> */}
         <ExtraToolBarButton />
       </GridToolbarContainer>
     );

@@ -58,7 +58,7 @@ function AddObservationGeneralAssessment(props) {
       openForm={open}
       closeForm={closeForm}
       branch="HELLO"
-      title="Personal History"
+      title="Body Measurement"
       extraSize={false}
     >
       <Formik
@@ -99,7 +99,6 @@ function AddObservationGeneralAssessment(props) {
           },
         }}
         enableReinitialize={true}
-        // validationSchema={personalHistorySchema}
         onSubmit={(values, { setErrors, setStatus, setSubmitting }) => {
           postPersonalHistory(values, setErrors, setStatus, setSubmitting);
         }}

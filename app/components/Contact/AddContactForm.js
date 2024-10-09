@@ -1,53 +1,46 @@
-import React, { useRef } from 'react';
-import PropTypes from 'prop-types';
-import Dropzone from 'react-dropzone';
-import Button from '@mui/material/Button';
-import Avatar from '@mui/material/Avatar';
-import Type from 'dan-styles/Typography.scss';
-import IconButton from '@mui/material/IconButton';
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
-import Typography from '@mui/material/Typography';
-import { connect } from 'react-redux';
-import { reduxForm, Field } from 'redux-form';
-import Tooltip from '@mui/material/Tooltip';
-import InputAdornment from '@mui/material/InputAdornment';
-import PermContactCalendar from '@mui/icons-material/PermContactCalendar';
-import Bookmark from '@mui/icons-material/Bookmark';
-import LocalPhone from '@mui/icons-material/LocalPhone';
-import Email from '@mui/icons-material/Email';
-import Smartphone from '@mui/icons-material/Smartphone';
-import LocationOn from '@mui/icons-material/LocationOn';
-import Work from '@mui/icons-material/Work';
-import Language from '@mui/icons-material/Language';
-import css from 'dan-styles/Form.scss';
-import { TextFieldRedux } from '../Forms/ReduxFormMUI';
-import useStyles from './contact-jss';
+import React, { useRef } from "react";
+import PropTypes from "prop-types";
+import Dropzone from "react-dropzone";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
+import Type from "dan-styles/Typography.scss";
+import IconButton from "@mui/material/IconButton";
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import Typography from "@mui/material/Typography";
+import { connect } from "react-redux";
+import { reduxForm, Field } from "redux-form";
+import Tooltip from "@mui/material/Tooltip";
+import InputAdornment from "@mui/material/InputAdornment";
+import PermContactCalendar from "@mui/icons-material/PermContactCalendar";
+import Bookmark from "@mui/icons-material/Bookmark";
+import LocalPhone from "@mui/icons-material/LocalPhone";
+import Email from "@mui/icons-material/Email";
+import Smartphone from "@mui/icons-material/Smartphone";
+import LocationOn from "@mui/icons-material/LocationOn";
+import Work from "@mui/icons-material/Work";
+import Language from "@mui/icons-material/Language";
+import css from "dan-styles/Form.scss";
+import { TextFieldRedux } from "../Forms/ReduxFormMUI";
+import useStyles from "./contact-jss";
 
 // validation functions
-const required = value => (value == null ? 'Required' : undefined);
-const email = value => (
+const required = (value) => (value == null ? "Required" : undefined);
+const email = (value) =>
   value && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value)
-    ? 'Invalid email'
-    : undefined
-);
+    ? "Invalid email"
+    : undefined;
 
 function AddContactForm(props) {
   const saveRef = useRef(null);
 
   const { classes } = useStyles();
-  const {
-    reset,
-    pristine,
-    submitting,
-    handleSubmit,
-    onDrop,
-    imgAvatar
-  } = props;
+  const { reset, pristine, submitting, handleSubmit, onDrop, imgAvatar } =
+    props;
   let dropzoneRef;
-  const acceptedFiles = ['image/jpeg', 'image/png', 'image/bmp'];
+  const acceptedFiles = ["image/jpeg", "image/png", "image/bmp"];
   const fileSizeLimit = 300000;
-  const imgPreview = img => {
-    if (typeof img !== 'string' && img !== '') {
+  const imgPreview = (img) => {
+    if (typeof img !== "string" && img !== "") {
       return URL.createObjectURL(imgAvatar);
     }
     return img;
@@ -57,14 +50,22 @@ function AddContactForm(props) {
       <form onSubmit={handleSubmit}>
         <section className={css.bodyForm}>
           <div>
-            <Typography display="block" variant="button" className={Type.textCenter}>Upload Avatar</Typography>
+            <Typography
+              display="block"
+              variant="button"
+              className={Type.textCenter}
+            >
+              Upload Avatar
+            </Typography>
             <Dropzone
               className={classes.hiddenDropzone}
-              accept={acceptedFiles.join(',')}
+              accept={acceptedFiles.join(",")}
               acceptClassName="stripes"
               onDrop={onDrop}
               maxSize={fileSizeLimit}
-              ref={(node) => { dropzoneRef = node; }}
+              ref={(node) => {
+                dropzoneRef = node;
+              }}
             >
               {({ getRootProps, getInputProps }) => (
                 <div {...getRootProps()}>
@@ -85,7 +86,8 @@ function AddContactForm(props) {
                   onClick={() => {
                     dropzoneRef.open();
                   }}
-                  size="large">
+                  size="large"
+                >
                   <PhotoCamera />
                 </IconButton>
               </Tooltip>
@@ -106,7 +108,7 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <PermContactCalendar />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
@@ -122,7 +124,7 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <Bookmark />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
@@ -139,7 +141,7 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <LocalPhone />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
@@ -156,7 +158,7 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <Smartphone />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
@@ -174,7 +176,7 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <Email />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
@@ -192,7 +194,7 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <Work />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
@@ -208,7 +210,7 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <LocationOn />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
@@ -225,13 +227,18 @@ function AddContactForm(props) {
                   <InputAdornment position="start">
                     <Language />
                   </InputAdornment>
-                )
+                ),
               }}
             />
           </div>
         </section>
         <div className={css.buttonArea}>
-          <Button variant="contained" color="secondary" type="submit" disabled={submitting}>
+          <Button
+            variant="contained"
+            color="secondary"
+            type="submit"
+            disabled={submitting}
+          >
             Submit
           </Button>
           <Button
@@ -253,18 +260,17 @@ AddContactForm.propTypes = {
   onDrop: PropTypes.func.isRequired,
   pristine: PropTypes.bool.isRequired,
   submitting: PropTypes.bool.isRequired,
-  imgAvatar: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
+  imgAvatar: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+    .isRequired,
 };
 
 const AddContactFormRedux = reduxForm({
-  form: 'addContact',
+  form: "addContact",
   enableReinitialize: true,
 })(AddContactForm);
 
-const AddContactInit = connect(
-  state => ({
-    initialValues: state.contact.formValues
-  })
-)(AddContactFormRedux);
+const AddContactInit = connect((state) => ({
+  initialValues: state.contact.formValues,
+}))(AddContactFormRedux);
 
 export default AddContactInit;

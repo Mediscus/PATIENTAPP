@@ -175,15 +175,15 @@ function AllergiesForm(props) {
             },
           ],
         },
-        type: values.allergyIntoleranceType.code, // Example: "allergy"
-        category: [values.allergyIntoleranceCategory.code], // Example: "medication"
-        criticality: values.criticality.code, // Example: "low"
+        type: values.allergyIntoleranceType.code,
+        category: [values.allergyIntoleranceCategory.code],
+        criticality: values.criticality.code, 
         code: {
           coding: [
             {
-              system: "http://snomed.info/sct", // SNOMED system for substance
-              code: values.allergy.conceptId, // Example: substance ID
-              display: values.allergy.term, // Example: substance name
+              system: "http://snomed.info/sct",
+              code: values.allergy.conceptId,
+              display: values.allergy.term,
             },
           ],
         },

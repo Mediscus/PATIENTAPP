@@ -28,6 +28,6 @@ function VaccinationReducer(state = initialState, action) {
     default:
       return state;
   }
-}s
+}
 
 export default VaccinationReducer;

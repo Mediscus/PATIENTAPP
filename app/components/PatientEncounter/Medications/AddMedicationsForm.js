@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import styles from "../PatientEncounter-jss";
 import css from "dan-styles/Form.scss";
@@ -22,8 +22,11 @@ import {
   TableFooter,
   MenuItem,
   TableHead,
+  TextField as MuiTextField,
+  CircularProgress,
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { useParams } from "react-router-dom";
 import {
   Medicines,
   Form,
@@ -46,9 +49,23 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
+import { useDropDownValues } from "../../Common/useDropDownValues";
+import { FloatingPanel } from "dan-components";
+import { Formik } from "formik";
+import { useDispatch, useSelector } from "react-redux";
+
+import _debounce from "lodash/debounce";
+import {
+  getmedicationName,
+  getDeasesName,
+  getRouteList,
+  getMethodList,
+} from "./MedicationsAction";
 
 function AddMedication(props) {
-  const { classes, inputChange } = props;
+  const patient = useParams();
+  const dispatch = useDispatch();
+  const { classes, inputChange, type, callBack } = props;
   const { height, width } = useWindowDimensions();
   const [editable, setEditable] = useState(["gen0"]);
   const [tapperredEdit, setTapperredEdit] = useState(["ap0"]);
@@ -60,6 +77,101 @@ function AddMedication(props) {
   const [search, setSearch] = useState("");
   const [FakeStateData, setFakeStateData] = useState("");
   const [value, setValue] = useState("d");
+  const [editData, setEditData] = useState({});
+
+  const initialState = {
+    medicationStatus: null,
+    medicationscategory: null,
+    medicationName: null,
+    deasesName: null,
+    routeName: null,
+    methodName: null,
+  };
+
+  const [MedicationsDetails, setMedicationsDetails] = useState(initialState);
+  const [medicationValue, setMedicationValue] = useState("");
+  const [deasesValue, setDeasesValue] = useState("");
+  const [routeValue, setRouteValue] = useState("");
+  const [methodValue, setMethodValue] = useState("");
+
+  const {
+    medicationname,
+    medicationnameLoader,
+    deasesname,
+    updateDeasesLoder,
+    medicationroute,
+    updateMedicationLoader,
+    medicationmethod,
+    updateMethodLoader,
+  } = useSelector((state) => state.medication);
+
+  useEffect(() => {
+    if (type === "edit") {
+      setEditData(data);
+    } else {
+      setEditData({});
+    }
+  }, []);
+
+  const handleMedicationChange = (e, value, name) => {
+    setMedicationsDetails({ ...MedicationsDetails, [name]: value });
+  };
+
+  useEffect(() => {
+    medicationResult(medicationValue);
+  }, [medicationValue]);
+
+  const handleMedicationDebounceFun = (ipValue) => {
+    getmedicationName(dispatch, ipValue);
+  };
+
+  const medicationResult = useCallback(
+    _debounce(handleMedicationDebounceFun, 200),
+    []
+  );
+
+  /****************************************/
+  useEffect(() => {
+    DeasesResult(deasesValue);
+  }, [deasesValue]);
+
+  const handleDeasesDebounceFun = (ipValue) => {
+    getDeasesName(dispatch, ipValue);
+  };
+
+  const DeasesResult = useCallback(_debounce(handleDeasesDebounceFun, 200), []);
+
+  /*******************************************/
+  useEffect(() => {
+    RouteResult(routeValue);
+  }, [routeValue]);
+
+  const handleRouteDebounceFun = (ipValue) => {
+    getRouteList(dispatch, ipValue);
+  };
+
+  const RouteResult = useCallback(_debounce(handleRouteDebounceFun, 200), []);
+  /******************************************/
+  useEffect(() => {
+    MethodResult(methodValue);
+  }, [methodValue]);
+
+  const handleMethodDebounceFun = (ipValue) => {
+    getMethodList(dispatch, ipValue);
+  };
+
+  const MethodResult = useCallback(_debounce(handleMethodDebounceFun, 200), []);
+  /*************************************************** */
+
+  const validation = () => {
+    var error = {};
+    Object.keys(MedicationsDetails).forEach((key) => {
+      if ((key !== MedicationsDetails[key]) === null) {
+        error[key] = `Please select ${key}`;
+      }
+    });
+    return error;
+  };
 
   const [formData, setFormData] = useState({
     resourceType: "MedicationRequest",
@@ -86,6 +198,7 @@ function AddMedication(props) {
       [name]: event.target.value,
     }));
   };
+
   const handleChangeR = (event) => {
     setValue(event.target.value);
   };
@@ -553,368 +666,584 @@ function AddMedication(props) {
         justify: "space-between",
       }}
     >
-      <div
-        className={css.bodyForm}
-        style={{
-          height: height - 176,
-          maxHeight: height - 176,
-          overflow: "auto",
+      <Formik
+        initialValues={{ ...MedicationsDetails }}
+        enableReinitialize={true}
+        validate={validation}
+        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
+          pastAllergies(values, setErrors, setStatus, setSubmitting);
         }}
       >
-        <Grid
-          container
-          spacing={2}
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <Grid item xs={12} sm={12}>
-            <Autocomplete
-              id="Search Here"
-              fullWidth
-              freeSolo
-              autoHighlight
-              autoComplete
-              autoSelect
-              value={search}
-              options={Medicines.map((option) => option.BrandName)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Search medicine by generic and brand name"
-                  placeholder="Paracetamol"
-                  value={search}
-                  InputProps={{
-                    ...params.InputProps,
-                    startAdornment: (
-                      <React.Fragment>
-                        <Search />
-                      </React.Fragment>
-                    ),
-                  }}
-                />
-              )}
-              onChange={handleBrandChange}
-            />
-          </Grid>
-
-          <Grid item xs={3} sm={3}>
-            <TextField
-              select
-              fullWidth
-              label="Form"
-              placeholder="Form"
-              value={formData.Form}
-              onChange={handleFormChange("Form")}
+        {({
+          errors,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+          isSubmitting,
+          touched,
+          values,
+        }) => (
+          <form>
+            <div
+              className={css.bodyForm}
+              style={{
+                height: height - 176,
+                maxHeight: height - 176,
+                overflow: "auto",
+              }}
             >
-              {Form.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          <Grid item xs={9} sm={9}>
-            <TextField
-              fullWidth
-              label="Brand Name"
-              placeholder="Dolo 650"
-              value={formData.BrandName}
-              onChange={handleChange("BrandName")}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={12}>
-            <TableContainer
-              component={Paper}
-              elevation={1}
-              className={classes.border}
-            >
-              <Table
-                size="small"
-                aria-label="a dense table"
-                style={{ margin: 0 }}
-                className={{ root: classes.tableRoot }}
+              <Grid
+                container
+                spacing={2}
+                justifyContent="space-between"
+                alignItems="center"
               >
-                <TableHead>
-                  <TableRow>
-                    <TableCell style={{ width: "55%" }}>Generic Name</TableCell>
-                    <TableCell>Strength</TableCell>
-                    <TableCell>Action</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>{renderGenericName()}</TableBody>
-                <TableFooter>
-                  <TableRow>
-                    <TableCell colSpan={3} align="right">
-                      <Button
-                        startIcon={<AddIcon />}
-                        onClick={() => addMoreGeneric()}
-                      >
-                        Add
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                </TableFooter>
-              </Table>
-            </TableContainer>
-          </Grid>
-
-          <Grid item xs={12} sm={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={ssd}
-                  onChange={handleSSDChange("checkedB")}
-                  //value={ssd}
-                  color="primary"
-                />
-              }
-              label="Single stat dose"
-              style={{ marginTop: 15 }}
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={ssd}
-                  onChange={handleSSDChange("checkedB")}
-                  //value={ssd}
-                  color="primary"
-                />
-              }
-              label="Take whenever needed"
-              style={{ marginTop: 15 }}
-            />
-
-            {!ssd && (
-              <Paper className={classes.frequencyBox}>
-                <Grid container spacing={2}>
-                  <Grid
-                    item
-                    sm={12}
-                    style={{ flexDirection: "row", display: "flex" }}
-                  >
-                    <Box
-                      style={{
-                        margin: "0 5px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                      }}
-                    >
-                      <IconButton
-                        style={{ padding: 5 }}
-                        onClick={() => handlePerDayDose(1)}
-                      >
-                        <ExpandLessIcon />
-                      </IconButton>
-                      <Typography variant="caption" noWrap>
-                        {perDayDose} Time
-                      </Typography>
-                      <IconButton
-                        style={{ padding: 5 }}
-                        onClick={() => handlePerDayDose(-1)}
-                      >
-                        <ExpandMoreIcon />
-                      </IconButton>
-                    </Box>
-                    <Box
-                      style={{
-                        margin: "0 20px 0 5px",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                      }}
-                    >
-                      <IconButton
-                        style={{ padding: 5 }}
-                        onClick={() => handlePerDaySchedule(1)}
-                      >
-                        <ExpandLessIcon />
-                      </IconButton>
-                      <Typography variant="caption" noWrap>
-                        {getSchedule(perDaySchedule)}
-                      </Typography>
-                      <IconButton
-                        style={{ padding: 5 }}
-                        onClick={() => handlePerDaySchedule(-1)}
-                      >
-                        <ExpandMoreIcon />
-                      </IconButton>
-                    </Box>
-                    {renderDose()}
-                  </Grid>
+                {/* <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    id="Search Here"
+                    fullWidth
+                    freeSolo
+                    autoHighlight
+                    autoComplete
+                    autoSelect
+                    value={search}
+                    options={Medicines.map((option) => option.BrandName)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Search medicine by generic and brand name"
+                        placeholder="Paracetamol"
+                        value={search}
+                        InputProps={{
+                          ...params.InputProps,
+                          startAdornment: (
+                            <React.Fragment>
+                              <Search />
+                            </React.Fragment>
+                          ),
+                        }}
+                      />
+                    )}
+                    onChange={handleBrandChange}
+                  />
+                </Grid> */}
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    options={medicationname}
+                    ListboxProps={{ style: { maxHeight: 150 } }}
+                    getOptionLabel={(option) => option.term || ""}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    onInputChange={(event, newInputValue) => {
+                      setMedicationValue(newInputValue);
+                    }}
+                    value={MedicationsDetails.medicationName}
+                    onChange={(e, value) =>
+                      handleMedicationChange(e, value, "medicationName")
+                    }
+                    loading={medicationnameLoader}
+                    noOptionsText={
+                      medicationValue.length === 0
+                        ? "Enter value for search"
+                        : "No options found"
+                    }
+                    renderInput={(params) => (
+                      <MuiTextField
+                        {...params}
+                        fullWidth
+                        id="medicationName"
+                        label={
+                          <>
+                            Search medicine
+                            <sup style={{ color: "red" }}>*</sup>
+                          </>
+                        }
+                        onBlur={handleBlur}
+                        helperText={
+                          touched.medicationName ? errors.medicationName : ""
+                        }
+                        error={Boolean(
+                          touched.medicationName ? errors.medicationName : ""
+                        )}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {medicationnameLoader ? (
+                                <CircularProgress size={20} />
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
                 </Grid>
-              </Paper>
-            )}
-          </Grid>
 
-          <Grid item sm={12}>
-            <TextField
-              fullWidth
-              label="Period"
-              placeholder="Period"
-              value={formData.period}
-              onChange={handleChange("period")}
-            />
-          </Grid>
+                <Grid item xs={3} sm={3}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="Form"
+                    placeholder="Form"
+                    value={formData.Form}
+                    onChange={handleFormChange("Form")}
+                  >
+                    {Form.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
 
-          <Grid item sm={12}>
-            <FormControl>
-              <FormLabel
-                id="demo-controlled-radio-buttons-group"
-                component="fieldset"
-              >
-                Period Unit
-              </FormLabel>
-              <RadioGroup
-                aria-labelledby="demo-controlled-radio-buttons-group"
-                name="controlled-radio-buttons-group"
-                value={value}
-                onChange={handleChangeR}
-                row
-              >
-                <FormControlLabel
-                  value="h"
-                  control={<Radio />}
-                  label="Hours"
-                  labelPlacement="bottom"
-                />
-                <FormControlLabel
-                  value="d"
-                  control={<Radio />}
-                  label="Days"
-                  labelPlacement="bottom"
-                />
-                <FormControlLabel
-                  value="wk"
-                  control={<Radio />}
-                  label="Weeks"
-                  labelPlacement="bottom"
-                />
-                <FormControlLabel
-                  value="mo"
-                  control={<Radio />}
-                  label="Months"
-                  labelPlacement="bottom"
-                />
-                <FormControlLabel
-                  value="a"
-                  control={<Radio />}
-                  label="Year"
-                  labelPlacement="bottom"
-                />
-              </RadioGroup>
-            </FormControl>
-          </Grid>
+                <Grid item xs={9} sm={9}>
+                  <TextField
+                    fullWidth
+                    label="Brand Name"
+                    placeholder="Dolo 650"
+                    value={formData.BrandName}
+                    onChange={handleChange("BrandName")}
+                  />
+                </Grid>
 
-          <Grid item sm={6}>
-            <TextField
-              select
-              fullWidth
-              label="Route"
-              placeholder="Route"
-              value={formData.Route}
-              onChange={handleRouteChange("Route")}
-            >
-              {Route.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-          <Grid item sm={6}>
-            <TextField
-              select
-              fullWidth
-              label="After Plan"
-              placeholder="After Plan"
-              value={formData.After}
-              onChange={handleAfterChange("After")}
-            >
-              {AfterPlan.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
+                <Grid item xs={12} sm={12}>
+                  <TableContainer
+                    component={Paper}
+                    elevation={1}
+                    className={classes.border}
+                  >
+                    <Table
+                      size="small"
+                      aria-label="a dense table"
+                      style={{ margin: 0 }}
+                      className={{ root: classes.tableRoot }}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell style={{ width: "55%" }}>
+                            Generic Name
+                          </TableCell>
+                          <TableCell>Strength</TableCell>
+                          <TableCell>Action</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>{renderGenericName()}</TableBody>
+                      <TableFooter>
+                        <TableRow>
+                          <TableCell colSpan={3} align="right">
+                            <Button
+                              startIcon={<AddIcon />}
+                              onClick={() => addMoreGeneric()}
+                            >
+                              Add
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      </TableFooter>
+                    </Table>
+                  </TableContainer>
+                </Grid>
 
-          <Grid item sm={12}>
-            <TextField
-              fullWidth
-              label="Link Condition"
-              placeholder="Link"
-              value={formData.Link}
-              onChange={handleChange("Link")}
-            />
-          </Grid>
+                <Grid item xs={12} sm={12}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={ssd}
+                        onChange={handleSSDChange("checkedB")}
+                        //value={ssd}
+                        color="primary"
+                      />
+                    }
+                    label="Single stat dose"
+                    style={{ marginTop: 15 }}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={ssd}
+                        onChange={handleSSDChange("checkedB")}
+                        //value={ssd}
+                        color="primary"
+                      />
+                    }
+                    label="Take whenever needed"
+                    style={{ marginTop: 15 }}
+                  />
 
-          {showAfterChangeInput && (
-            <Grid item xs={12} sm={12}>
-              <TableContainer
-                component={Paper}
-                elevation={1}
-                className={classes.border}
-              >
-                <Table
-                  size="small"
-                  aria-label="a dense table"
-                  style={{ margin: 0 }}
-                  className={{ root: classes.tableRoot }}
-                >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Strenght</TableCell>
-                      <TableCell>Dose</TableCell>
-                      <TableCell>Duration</TableCell>
-                      <TableCell>Action</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>{renderAfterPlan()}</TableBody>
-                  <TableFooter>
-                    <TableRow>
-                      <TableCell colSpan={5} align="right">
-                        <Button
-                          onClick={() => addMoreTapperred()}
-                          startIcon={<AddIcon />}
+                  {!ssd && (
+                    <Paper className={classes.frequencyBox}>
+                      <Grid container spacing={2}>
+                        <Grid
+                          item
+                          sm={12}
+                          style={{ flexDirection: "row", display: "flex" }}
                         >
-                          Add
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  </TableFooter>
-                </Table>
-              </TableContainer>
-            </Grid>
-          )}
+                          <Box
+                            style={{
+                              margin: "0 5px",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                            }}
+                          >
+                            <IconButton
+                              style={{ padding: 5 }}
+                              onClick={() => handlePerDayDose(1)}
+                            >
+                              <ExpandLessIcon />
+                            </IconButton>
+                            <Typography variant="caption" noWrap>
+                              {perDayDose} Time
+                            </Typography>
+                            <IconButton
+                              style={{ padding: 5 }}
+                              onClick={() => handlePerDayDose(-1)}
+                            >
+                              <ExpandMoreIcon />
+                            </IconButton>
+                          </Box>
+                          <Box
+                            style={{
+                              margin: "0 20px 0 5px",
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                            }}
+                          >
+                            <IconButton
+                              style={{ padding: 5 }}
+                              onClick={() => handlePerDaySchedule(1)}
+                            >
+                              <ExpandLessIcon />
+                            </IconButton>
+                            <Typography variant="caption" noWrap>
+                              {getSchedule(perDaySchedule)}
+                            </Typography>
+                            <IconButton
+                              style={{ padding: 5 }}
+                              onClick={() => handlePerDaySchedule(-1)}
+                            >
+                              <ExpandMoreIcon />
+                            </IconButton>
+                          </Box>
+                          {renderDose()}
+                        </Grid>
+                      </Grid>
+                    </Paper>
+                  )}
+                </Grid>
 
-          <Grid item sm={12}>
-            <TextField
-              fullWidth
-              label="Aadditional Instruction"
-              placeholder="additional Instruction"
-              value={formData.additionalInstruction}
-              onChange={handleChange("additionalInstruction")}
-            />
-          </Grid>
-        </Grid>
-      </div>
-      <div className={css.buttonArea}>
-        <Button type="button" onClick={() => setOpenDiagnosesForm(false)}>
-          {" "}
-          Discard{" "}
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={handleFormSubmit}
-        >
-          Save&nbsp;
-          <Send className={classes.sendIcon} />
-        </Button>
-      </div>
+                <Grid item sm={12}>
+                  <TextField
+                    fullWidth
+                    label="Instruction"
+                    placeholder="Instruction"
+                    onChange={handleChange("additionalInstruction")}
+                  />
+                </Grid>
+
+                <Grid item sm={12}>
+                  <TextField
+                    fullWidth
+                    label="Period"
+                    placeholder="Period"
+                    onChange={handleChange("period")}
+                  />
+                </Grid>
+
+                <Grid item sm={12}>
+                  <FormControl>
+                    <FormLabel
+                      id="demo-controlled-radio-buttons-group"
+                      component="fieldset"
+                    >
+                      Period Unit
+                    </FormLabel>
+                    <RadioGroup
+                      aria-labelledby="demo-controlled-radio-buttons-group"
+                      name="controlled-radio-buttons-group"
+                      value={value}
+                      onChange={handleChangeR}
+                      row
+                    >
+                      <FormControlLabel
+                        value="h"
+                        control={<Radio />}
+                        label="Hours"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value="d"
+                        control={<Radio />}
+                        label="Days"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value="wk"
+                        control={<Radio />}
+                        label="Weeks"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value="mo"
+                        control={<Radio />}
+                        label="Months"
+                        labelPlacement="bottom"
+                      />
+                      <FormControlLabel
+                        value="a"
+                        control={<Radio />}
+                        label="Year"
+                        labelPlacement="bottom"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    options={deasesname}
+                    ListboxProps={{ style: { maxHeight: 150 } }}
+                    getOptionLabel={(option) => option.term || ""}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    onInputChange={(event, newInputValue) => {
+                      setDeasesValue(newInputValue);
+                    }}
+                    value={MedicationsDetails.deasesName}
+                    onChange={(e, value) =>
+                      handleMedicationChange(e, value, "deasesName")
+                    }
+                    loading={updateDeasesLoder}
+                    noOptionsText={
+                      deasesValue.length === 0
+                        ? "Enter value for search"
+                        : "No options found"
+                    }
+                    renderInput={(params) => (
+                      <MuiTextField
+                        {...params}
+                        fullWidth
+                        id="deasesName"
+                        label={
+                          <>
+                            Deases Name
+                            <sup style={{ color: "red" }}>*</sup>
+                          </>
+                        }
+                        onBlur={handleBlur}
+                        helperText={touched.deasesName ? errors.deasesName : ""}
+                        error={Boolean(
+                          touched.deasesName ? errors.deasesName : ""
+                        )}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {updateDeasesLoder ? (
+                                <CircularProgress size={20} />
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    options={medicationroute}
+                    ListboxProps={{ style: { maxHeight: 150 } }}
+                    getOptionLabel={(option) => option.term || ""}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    onInputChange={(event, newInputValue) => {
+                      setRouteValue(newInputValue);
+                    }}
+                    value={MedicationsDetails.routeName}
+                    onChange={(e, value) =>
+                      handleMedicationChange(e, value, "routeName")
+                    }
+                    loading={updateMedicationLoader}
+                    noOptionsText={
+                      routeValue.length === 0
+                        ? "Enter value for search"
+                        : "No options found"
+                    }
+                    renderInput={(params) => (
+                      <MuiTextField
+                        {...params}
+                        fullWidth
+                        id="routeName"
+                        label={
+                          <>
+                            Route Name
+                            <sup style={{ color: "red" }}>*</sup>
+                          </>
+                        }
+                        onBlur={handleBlur}
+                        helperText={touched.routeName ? errors.routeName : ""}
+                        error={Boolean(
+                          touched.routeName ? errors.routeName : ""
+                        )}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {updateMedicationLoader ? (
+                                <CircularProgress size={20} />
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12}>
+                  <Autocomplete
+                    options={medicationmethod}
+                    ListboxProps={{ style: { maxHeight: 150 } }}
+                    getOptionLabel={(option) => option.term || ""}
+                    isOptionEqualToValue={(option, value) =>
+                      option.id === value.id
+                    }
+                    onInputChange={(event, newInputValue) => {
+                      setMethodValue(newInputValue);
+                    }}
+                    value={MedicationsDetails.methodName}
+                    onChange={(e, value) =>
+                      handleMedicationChange(e, value, "methodName")
+                    }
+                    loading={updateMethodLoader}
+                    noOptionsText={
+                      methodValue.length === 0
+                        ? "Enter value for search"
+                        : "No options found"
+                    }
+                    renderInput={(params) => (
+                      <MuiTextField
+                        {...params}
+                        fullWidth
+                        id="methodName"
+                        label={
+                          <>
+                            Method Name
+                            <sup style={{ color: "red" }}>*</sup>
+                          </>
+                        }
+                        onBlur={handleBlur}
+                        helperText={touched.methodName ? errors.methodName : ""}
+                        error={Boolean(
+                          touched.methodName ? errors.methodName : ""
+                        )}
+                        InputProps={{
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {updateMethodLoader ? (
+                                <CircularProgress size={20} />
+                              ) : null}
+                              {params.InputProps.endAdornment}
+                            </>
+                          ),
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item sm={12} xs={12}>
+                  <TextField
+                    select
+                    fullWidth
+                    label="After Plan"
+                    placeholder="After Plan"
+                    value={formData.After}
+                    onChange={handleAfterChange("After")}
+                  >
+                    {AfterPlan.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+
+                {showAfterChangeInput && (
+                  <Grid item xs={12} sm={12}>
+                    <TableContainer
+                      component={Paper}
+                      elevation={1}
+                      className={classes.border}
+                    >
+                      <Table
+                        size="small"
+                        aria-label="a dense table"
+                        style={{ margin: 0 }}
+                        className={{ root: classes.tableRoot }}
+                      >
+                        <TableHead>
+                          <TableRow>
+                            <TableCell>Strenght</TableCell>
+                            <TableCell>Dose</TableCell>
+                            <TableCell>Duration</TableCell>
+                            <TableCell>Action</TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>{renderAfterPlan()}</TableBody>
+                        <TableFooter>
+                          <TableRow>
+                            <TableCell colSpan={5} align="right">
+                              <Button
+                                onClick={() => addMoreTapperred()}
+                                startIcon={<AddIcon />}
+                              >
+                                Add
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        </TableFooter>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                )}
+
+                <Grid item sm={12}>
+                  <TextField
+                    fullWidth
+                    label="Aadditional Instruction"
+                    placeholder="additional Instruction"
+                    onChange={handleChange("additionalInstruction")}
+                  />
+                </Grid>
+              </Grid>
+            </div>
+            <div className={css.buttonArea}>
+              <Button type="button" onClick={() => setOpenDiagnosesForm(false)}>
+                {" "}
+                Discard{" "}
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={handleFormSubmit}
+              >
+                Save&nbsp;
+                <Send className={classes.sendIcon} />
+              </Button>
+            </div>
+          </form>
+        )}
+      </Formik>
     </Box>
   );
 }

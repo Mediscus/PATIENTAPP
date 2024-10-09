@@ -41,10 +41,6 @@ function VaccinationsHistoryForm(props) {
   const { height } = useWindowDimensions();
   const [vaccineCode, setVaccineCode] = useState("");
 
-  // const { vaccineCodeList, vaccineCodeLoder } = useSelector(
-  //   (state) => state.allergy
-  // );
-
   const immunizationStatusList = useDropDownValues(
     "http://hl7.org/fhir/ValueSet/immunization-status"
   );
@@ -84,6 +80,98 @@ function VaccinationsHistoryForm(props) {
 
   const handleVaccineChange = (e, value, name) => {
     setVaccineDetails({ ...vaccineDetails, [name]: value });
+  };
+
+  const postAllergies = async (values, setErrors, setStatus, setSubmitting) => {
+    console.log("values", vaccineDetails);
+    try {
+      // Extract necessary values from input
+      const allergyIntolerance = {
+        resourceType: "AllergyIntolerance",
+        id: "example", // we can replace this with a dynamic id if needed
+        text: {
+          status: "generated",
+          div: '<div xmlns="http://www.w3.org/1999/xhtml"><p><b>Generated Narrative with Details</b></p></div>',
+        },
+        clinicalStatus: {
+          coding: [
+            {
+              system: allergyDetails.clinicalStatus.system,
+              code: allergyDetails.clinicalStatus.code,
+              display: allergyDetails.clinicalStatus.display,
+            },
+          ],
+        },
+        verificationStatus: {
+          coding: [
+            {
+              system: allergyDetails.verificationStatus.system,
+              code: allergyDetails.verificationStatus.code,
+              display: allergyDetails.verificationStatus.display,
+            },
+          ],
+        },
+        type: allergyDetails.allergyIntoleranceType.code, // Example: "allergy"
+        category: [allergyDetails.allergyIntoleranceCategory.code], // Example: "medication"
+        criticality: allergyDetails.criticality.code, // Example: "low"
+        code: {
+          coding: [
+            {
+              system: "http://snomed.info/sct", // SNOMED system for substance
+              code: allergyDetails.allergy.conceptId, // Example: substance ID
+              display: allergyDetails.allergy.term, // Example: substance name
+            },
+          ],
+        },
+        patient: {
+          reference: "Patient/example", // Can be dynamic if you have patient data
+        },
+        recordedDate: new Date().toISOString(), // Or use values.recordedDate if provided
+        reaction: [
+          {
+            substance: {
+              coding: [
+                {
+                  system: "http://snomed.info/sct",
+                  code: allergyDetails.substance.conceptId,
+                  display: allergyDetails.substance.term,
+                },
+              ],
+            },
+            manifestation: [
+              {
+                coding: [
+                  {
+                    system: "http://snomed.info/sct",
+                    code: allergyDetails.allergyManifesting.conceptId,
+                    display: allergyDetails.allergyManifesting.term,
+                  },
+                ],
+              },
+            ],
+            severity: allergyDetails.severity.code, // Example: "moderate"
+            exposureRoute: {
+              coding: [
+                {
+                  system: "http://snomed.info/sct",
+                  code: allergyDetails.exposureRoute.conceptId,
+                  display: allergyDetails.exposureRoute.term,
+                },
+              ],
+            },
+            description: allergyDetails.description, // Description from input
+          },
+        ],
+      };
+
+      // Log the transformed JSON structure for debugging
+      console.log(allergyIntolerance);
+      console.log(JSON.stringify(allergyIntolerance));
+
+      // Simulate an API call or further processing
+    } catch (error) {
+      console.error("Error processing allergy data", error);
+    }
   };
 
   const validation = () => {

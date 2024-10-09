@@ -73,8 +73,8 @@ function PersonalHistory(props) {
     <Paper className={classNames(classes.root)} elevation={shadow}>
       <Box className={classes.header}>
         <Typography variant="h6" className={classes.title}>
-          Observation Life Style
-        </Typography> 
+          Life Style
+        </Typography>
         {add && (
           <IconButton color="secondary" onClick={() => openForm()} size="large">
             <Edit fontSize="small" />

@@ -31,13 +31,21 @@ export const paymentMode = ["Cash", "Cheque", "Smart Card"];
 export const financialStatus = ["Poor", "Ulta Poor", "Not Poor"];
 export const batchNo = ["1", "2", "3", "4", "5", "6", "7"];
 export const bittenOn = ["Foot", "Leg", "Finger", "Hand", "Other"];
-export const bittenSnake = ["Krait", "Cobra", "Dhaman", "Viper", "Uncknown", "Other"];
+export const bittenSnake = [
+  "Krait",
+  "Cobra",
+  "Dhaman",
+  "Viper",
+  "Uncknown",
+  "Other",
+];
 
 export const firstAid = [
   "Application Of Tourniquest",
   "Sucking Of Wound",
   "Other",
 ];
+
 export const storName = [
   "Accounting Store",
   "Administration Store",
@@ -46,6 +54,8 @@ export const storName = [
   "Clinicians",
   "CT/MRI/X-RAY Store",
 ];
+
+
 export const additionalItemName = [
   {
     id: 1,
@@ -63,6 +73,7 @@ export const additionalItemName = [
     value: "Health Card-3",
   },
 ];
+
 export const caseType = [
   "General",
   "Police Case",
@@ -992,7 +1003,7 @@ export const companyName = [
   "AMANTA HEALTH CARE",
   "ARISTO",
   "AQUA VALLY SPRING",
-]
+];
 export const itemType = [
   "ABDOMINAL",
   "ETOFYLLINE AND THEOPHYLLINE",
@@ -1002,8 +1013,8 @@ export const itemType = [
   "FEXOFENADINE",
   "LEVOCARNITINE",
   "SPIRONOLACTONE",
-]
-export const itemUnits =[
+];
+export const itemUnits = [
   "ABDOMINAL",
   "ETOFYLLINE AND THEOPHYLLINE",
   "ALBENDAZOLE",
@@ -1012,5 +1023,5 @@ export const itemUnits =[
   "FEXOFENADINE",
   "LEVOCARNITINE",
   "SPIRONOLACTONE",
-]
-export const ccCharge = ["0", "5.5", "6.5", "7.5", "8.5", "9.5"]
+];
+export const ccCharge = ["0", "5.5", "6.5", "7.5", "8.5", "9.5"];

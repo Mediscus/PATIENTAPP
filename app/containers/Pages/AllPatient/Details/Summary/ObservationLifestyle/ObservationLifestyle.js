@@ -1,169 +1,198 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import css from "dan-styles/Form.scss";
-import { Box, Button, Grid } from "@mui/material";
-import Send from "@mui/icons-material/Send";
-import { TextField } from "@mui/material";
-import { FloatingPanel } from "dan-components";
-import { Formik } from "formik";
-import { useParams } from "react-router-dom";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
-import axios from "axios";
+import { FloatingPanel } from "dan-components";
+import { Box, Button, Grid, TextField } from "@mui/material";
+import Send from "@mui/icons-material/Send";
+import { Formik } from "formik";
+import { lifestyleFormSchema } from "dan-api/schema";
 
-function AddObservationGeneralAssessment(props) {
-  const { open, closeForm, data, callBack, setMessage } = props;
-  const [editData, setEditData] = useState(data);
+function LifestyleForm(props) {
+  const { open, closeForm, data, type } = props;
+  const [editData, setEditData] = useState({});
   const { height } = useWindowDimensions();
 
-  const [formData, setFormData] = useState({
-    smokingStatus: "",
-    smokingSince: "",
-    smokingQuantity: "",
-    effectiveDateTime: "",
-    valueCodeableConcept: "",
-  });
-
-  const handleChange = (field) => (event) => {
-    setFormData({
-      ...formData,
-      [field]: event.target.value,
-    });
-  };
-
-  const handleFormSubmit = async () => {
-    try {
-      const postData = {
-        resourceType: "Observation",
-        status: formData.smokingStatus,
-        code: {
-          text: formData.smokingSince,
-        },
-        subject: {
-          reference: "Patient/593372",
-        },
-        effectiveDateTime: formData.effectiveDateTime,
-        performer: [
-          {
-            reference: "Organization/44787710",
-          },
-        ],
-        valueCodeableConcept: {
-          coding: [
-            {
-              display: formData.valueCodeableConcept,
-            },
-          ],
-          text: formData.valueCodeableConcept,
-        },
-      };
-
-      console.log("postData:", postData);
-
-      const response = await axios.post(
-        "https://hapi.fhir.org/baseR4/Observation",
-        postData
-      );
-
-      console.log("API Response:", response.data);
-      alert("Data submitted successfully!");
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error submitting data. Please try again.");
+  useEffect(() => {
+    if (type === "edit") {
+      setEditData(data);
+    } else {
+      setEditData({});
     }
+  }, []);
+
+  const handleSave = (values) => {
+    //Save logic, e.g., API call or local storage
+    console.log("Saving data:", values);
+
+    const jsonData = JSON.stringify(values);
+    console.log("Saved data JSON:", jsonData);
   };
 
   return (
     <FloatingPanel
       openForm={open}
       closeForm={closeForm}
-      branch="HELLO"
-      title="Personal History"
+      title="Life Style Information"
       extraSize={false}
     >
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          justify: "space-between",
+      <Formik
+        initialValues={{
+          dietType: editData.dietType || "",
+          smokingStatus: editData.smokingStatus || "",
+          alcoholConsumption: editData.alcoholConsumption || "",
+          tobaccoChewing: editData.tobaccoChewing || "",
+          exerciseFrequency: editData.exerciseFrequency || "",
+          exerciseDuration: editData.exerciseDuration || "",
+        }}
+        enableReinitialize={true}
+        validationSchema={lifestyleFormSchema}
+        onSubmit={(values, { setSubmitting }) => {
+          handleSave(values);
+          setSubmitting(false);
         }}
       >
-        <div
-          className={css.bodyForm}
-          style={{
-            height: height - 176,
-            maxHeight: height - 176,
-            overflow: "auto",
-          }}
-        >
-          <Grid
-            container
-            spacing={2}
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="smokingSince"
-                label="smokingSince"
-                placeholder="Enter smokingSince"
-                value={formData.smokingSince}
-                onChange={handleChange("smokingSince")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="text"
-                name="valueCodeableConcept"
-                label="valueCodeableConcept"
-                placeholder="Enter valueCodeableConcept"
-                value={formData.valueCodeableConcept}
-                onChange={handleChange("valueCodeableConcept")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="date"
-                name="effectiveDateTime"
-                label="effectiveDateTime"
-                placeholder="Enter    effectiveDateTime"
-                value={formData.effectiveDateTime}
-                onChange={handleChange("    effectiveDateTime")}
-              />
-            </Grid>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                fullWidth
-                type="number"
-                name="smokingQuantity"
-                label="Smoking quantity"
-                placeholder="Enter smoking quantity"
-                value={formData.smokingQuantity}
-                onChange={handleChange("smokingQuantity")}
-              />
-            </Grid>
-          </Grid>
-        </div>
-        <div className={css.buttonArea}>
-          <Button type="button" onClick={closeForm}>
-            Discard
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={handleFormSubmit}
-          >
-            Save&nbsp;
-            <Send />
-          </Button>
-        </div>
-      </Box>
+        {({
+          errors,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+          isSubmitting,
+          touched,
+          values,
+        }) => (
+          <form onSubmit={handleSubmit}>
+            <Box
+              sx={{
+                flex: 1,
+                display: "flex",
+                flexDirection: "column",
+                justify: "space-between",
+              }}
+            >
+              <div
+                className={css.bodyForm}
+                style={{
+                  height: height - 140,
+                  maxHeight: height - 140,
+                  overflow: "auto",
+                  padding: "8px !important",
+                }}
+              >
+                <Grid
+                  container
+                  spacing={2}
+                  justifyContent="space-between"
+                  alignItems="center"
+                >
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      type="text"
+                      name="dietType"
+                      label={
+                        <>
+                          Diet Type
+                          <sup style={{ color: "red" }}>*</sup>
+                        </>
+                      }
+                      placeholder="Enter your diet type"
+                      value={values.dietType}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.dietType && errors.dietType}
+                      error={touched.dietType && Boolean(errors.dietType)}
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      type="text"
+                      name="smokingStatus"
+                      label={
+                        <>
+                          Enter smoking status
+                          <sup style={{ color: "red" }}>*</sup>
+                        </>
+                      }
+                      placeholder="Enter smoking status"
+                      value={values.smokingStatus}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={touched.smokingStatus && errors.smokingStatus}
+                      error={
+                        touched.smokingStatus && Boolean(errors.smokingStatus)
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      type="text"
+                      name="alcoholConsumption"
+                      label={
+                        <>
+                          Enter alcohol consumption
+                          <sup style={{ color: "red" }}>*</sup>
+                        </>
+                      }
+                      placeholder="Enter alcohol consumption"
+                      value={values.alcoholConsumption}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={
+                        touched.alcoholConsumption && errors.alcoholConsumption
+                      }
+                      error={
+                        touched.alcoholConsumption &&
+                        Boolean(errors.alcoholConsumption)
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      fullWidth
+                      type="text"
+                      name="tobaccoChewing"
+                      label={
+                        <>
+                          Enter Tobacco Chewing Status
+                          <sup style={{ color: "red" }}>*</sup>
+                        </>
+                      }
+                      placeholder="Enter Tobacco Chewing Status"
+                      value={values.tobaccoChewing}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      helperText={
+                        touched.tobaccoChewing && errors.tobaccoChewing
+                      }
+                      error={
+                        touched.tobaccoChewing && Boolean(errors.tobaccoChewing)
+                      }
+                    />
+                  </Grid>
+                </Grid>
+              </div>
+              <div className={css.buttonArea}>
+                <Button type="button" onClick={closeForm}>
+                  Discard
+                </Button>
+                <Button
+                  disabled={isSubmitting}
+                  type="submit"
+                  variant="contained"
+                  color="secondary"
+                >
+                  Save&nbsp;
+                  <Send />
+                </Button>
+              </div>
+            </Box>
+          </form>
+        )}
+      </Formik>
     </FloatingPanel>
   );
 }
 
-export default AddObservationGeneralAssessment;
+export default LifestyleForm;
