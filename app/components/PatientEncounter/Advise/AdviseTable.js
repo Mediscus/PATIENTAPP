@@ -1,13 +1,6 @@
 import React from "react";
-import makeStyles from '@mui/styles/makeStyles';
-import {
-  Grid,
-  Typography,
-  Divider,
-  List,
-  ListItem,
-  Box,
-} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Grid, Typography, Divider, List, ListItem, Box } from "@mui/material";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -38,23 +31,23 @@ export default function AdviseTable(props) {
   const classes = useStyles();
   const { adviceData } = props;
 
-  const renderDietList = () => {
+  const renderDietList = (items) => {
     let data = [];
-    if (adviceData && adviceData.length > 0) {
-      adviceData.map((option, ind) => {
+    if (items && items.length > 0) {
+      items.map((option, ind) => {
         data[ind] = (
-          <List key={'diet' + ind} style={{ width: "100%" }}>
-            <ListItem style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%"
-            }}>
-              <Typography style={{ fontSize: 12 }}>{option.diet.join(', ')}</Typography>
-              <Typography style={{ fontSize: 12 }}>{moment(option.created_at).format('DD/MM/YYYY')}</Typography>
+          <>
+            <Divider />
+            <ListItem
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ fontSize: 12 }}>{option.name}</Typography>
             </ListItem>
-            <Divider variant="fullWidth" />
-          </List>
+          </>
         );
       });
     }
@@ -62,50 +55,57 @@ export default function AdviseTable(props) {
   };
 
   const renderDiet = () => {
-    return (
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          classes={{
-            root: classes.summaryRoot,
-            content: classes.summaryContent,
-            expanded: classes.summaryExpanded,
-          }}
-        >
-          <Typography className={classes.heading} style={{ fontSize: 14 }}>
-            Diet
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails
-          classes={{
-            root: classes.accordingDetails,
-          }}
-        >
-          {renderDietList()}
-        </AccordionDetails>
-      </Accordion>
-    );
+    let data = [];
+    if (Diet && Diet.length > 0) {
+      Diet.map((option, ind) => {
+        data[ind] = (
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              classes={{
+                root: classes.summaryRoot,
+                content: classes.summaryContent,
+                expanded: classes.summaryExpanded,
+              }}
+              IconButtonProps={{ style: { padding: 5 } }}
+            >
+              <Typography className={classes.heading} style={{ fontSize: 14 }}>
+                {option.Category}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              classes={{
+                root: classes.accordingDetails,
+              }}
+            >
+              <List style={{ width: "100%" }}>
+                {renderDietList(option.Diet)}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        );
+      });
+    }
+    return data;
   };
 
-  const renderExerciseList = () => {
+  const renderExerciseList = (items) => {
     let data = [];
-    if (adviceData && adviceData.length > 0) {
-      adviceData.map((option, ind) => {
+    if (items && items.length > 0) {
+      items.map((option, ind) => {
         data[ind] = (
-          <List key={'ex' + ind} style={{ width: "100%" }}>
+          <>
+            <Divider />
             <ListItem
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                width: "100%",
               }}
             >
-              <Typography style={{ fontSize: 12 }}>{option.exercise.join(', ')}</Typography>
-              <Typography style={{ fontSize: 12 }}>{moment(option.created_at).format('DD/MM/YYYY')}</Typography>
+              <Typography style={{ fontSize: 12 }}>{option.name}</Typography>
             </ListItem>
-            <Divider variant="fullWidth" />
-          </List>
+          </>
         );
       });
     }
@@ -113,48 +113,57 @@ export default function AdviseTable(props) {
   };
 
   const renderExercise = () => {
-    return (
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          classes={{
-            root: classes.summaryRoot,
-            content: classes.summaryContent,
-            expanded: classes.summaryExpanded,
-          }}
-
-        >
-          <Typography className={classes.heading} style={{ fontSize: 14 }}>
-            Exercise
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails
-          classes={{
-            root: classes.accordingDetails,
-          }}
-        >
-          {renderExerciseList()}
-        </AccordionDetails>
-      </Accordion>
-    );
+    let data = [];
+    if (Exercise && Exercise.length > 0) {
+      Exercise.map((option, ind) => {
+        data[ind] = (
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              classes={{
+                root: classes.summaryRoot,
+                content: classes.summaryContent,
+                expanded: classes.summaryExpanded,
+              }}
+              IconButtonProps={{ style: { padding: 5 } }}
+            >
+              <Typography className={classes.heading} style={{ fontSize: 14 }}>
+                {option.Category}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              classes={{
+                root: classes.accordingDetails,
+              }}
+            >
+              <List style={{ width: "100%" }}>
+                {renderExerciseList(option.Exercise)}
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        );
+      });
+    }
+    return data;
   };
 
-  const renderCommentList = () => {
+  const renderCommentList = (items) => {
     let data = [];
-    if (adviceData && adviceData.length > 0) {
-      adviceData.map((option, ind) => {
+    if (items && items.length > 0) {
+      items.map((option, ind) => {
         data[ind] = (
-          <ListItem
-            key={'comt' + ind}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-            }}
-          >
-            <Typography style={{ fontSize: 12 }}>{option.comment}</Typography>
-          </ListItem>
+          <Box>
+            <Divider />
+            <ListItem
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography style={{ fontSize: 12 }}>{option.Comment}</Typography>
+            </ListItem>
+          </Box>
         );
       });
     }
@@ -162,35 +171,51 @@ export default function AdviseTable(props) {
   };
 
   const renderComment = () => {
-    return (
-      <Accordion>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          classes={{
-            root: classes.summaryRoot,
-            content: classes.summaryContent,
-            expanded: classes.summaryExpanded,
-          }}
-
-        >
-          <Typography
-            className={classes.heading}
-            style={{ fontSize: 14, letterSpacing: 1 }}
-          >
-            Comment
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails
-          classes={{
-            root: classes.accordingDetails,
-          }}
-        >
-          <List style={{ width: "100%" }}>
-            {renderCommentList()}
-          </List>
-        </AccordionDetails>
-      </Accordion>
-    );
+    let data = [];
+    if (Comment && Comment.length > 0) {
+      Comment.map((option, ind) => {
+        data[ind] = (
+          <Accordion>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              classes={{
+                root: classes.summaryRoot,
+                content: classes.summaryContent,
+                expanded: classes.summaryExpanded,
+              }}
+              IconButtonProps={{ style: { padding: 5 } }}
+            >
+              <Typography
+                className={classes.heading}
+                style={{ fontSize: 14, letterSpacing: 1 }}
+              >
+                {option.Category}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails
+              classes={{
+                root: classes.accordingDetails,
+              }}
+            >
+              <List style={{ width: "100%" }}>
+                <ListItem
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography style={{ fontSize: 14 }}>
+                    {renderCommentList(option.Comment)}
+                  </Typography>
+                </ListItem>
+              </List>
+            </AccordionDetails>
+          </Accordion>
+        );
+      });
+    }
+    return data;
   };
 
   return (
@@ -207,3 +232,78 @@ export default function AdviseTable(props) {
     </Grid>
   );
 }
+
+const Diet = [
+  {
+    id: 1,
+    Category: "Diet",
+    Diet: [
+      {
+        name: "Breakfast (8:00-8:30AM) 4 Idli + Sambar 1/2 cup/ 1 table spoon Green chutney/ Tomato Chutney",
+      },
+      {
+        name: "Mid-Meal (11:00-11:30AM) green gram sprouts 1 cup",
+      },
+      {
+        name: "Lunch (2:00-2:30PM) 3 Roti+1/2 cup salad + Fish curry ( 100 gm fish)+ 1/2 cup cabbage subji.",
+      },
+      {
+        name: "Evening (4:00-4:30PM) 1 cup tea+ + 2 biscuits ( Nutrichoice or Digestiva or Oatmeal.)",
+      },
+      {
+        name: "Dinner (8:00-8:30PM) 2 Roti / chappathi+Ridge guard subji 1/2 cup..",
+      },
+    ],
+  },
+];
+
+const Exercise = [
+  {
+    id: 1,
+    Category: "Exercise",
+    Exercise: [
+      {
+        name: "Walking. Walking is one of the easiest aerobic exercises to do, and you don't need any equipment — just your two feet. ...",
+      },
+      {
+        name: "Yoga",
+      },
+      {
+        name: "Pilates",
+      },
+      {
+        name: "Dance",
+      },
+      {
+        name: "Bicycle or elliptical machine",
+      },
+      {
+        name: "High-intensity interval training (HIIT)",
+      },
+      {
+        name: "Stretching",
+      },
+      {
+        name: "Resistance training",
+      },
+    ],
+  },
+];
+
+const Comment = [
+  {
+    id: 1,
+    Category: "Comment",
+    Comment: [
+      {
+        Comment: "Patient is physically fit to join work",
+      },
+      {
+        Comment: "Patient is unfit for joining heavy work.",
+      },
+      {
+        Comment: "Patient is unfit to join work and needs {10}days rest",
+      },
+    ],
+  },
+];

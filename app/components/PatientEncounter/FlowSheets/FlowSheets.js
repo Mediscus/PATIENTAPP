@@ -282,14 +282,21 @@ class FlowSheet extends Component {
     const { assessmentHeader, assessmentData } = this.state;
 
     return (
-      <div>
-        <StyledTableContainer>
-          <TableHead style={{ margin: 0, tableLayout: "auto", width: "100vw" }}>
+      <StyledTableContainer>
+        <Table
+          className={classNames(
+            classes.table,
+            classes.bordered,
+            classes["small"]
+          )}
+          style={{ margin: 0, tableLayout: "auto" }}
+        >
+          <TableHead>
             <TableRow>{this.renderAssessmentHeader()}</TableRow>
           </TableHead>
           <TableBody>{this.renderAssessmentCategory()}</TableBody>
-        </StyledTableContainer>
-      </div>
+        </Table>
+      </StyledTableContainer>
     );
   }
 }
