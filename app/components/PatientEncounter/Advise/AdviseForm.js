@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import FloatingPanel from "../../Panel/FloatingPanel";
 import styles from "../PatientEncounter-jss";
 import css from "dan-styles/Form.scss";
@@ -32,7 +32,15 @@ import { useParams } from "react-router-dom";
 function AdviseForm(props) {
   const patientRef = useParams();
   const branch = "HELLO";
-  const { classes, encounterData, open, closeForm, data, callBack, setMessage } = props;
+  const {
+    classes,
+    encounterData,
+    open,
+    closeForm,
+    data,
+    callBack,
+    setMessage,
+  } = props;
   const { height } = useWindowDimensions();
   const [popupOpen, setPopupOpen] = useState(false);
   const [dietText, setDietText] = useState("");
@@ -40,7 +48,7 @@ function AdviseForm(props) {
 
   const [formData, setFormData] = useState({
     patientRef: patientRef.patientRef,
-    encounterRef: encounterData.appointment_id,
+    encounterRef: encounterData ? encounterData.appointment_id : "",
     diet: [],
     exercise: [],
     comment: "",
@@ -131,7 +139,8 @@ function AdviseForm(props) {
               <IconButton
                 style={{ color: "red", padding: 0 }}
                 onClick={() => handleDeleteDiet(diet[ind])}
-                size="large">
+                size="large"
+              >
                 <DeleteForeverIcon />
               </IconButton>
             </Box>
@@ -161,7 +170,8 @@ function AdviseForm(props) {
               <IconButton
                 style={{ color: "red", padding: 0 }}
                 onClick={() => handleDeleteExersice(exercise[ind])}
-                size="large">
+                size="large"
+              >
                 <DeleteForeverIcon />
               </IconButton>
             </Box>
@@ -241,7 +251,8 @@ function AdviseForm(props) {
                   aria-label="add new"
                   color="secondary"
                   onClick={() => handleAddMoreDiet("diet")}
-                  size="large">
+                  size="large"
+                >
                   <AddIcon />
                 </IconButton>
                 <Divider
@@ -252,8 +263,9 @@ function AdviseForm(props) {
                   style={{ padding: "5px" }}
                   aria-label="show chart"
                   color="secondary"
-                  onClick={() => { }}
-                  size="large">
+                  onClick={() => {}}
+                  size="large"
+                >
                   <PieChartIcon />
                 </IconButton>
               </Box>
@@ -297,7 +309,8 @@ function AdviseForm(props) {
                   aria-label="add new"
                   color="secondary"
                   onClick={() => handleAddMoreDiet("exercise")}
-                  size="large">
+                  size="large"
+                >
                   <AddIcon />
                 </IconButton>
                 <Divider
@@ -308,8 +321,9 @@ function AdviseForm(props) {
                   style={{ padding: "5px" }}
                   aria-label="show chart"
                   color="secondary"
-                  onClick={() => { }}
-                  size="large">
+                  onClick={() => {}}
+                  size="large"
+                >
                   <PieChartIcon />
                 </IconButton>
               </Box>
@@ -409,9 +423,15 @@ function AdviseForm(props) {
           >
             <Button onClick={handlePopupOpen}>Save as Template</Button>
             <Box>
-              <Button type="button" onClick={() => closeForm()}>Discard</Button>
+              <Button type="button" onClick={() => closeForm()}>
+                Discard
+              </Button>
               <Button
-                disabled={formData.diet.length === 0 && formData.exercise.length === 0 ? true : false}
+                disabled={
+                  formData.diet.length === 0 && formData.exercise.length === 0
+                    ? true
+                    : false
+                }
                 variant="contained"
                 color="secondary"
                 onClick={() => submitForm()}

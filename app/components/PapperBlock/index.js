@@ -28,9 +28,11 @@ function PapperBlock(props) {
         elevation={0}
       >
         <div className={classes.descBlock}>
-          <span className={classes.iconTitle}>
-            <i className={icon} />
-          </span>
+          {icon !== "" && icon !== "none" && (
+            <span className={classes.iconTitle}>
+              <i className={icon} />
+            </span>
+          )}
           <div className={classes.titleText}>
             <Typography variant="h6" component="h2" className={classes.title}>
               {title}

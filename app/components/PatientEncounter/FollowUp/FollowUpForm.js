@@ -10,7 +10,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { DatePicker } from "dan-components";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import moment from "moment";
 import { useParams } from "react-router-dom";
 import apiCall from "dan-redux/apiInterface";
@@ -21,7 +21,9 @@ function FollowUpForm(props) {
   const [apiData, setApiData] = useState({});
 
   const getFollowUpApi = async () => {
-    await apiCall('ehr/follow-up', "get", { encounterRef: encounterData.appointment_id })
+    await apiCall("ehr/follow-up", "get", {
+      encounterRef: encounterData ? encounterData.appointment_id : "",
+    })
       .then((res) => {
         if (res && res.Data && res.Status === "Success") {
           let data = res.Data;
@@ -44,13 +46,13 @@ function FollowUpForm(props) {
     var nextDate = new Date();
     var daysAdd = formData.interval_days;
     var result = nextDate.setDate(nextDate.getDate() + daysAdd);
-    return moment(result).format('YYYY-MM-DD');
-  }
+    return moment(result).format("YYYY-MM-DD");
+  };
 
   const [formData, setFormData] = useState({
     patient_ref: patient && patient.patientRef,
-    encounter_ref: encounterData.appointment_id,
-    regular: 'No',
+    encounter_ref: encounterData ? encounterData.appointment_id : "",
+    regular: "No",
     follow_up_date: new Date(),
     interval_days: 7,
     instruction: "",
@@ -61,35 +63,35 @@ function FollowUpForm(props) {
   }, [formData.interval_days]);
 
   useEffect(() => {
-    callBackfollowUpData(formData)
+    callBackfollowUpData(formData);
   }, [formData]);
 
   const handleChange = (event) => {
     if (event.target.checked) {
-      setFormData({ ...formData, regular: 'Yes' })
+      setFormData({ ...formData, regular: "Yes" });
     } else {
-      setFormData({ ...formData, regular: 'No' })
+      setFormData({ ...formData, regular: "No" });
     }
   };
 
   const handleFormChange = (name) => (event) => {
-    if (name == 'interval_days' && event.target.value < 1) {
-      setFormData({ ...formData, ['interval_days']: 1, });
+    if (name == "interval_days" && event.target.value < 1) {
+      setFormData({ ...formData, ["interval_days"]: 1 });
     } else {
-      setFormData({ ...formData, [name]: event.target.value, });
+      setFormData({ ...formData, [name]: event.target.value });
     }
   };
 
   const handleChangeDate = (value) => {
     setFormData({ ...formData, follow_up_date: value });
-    let startDate = moment(value).format('YYYY-MM-DD')
-    let endDate = moment(new Date()).format('YYYY-MM-DD')
-    let gapDays = moment(startDate).diff(moment(endDate), 'days');
+    let startDate = moment(value).format("YYYY-MM-DD");
+    let endDate = moment(new Date()).format("YYYY-MM-DD");
+    let gapDays = moment(startDate).diff(moment(endDate), "days");
     if (gapDays < 2) {
       gapDays = 1;
     }
     setFormData({ ...formData, interval_days: gapDays });
-  }
+  };
 
   return (
     <Grid
@@ -103,12 +105,12 @@ function FollowUpForm(props) {
         <Typography variant="body2">Select fullow up after: </Typography>
       </Grid>
 
-      <Grid container xs={12} sm={9} sx={{ textAlign: 'center' }}>
+      <Grid container xs={12} sm={9} sx={{ textAlign: "center" }}>
         <Grid item xs={12} sm={4}>
           <FormControlLabel
             control={
               <Checkbox
-                checked={formData.regular === 'Yes' ? true : false}
+                checked={formData.regular === "Yes" ? true : false}
                 value={formData.regular}
                 color="secondary"
                 onChange={(e) => handleChange(e)}

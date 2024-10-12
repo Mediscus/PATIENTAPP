@@ -10,8 +10,8 @@ import {
   RadioGroup,
   FormControlLabel,
 } from "@mui/material";
-import withStyles from '@mui/styles/withStyles';
-import Autocomplete from '@mui/material/Autocomplete';
+import withStyles from "@mui/styles/withStyles";
+import Autocomplete from "@mui/material/Autocomplete";
 import { useParams } from "react-router-dom";
 import apiCall from "dan-redux/apiInterface";
 
@@ -21,7 +21,9 @@ function ReferalForm(props) {
   const [apiData, setApiData] = useState({});
 
   const getReferalApi = async () => {
-    await apiCall('ehr/referral', "get", { encounterRef: encounterData.appointment_id })
+    await apiCall("ehr/referral", "get", {
+      encounterRef: encounterData ? encounterData.appointment_id : "",
+    })
       .then((res) => {
         if (res && res.Data && res.Status === "Success") {
           let data = res.Data;
@@ -42,15 +44,15 @@ function ReferalForm(props) {
 
   const [formData, setFormData] = useState({
     patient_ref: patient && patient.patientRef,
-    encounter_ref: encounterData.appointment_id,
-    doctor_name: '',
-    specialty: '',
-    comment: '',
-    priority: 'Regular',
+    encounter_ref: encounterData ? encounterData.appointment_id : "",
+    doctor_name: "",
+    specialty: "",
+    comment: "",
+    priority: "Regular",
   });
 
   useEffect(() => {
-    callBackReferalData(formData)
+    callBackReferalData(formData);
   }, [formData]);
 
   return (
@@ -68,10 +70,7 @@ function ReferalForm(props) {
         <Autocomplete
           fullWidth
           id="combo-box-demo"
-          options={[
-            "Dr. AJit",
-            "Dr. Manoj",
-          ]}
+          options={["Dr. AJit", "Dr. Manoj"]}
           value={formData.doctor_name || ""}
           onChange={(event, value) => {
             setFormData({ ...formData, doctor_name: value });
@@ -90,10 +89,7 @@ function ReferalForm(props) {
         <Autocomplete
           fullWidth
           id="combo-box-demo"
-          options={[
-            "Lever",
-            "Heart",
-          ]}
+          options={["Lever", "Heart"]}
           value={formData.specialty || ""}
           onChange={(event, value) => {
             setFormData({ ...formData, specialty: value });
@@ -122,7 +118,9 @@ function ReferalForm(props) {
           multiline
           maxRows={5}
           value={formData.comment}
-          onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+          onChange={(e) =>
+            setFormData({ ...formData, comment: e.target.value })
+          }
         />
       </Grid>
 
@@ -144,7 +142,9 @@ function ReferalForm(props) {
               alignItems: "center",
             }}
             value={formData.priority}
-            onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, priority: e.target.value })
+            }
           >
             <FormControlLabel
               value="Urgent"

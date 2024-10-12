@@ -26,6 +26,7 @@ import Diagnosis from "../../../../../components/PatientEncounter/Diagnosis";
 import LabPrescriptionTable from "./../../../../../components/PatientEncounter/LabPrescriptions/LabPrescriptionTable";
 import AddLabPrescription from "../../../../../components/PatientEncounter/LabPrescriptions/AddLabPrescription";
 import LabPrescriptions from "../../../../../components/PatientEncounter/LabPrescriptions";
+import { PatientEncounter } from "dan-components";
 
 function Status(props) {
   const title = brand.name + " - Patient Summary";
@@ -75,6 +76,7 @@ function Status(props) {
           <ObservationBodyMeasurement add={add} shadow={visible} />
         </Grid>
       </Grid>
+      <PatientEncounter encounterData={null} />
     </div>
   );
 }

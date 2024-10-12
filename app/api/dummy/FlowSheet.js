@@ -668,39 +668,34 @@ const flowSheetReadingData = [
   },
 ];
 
-const Headers = [""];
-// const GeneralExaminationHeaders = [
-//   "",
-//   "03/09/2022, 11:37:39",
-//   "04/09/2022, 11:37:39",
-// ];
+const Headers = ["", "03/09/2022, 11:37:39", "04/09/2022, 11:37:39"];
 
 const Categories = [
-  // {
-  //   category_name: "Vitals",
-  //   data: [
-  //     { header: "Pulse" },
-  //     { header: "Blood Pressure" },
-  //     { header: "Respiratory Rate" },
-  //     { header: "Oxygen Saturation SPO2" },
-  //     { header: "Temperature" },
-  //   ],
-  // },
+  {
+    category_name: "Vitals",
+    data: [
+      { header: "Pulse" },
+      { header: "Blood Pressure" },
+      { header: "Respiratory Rate" },
+      { header: "Oxygen Saturation SPO2" },
+      { header: "Temperature" },
+    ],
+  },
   {
     category_name: "General Examination",
     data: [
       { header: "Height" },
       { header: "Weight" },
-      // { header: "Skin" },
-      // { header: "Nails" },
-      // { header: "Pallor" },
-      // { header: "Jaundice" },
-      // { header: "Cyanosis" },
-      // { header: "Pedal Edema" },
-      // { header: "Edema" },
-      // { header: "Lumps / Lymph nodes" },
-      // { header: "Facial appearance" },
-      // { header: "Gait" },
+      { header: "Skin" },
+      { header: "Nails" },
+      { header: "Pallor" },
+      { header: "Jaundice" },
+      { header: "Cyanosis" },
+      { header: "Pedal Edema" },
+      { header: "Edema" },
+      { header: "Lumps / Lymph nodes" },
+      { header: "Facial appearance" },
+      { header: "Gait" },
     ],
   },
 ];

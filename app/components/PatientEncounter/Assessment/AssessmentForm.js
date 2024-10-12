@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import FloatingPanel from "../../Panel/FloatingPanel";
 import styles from "../PatientEncounter-jss";
 import css from "dan-styles/Form.scss";
@@ -37,7 +37,16 @@ import { useParams } from "react-router-dom";
 import apiCall from "dan-redux/apiInterface";
 
 function AssessmentForm(props) {
-  const { classes, encounterData, setMessage, data, type, open, callBack, closeForm } = props;
+  const {
+    classes,
+    encounterData,
+    setMessage,
+    data,
+    type,
+    open,
+    callBack,
+    closeForm,
+  } = props;
   const [editorContent, setEditorContent] = useState("");
   const [editData, setEditData] = useState({});
   const { height, width } = useWindowDimensions();
@@ -45,10 +54,10 @@ function AssessmentForm(props) {
   let EditorRef;
 
   useEffect(() => {
-    if (type == 'edit' || type == 'template') {
-      setEditData(data)
+    if (type == "edit" || type == "template") {
+      setEditData(data);
     } else {
-      setEditData({})
+      setEditData({});
     }
   }, []);
 
@@ -153,7 +162,7 @@ function AssessmentForm(props) {
       await apiCall("ehr/assessment", "post", values)
         .then((res) => {
           if (res && res.Status === "Success") {
-            setMessage('success', "Data saved successfully!");
+            setMessage("success", "Data saved successfully!");
             setStatus({ success: true });
             callBack(true);
           }
@@ -163,7 +172,7 @@ function AssessmentForm(props) {
           if (Error.ErrorMessage && Array.isArray(Error.ErrorMessage)) {
             ErrorMessage = Error.ErrorMessage.join("\n");
           }
-          setMessage('error', ErrorMessage);
+          setMessage("error", ErrorMessage);
         });
     }
   };
@@ -190,10 +199,14 @@ function AssessmentForm(props) {
       <Formik
         initialValues={{
           patientRef: patientId.patientRef,
-          encounterRef: encounterData.appointment_id,
-          assessmentRef: editData ? editData['assessment_id'] : '',
-          category: Object.keys(editData).length > 0 ? editData['category'] : '',
-          detail: Object.keys(editData).length > 0 ? editData['detail'] : '<p>Abc</p>\n',
+          encounterRef: encounterData ? encounterData.appointment_id : "",
+          assessmentRef: editData ? editData["assessment_id"] : "",
+          category:
+            Object.keys(editData).length > 0 ? editData["category"] : "",
+          detail:
+            Object.keys(editData).length > 0
+              ? editData["detail"]
+              : "<p>Abc</p>\n",
         }}
         enableReinitialize={true}
         validationSchema={assesmentFormSchema}
@@ -277,7 +290,7 @@ function AssessmentForm(props) {
                 onClick={() =>
                   sendTextToEditor(
                     "<div>Button but click does not work</div><b>Bold text</b>, <i>Italic text</i><br/ ><br />" +
-                    '<a href="http://www.facebook.com">Example link</a>'
+                      '<a href="http://www.facebook.com">Example link</a>'
                   )
                 }
               >
@@ -302,7 +315,9 @@ function AssessmentForm(props) {
               >
                 <Button>Save as Template</Button>
                 <Box>
-                  <Button type="button" onClick={() => closeForm()}>Discard</Button>
+                  <Button type="button" onClick={() => closeForm()}>
+                    Discard
+                  </Button>
                   <Button variant="contained" color="secondary" type="submit">
                     Save&nbsp;
                     <Send className={classes.sendIcon} />
