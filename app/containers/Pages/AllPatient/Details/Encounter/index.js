@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { useTheme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppBar from "@mui/material/AppBar";
@@ -14,10 +14,10 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import Summary from "../Summary";
 import { PatientEncounter } from "dan-components";
 import { Box, Button } from "@mui/material";
-import PrintOutlinedIcon from '@mui/icons-material/PrintOutlined';
-import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
-import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
-import FingerprintOutlinedIcon from '@mui/icons-material/FingerprintOutlined';
+import PrintOutlinedIcon from "@mui/icons-material/PrintOutlined";
+import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
+import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
+import FingerprintOutlinedIcon from "@mui/icons-material/FingerprintOutlined";
 
 const drawerWidth = 240 + 60;
 
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
     position: "relative",
-    marginTop: '10px'
+    marginTop: "10px",
   },
   appBar: {
     transition: theme.transitions.create(["margin", "width"], {
@@ -120,7 +120,8 @@ export default function Encounter(props) {
             onClick={handleDrawerOpen}
             edge="start"
             className={clsx(classes.menuButton, open && classes.hide)}
-            size="large">
+            size="large"
+          >
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap>
@@ -157,24 +158,76 @@ export default function Encounter(props) {
       >
         <div className={classes.drawerHeader} />
 
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
-          <Button style={{ margin: 5 }} variant="contained" color="primary" endIcon={<SaveOutlinedIcon />}>Save</Button>
+        <Box
+          sx={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}
+        >
           <Button
             style={{ margin: 5 }}
             variant="contained"
-            endIcon={<FingerprintOutlinedIcon />}>Sign</Button>
-          <Button style={{ margin: 5 }} variant="contained" color="secondary" endIcon={<PrintOutlinedIcon />}>Print</Button>
-          <Button style={{ margin: 5 }} variant="contained" color="inherit" endIcon={<ShareOutlinedIcon />}>Share</Button>
+            color="primary"
+            endIcon={<SaveOutlinedIcon />}
+          >
+            Save
+          </Button>
+          <Button
+            style={{ margin: 5 }}
+            variant="contained"
+            endIcon={<FingerprintOutlinedIcon />}
+          >
+            Sign
+          </Button>
+          <Button
+            style={{ margin: 5 }}
+            variant="contained"
+            color="secondary"
+            endIcon={<PrintOutlinedIcon />}
+          >
+            Print
+          </Button>
+          <Button
+            style={{ margin: 5 }}
+            variant="contained"
+            color="inherit"
+            endIcon={<ShareOutlinedIcon />}
+          >
+            Share
+          </Button>
         </Box>
         <PatientEncounter encounterData={data} />
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 10 }}>
-          <Button style={{ margin: 5 }} variant="contained" color="primary" endIcon={<SaveOutlinedIcon />}>Save</Button>
+        <Box
+          sx={{ display: "flex", justifyContent: "flex-end", marginBottom: 10 }}
+        >
           <Button
             style={{ margin: 5 }}
             variant="contained"
-            endIcon={<FingerprintOutlinedIcon />}>Sign</Button>
-          <Button style={{ margin: 5 }} variant="contained" color="secondary" endIcon={<PrintOutlinedIcon />}>Print</Button>
-          <Button style={{ margin: 5 }} variant="contained" color="inherit" endIcon={<ShareOutlinedIcon />}>Share</Button>
+            color="primary"
+            endIcon={<SaveOutlinedIcon />}
+          >
+            Save
+          </Button>
+          <Button
+            style={{ margin: 5 }}
+            variant="contained"
+            endIcon={<FingerprintOutlinedIcon />}
+          >
+            Sign
+          </Button>
+          <Button
+            style={{ margin: 5 }}
+            variant="contained"
+            color="secondary"
+            endIcon={<PrintOutlinedIcon />}
+          >
+            Print
+          </Button>
+          <Button
+            style={{ margin: 5 }}
+            variant="contained"
+            color="inherit"
+            endIcon={<ShareOutlinedIcon />}
+          >
+            Share
+          </Button>
         </Box>
       </main>
     </div>

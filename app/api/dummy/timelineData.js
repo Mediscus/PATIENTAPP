@@ -100,14 +100,14 @@ const timelineData = [
   //             {id:1001111, name: 'blood definitely coughed up from the chest?'},
   //             {id:1001122, name: 'A short history of streaks of blood with purulent sputum'},
   //             {id:1001133, name: 'A sudden episode of a small volume of blood with pleuritic pain and breathlessness'},
-  //         ], 
+  //         ],
   //       },
   //       {name:'Cough', data: [
   //             {id:10011110, name: 'Duration is of ___ days'},
   //             {id:10011212, name: 'Duration is of ___ months'},
   //             {id:10011313, name: 'it produces sputum.', data:['how much and what colour?', 'green or yellow sputum', 'Large volumes of sputum over long periods']},
   //             {id:10011313, name: 'it is intrusive/irresistible or whether the patient coughs deliberately to clear a perceived obstruction (throat clearing).'},
-  //         ], 
+  //         ],
   //       }, */
   //     ],
   //     initial_assessment: [

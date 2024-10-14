@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import withStyles from '@mui/styles/withStyles';
+import withStyles from "@mui/styles/withStyles";
 import FloatingPanel from "../../../Panel/FloatingPanel";
 import styles from "../../PatientEncounter-jss";
 import css from "dan-styles/Form.scss";
@@ -37,7 +37,15 @@ import { useParams } from "react-router-dom";
 import apiCall from "dan-redux/apiInterface";
 
 function ChiefComplaintForm(props) {
-  const { classes, encounterData, setMessage, data, open, callBack, closeForm } = props;
+  const {
+    classes,
+    encounterData,
+    setMessage,
+    data,
+    open,
+    callBack,
+    closeForm,
+  } = props;
   const [editorContent, setEditorContent] = useState("");
   const { height, width } = useWindowDimensions();
   const patientId = useParams();
@@ -182,19 +190,19 @@ function ChiefComplaintForm(props) {
         initialValues={
           data
             ? {
-              patientRef: data.patient_ref,
-              encounterRef: encounterData.appointment_id,
-              compliantRef: data.compliant_id,
-              category: data.category,
-              detail: data.detail,
-            }
+                patientRef: data.patient_ref,
+                encounterRef: encounterData ? encounterData.appointment_id : "",
+                compliantRef: data.compliant_id,
+                category: data.category,
+                detail: data.detail,
+              }
             : {
-              patientRef: patientId.patientRef,
-              encounterRef: encounterData.appointment_id,
-              compliantRef: '',
-              category: "",
-              detail: "<p></p>\n",
-            }
+                patientRef: patientId.patientRef,
+                encounterRef: encounterData ? encounterData.appointment_id : "",
+                compliantRef: "",
+                category: "",
+                detail: "<p></p>\n",
+              }
         }
         validationSchema={assesmentFormSchema}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
@@ -285,7 +293,9 @@ function ChiefComplaintForm(props) {
               >
                 <Button>Save as Template</Button>
                 <Box>
-                  <Button type="button" onClick={() => closeForm()}>Discard</Button>
+                  <Button type="button" onClick={() => closeForm()}>
+                    Discard
+                  </Button>
                   <Button variant="contained" color="secondary" type="submit">
                     Save&nbsp;
                     <Send className={classes.sendIcon} />
