@@ -34,6 +34,7 @@ function VaccinationsHistoryForm(props) {
     occurrenceDateTime: null,
     vaccineCode: null,
   };
+
   //immunizationRoute
 
   const [editData, setEditData] = useState({});
@@ -117,9 +118,9 @@ function VaccinationsHistoryForm(props) {
         code: {
           coding: [
             {
-              system: "http://snomed.info/sct", // SNOMED system for substance
-              code: allergyDetails.allergy.conceptId, // Example: substance ID
-              display: allergyDetails.allergy.term, // Example: substance name
+              system: "http://snomed.info/sct",
+              code: allergyDetails.allergy.conceptId,
+              display: allergyDetails.allergy.term,
             },
           ],
         },
@@ -164,7 +165,6 @@ function VaccinationsHistoryForm(props) {
         ],
       };
 
-      // Log the transformed JSON structure for debugging
       console.log(allergyIntolerance);
       console.log(JSON.stringify(allergyIntolerance));
 
