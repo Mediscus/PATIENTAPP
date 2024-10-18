@@ -125,9 +125,9 @@ function VaccinationsHistoryForm(props) {
           ],
         },
         patient: {
-          reference: "Patient/example", // Can be dynamic if you have patient data
+          reference: "Patient/example",
         },
-        recordedDate: new Date().toISOString(), // Or use values.recordedDate if provided
+        recordedDate: new Date().toISOString(), // Or use valu
         reaction: [
           {
             substance: {

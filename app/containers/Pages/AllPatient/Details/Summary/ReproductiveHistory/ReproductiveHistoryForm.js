@@ -20,8 +20,8 @@ import {
 } from "@mui/material";
 import MomentUtils from "@date-io/moment";
 import Send from "@mui/icons-material/Send";
-import DatePicker from '@mui/lab/DatePicker';
-import LocalizationProvider from '@mui/lab/LocalizationProvider';
+import DatePicker from "@mui/lab/DatePicker";
+import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import { YesNo } from "dan-api/dummy/commomDropdownData";
 
 function ReproductiveHistoryForm(props) {
@@ -51,7 +51,8 @@ function ReproductiveHistoryForm(props) {
   };
 
   const submitForm = () => {
-    alert("Data Submit");
+    console.log("Form Data: ", formData);
+    console.log("Selected Date: ", selectedDate);
   };
 
   const handleMenstruallyActiveChange = (event) => {
@@ -139,8 +140,8 @@ function ReproductiveHistoryForm(props) {
                 fullWidth
                 label="Are you menstrually active?"
                 placeholder="Are you menstrually active?"
-              // value={menstrually}
-              // onChange={handleMenstruallyActiveChange}
+                // value={menstrually}
+                // onChange={handleMenstruallyActiveChange}
               >
                 {["Regular", "Inregular"].map((option, ind) => (
                   <MenuItem key={ind} value={option}>

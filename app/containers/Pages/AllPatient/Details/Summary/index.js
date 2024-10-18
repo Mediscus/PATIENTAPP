@@ -27,6 +27,7 @@ import LabPrescriptionTable from "./../../../../../components/PatientEncounter/L
 import AddLabPrescription from "../../../../../components/PatientEncounter/LabPrescriptions/AddLabPrescription";
 import LabPrescriptions from "../../../../../components/PatientEncounter/LabPrescriptions";
 import { PatientEncounter } from "dan-components";
+import ECGPanel from "./ECG Panel";
 
 function Status(props) {
   const title = brand.name + " - Patient Summary";
@@ -49,6 +50,9 @@ function Status(props) {
 
           <PersonalHistory add={add} shadow={visible} />
           <ObservationLifestyle add={add} shadow={visible} />
+          <ObservationBodyMeasurement add={add} shadow={visible} />
+          <ObservationPhysicalActivity add={add} shadow={visible} />
+          <TravelHistory add={add} shadow={visible} />
         </Grid>
 
         <Grid item md={encounter ? 12 : 4} xs={12}>
@@ -57,11 +61,9 @@ function Status(props) {
           <FamilyHistory add={add} shadow={visible} />
           <Medications add={add} shadow={visible} />
           <VaccinationsHistory add={add} shadow={visible} />
-          <TravelHistory add={add} shadow={visible} />
           <PastHistory add={add} shadow={visible} />
           {/*  <CheifComplaint add={add} shadow={visible} />  */}
           {/* <Assessment add={add} shadow={visible} /> */}
-          <ObservationPhysicalActivity add={add} shadow={visible} />
         </Grid>
 
         <Grid item md={encounter ? 12 : 4} xs={12}>
@@ -73,7 +75,7 @@ function Status(props) {
           <MenstrualHistory add={add} shadow={visible} />
           <ReproductiveHistory add={add} shadow={visible} />
           <ObservationGeneralAssessment add={add} shadow={visible} />
-          <ObservationBodyMeasurement add={add} shadow={visible} />
+          <ECGPanel add={add} shadow={visible} />
         </Grid>
       </Grid>
       <PatientEncounter encounterData={null} />

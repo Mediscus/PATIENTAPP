@@ -5,7 +5,6 @@ import { reducer as form } from "redux-form";
 import { combineReducers } from "redux";
 import { connectRouter } from "connected-react-router";
 import history from "utils/history";
-
 import languageProviderReducer from "containers/LanguageProvider/reducer";
 import uiReducer from "./modules/ui";
 import patients from "./modules/Patients";
@@ -18,6 +17,8 @@ import encounters from "./modules/encounters";
 import otpReducer from "./modules/otpReducer";
 import AllergyReducer from "./modules/AllergyReducer";
 import DiagnosisReducer from "./modules/DiagnosisReducer";
+import MedicationReducer from "./modules/MedicationReducer";
+import VaccinationReducer from "./modules/VaccinationReducer";
 
 /*
  * Creates the main reducer with the dynamically injected ones
@@ -35,6 +36,8 @@ export default function createReducer(injectedReducers = {}) {
     chat,
     register,
     allergy: AllergyReducer,
+    vaccine: VaccinationReducer,
+    medication: MedicationReducer,
     diagnosis: DiagnosisReducer,
     language: languageProviderReducer,
     router: connectRouter(history),

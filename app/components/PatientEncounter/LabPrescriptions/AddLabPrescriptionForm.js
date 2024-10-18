@@ -1,28 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import styles from "../PatientEncounter-jss";
+import css from "dan-styles/Form.scss";
 import {
   Box,
   Button,
-  Grid,
-  MenuItem,
   TextField,
-  FloatingPanel,
-} from "@mui/material";
+  Grid,
+  withStyles,
+  MenuItem,
+} from "@material-ui/core";
+import Send from "@material-ui/icons/Send";
 import useWindowDimensions from "dan-utils/useWindowDimensions";
-import axios from "axios";
-import moment from "moment";
-import { useParams } from "react-router-dom";
-import css from "dan-styles/Form.scss";
-import { DatePicker } from "@material-ui/pickers";
 import {
   KeyboardDatePicker,
   MuiPickersUtilsProvider,
 } from "@material-ui/pickers";
-import { Formik } from "formik";
+import MomentUtils from "@date-io/moment";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import axios from "axios";
 
 function AddLabPrescriptionForm(props) {
   const { classes, inputChange } = props;
   const { height, width } = useWindowDimensions();
   const [selectedOrderDate, setSelectedOrderDate] = useState(new Date());
+  const [popupOpen, setPopupOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     Investigation: "",
     intent: "",
@@ -32,16 +38,24 @@ function AddLabPrescriptionForm(props) {
     Instruction: "",
   });
 
-  const handleChange = (name) => (event) => {
-    setFormData({
-      ...formData,
-      [name]: event.target.value,
-    });
+  const handlePopupOpen = () => {
+    setPopupOpen(true);
+  };
+
+  const handlePopupClose = () => {
+    setPopupOpen(false);
   };
 
   const handleDateChange = (date) => {
     setSelectedOrderDate(date);
     setFormData({ ...formData, Date: selectedOrderDate });
+  };
+
+  const handleChange = (name) => (event) => {
+    setFormData({
+      ...formData,
+      [name]: event.target.value,
+    });
   };
 
   const handleFormSubmit = async () => {
@@ -68,13 +82,12 @@ function AddLabPrescriptionForm(props) {
           ],
         },
         quantityQuantity: { value: 1 },
-        authoredOn: moment(formData.Date).toISOString(),
+        authoredOn: selectedOrderDate,
       };
-
       console.log("postData:", postData);
 
       const response = await axios.post(
-        "https://hapi.fhir.org/baseR4/ServiceRequest?_lastUpdated=gt2024-05-22",
+        "https://hapi.fhir.org/baseR4/ServiceRequest?_lastUpdated=gt2024-05-13",
         postData
       );
 
@@ -86,144 +99,174 @@ function AddLabPrescriptionForm(props) {
   };
 
   return (
-    <FloatingPanel
-      openForm={open}
-      // closeForm={closeForm}
-      title="Vaccinactions History"
-      extraSize={false}
+    <Box
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        justify: "space-between",
+      }}
     >
-      <Formik
-        initialValues={
-          {
-            // patientRef: patient && patient.patientRef,
-            // vaccinationRef: editData ? editData["vaccination_id"] : "",
-            // vaccinationName: editData ? editData["vaccination_name"] : "",
-            // againstDisease: editData ? editData["against_disease"] : "",
-            // schedule: editData ? editData["schedule"] : "",
-            // status: editData ? editData["status"] : "",
-          }
-        }
-        enableReinitialize={true}
-        validationSchema={vaccinationHistoryFormSchema}
-        onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
-          postFamilyHistory(values, setErrors, setStatus, setSubmitting);
+      <div
+        className={css.bodyForm}
+        style={{
+          height: height - 140,
+          maxHeight: height - 140,
+          overflow: "auto",
         }}
       >
-        {({
-          errors,
-          handleBlur,
-          handleChange,
-          handleSubmit,
-          isSubmitting,
-          touched,
-          setFieldValue,
-          values,
-        }) => (
-          <form onSubmit={handleSubmit}>
-            <Box
-              sx={{
-                flex: 1,
-                display: "flex",
-                flexDirection: "column",
-                justify: "space-between",
-              }}
+        <Grid
+          container
+          spacing={2}
+          justifyContent="space-between"
+          alignItems="center"
+        >
+          <Grid item xs={6} sm={6}>
+            <TextField
+              fullWidth
+              label="Investigation"
+              placeholder="Investigation"
+              value={formData.Investigation}
+              onChange={handleChange("Investigation")}
+            />
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              fullWidth
+              label="Intent"
+              placeholder="Intent"
+              value={formData.intent}
+              onChange={handleChange("intent")}
+              select
             >
-              <div
-                className={css.bodyForm}
-                style={{
-                  height: height - 140,
-                  maxHeight: height - 140,
-                  overflow: "auto",
-                  padding: "8px !important",
-                }}
-              >
-                <Grid
-                  container
-                  spacing={2}
-                  justifyContent="space-between"
-                  alignItems="center"
-                >
-                  <Grid item xs={12} sm={12}>
-                    <TextField
-                      fullWidth
-                      type="text"
-                      name="vaccinationName"
-                      label="Vaccination Name"
-                      placeholder="Enter Vaccination Name"
-                      value={values.vaccinationName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.vaccinationName ? errors.vaccinationName : ""
-                      }
-                      error={
-                        touched.vaccinationName ? errors.vaccinationName : ""
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      type="text"
-                      name="againstDisease"
-                      label="Against Disease"
-                      placeholder="Enter Against Disease"
-                      value={values.againstDisease}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={
-                        touched.againstDisease ? errors.againstDisease : ""
-                      }
-                      error={
-                        touched.againstDisease ? errors.againstDisease : ""
-                      }
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      type="text"
-                      name="schedule"
-                      label="Schedule"
-                      placeholder="Enter Schedule"
-                      value={values.schedule}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.schedule ? errors.schedule : ""}
-                      error={touched.schedule ? errors.schedule : ""}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      type="text"
-                      name="status"
-                      label="Status"
-                      placeholder="Enter Status"
-                      value={values.status}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      helperText={touched.status ? errors.status : ""}
-                      error={touched.status ? errors.status : ""}
-                    />
-                  </Grid>
-                </Grid>
-              </div>
-              <div className={css.buttonArea}>
-                <Button type="button" onClick={closeForm}>
-                  Discard
-                </Button>
-                <Button type="submit" variant="contained" color="secondary">
-                  Save&nbsp;
-                  <Send />
-                </Button>
-              </div>
-            </Box>
-          </form>
-        )}
-      </Formik>
-    </FloatingPanel>
+              {[
+                "proposal",
+                "plan",
+                "directive",
+                "order",
+                "original-order",
+                "reflex-order",
+                "filler-order",
+                "instance-order",
+                "option",
+              ].map((option, index) => (
+                <MenuItem key={option + "-" + index} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item sm={6}>
+            <TextField
+              fullWidth
+              label="Priority"
+              placeholder="Priority"
+              value={formData.priority}
+              onChange={handleChange("priority")}
+              select
+            >
+              {["routine", "urgent", "asap", "stat"].map((option, index) => (
+                <MenuItem key={option + "-" + index} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={6} sm={6}>
+            <TextField
+              fullWidth
+              label="Details"
+              placeholder="Details"
+              value={formData.Details}
+              onChange={handleChange("Details")}
+            />
+          </Grid>
+
+          <Grid item xs={6} sm={6}>
+            <MuiPickersUtilsProvider utils={MomentUtils}>
+              <KeyboardDatePicker
+                label="Order Date"
+                format="DD/MM/YYYY"
+                placeholder="10/10/2018"
+                value={selectedOrderDate}
+                onChange={handleDateChange}
+                animateYearScrolling={false}
+                style={{ width: "100%" }}
+              />
+            </MuiPickersUtilsProvider>
+          </Grid>
+        </Grid>
+      </div>
+      <Dialog
+        open={popupOpen}
+        onClose={handlePopupClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle
+          style={{
+            marginBottom: 5,
+          }}
+          id="alert-dialog-title"
+        >
+          {"Template"}
+        </DialogTitle>
+        <DialogContent>
+          <Grid container style={{ width: 500 }}>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                fullWidth
+                label="Enter LabPrescription Template Name"
+                placeholder="Enter LabPrescription Template Name"
+                type="text"
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handlePopupClose} color="primary">
+            Discard
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handlePopupClose}
+            color="primary"
+            autoFocus
+          >
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <div className={css.buttonArea}>
+        <Grid
+          container
+          xs={12}
+          md={12}
+          justifyContent="space-between"
+          alignItems="center"
+          flexDirection="row"
+        >
+          <Button onClick={handlePopupOpen}>Save as Template</Button>
+          <Box>
+            <Button type="button">Discard</Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={handleFormSubmit}
+            >
+              Save&nbsp;
+              <Send className={classes.sendIcon} />
+            </Button>
+          </Box>
+        </Grid>
+      </div>
+    </Box>
   );
 }
 
-export default AddLabPrescriptionForm;
+AddLabPrescriptionForm.propTypes = {
+  classes: PropTypes.object.isRequired,
+};
+
+export default withStyles(styles)(AddLabPrescriptionForm);
