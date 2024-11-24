@@ -27,6 +27,8 @@ import LabPrescriptionTable from "./../../../../../components/PatientEncounter/L
 import AddLabPrescription from "../../../../../components/PatientEncounter/LabPrescriptions/AddLabPrescription";
 import LabPrescriptions from "../../../../../components/PatientEncounter/LabPrescriptions";
 import { PatientEncounter } from "dan-components";
+import Assessment from "../../../../../components/PatientEncounter/Assessment";
+import Reports from "../../../../../components/PatientEncounter/Reports";
 
 function Status(props) {
   const title = brand.name + " - Patient Summary";
@@ -58,7 +60,7 @@ function Status(props) {
           <Medications add={add} shadow={visible} />
           <VaccinationsHistory add={add} shadow={visible} />
           <TravelHistory add={add} shadow={visible} />
-          <PastHistory add={add} shadow={visible} />
+
           {/*  <CheifComplaint add={add} shadow={visible} />  */}
           {/* <Assessment add={add} shadow={visible} /> */}
           <ObservationPhysicalActivity add={add} shadow={visible} />
@@ -73,10 +75,38 @@ function Status(props) {
           <MenstrualHistory add={add} shadow={visible} />
           <ReproductiveHistory add={add} shadow={visible} />
           <ObservationGeneralAssessment add={add} shadow={visible} />
-          <ObservationBodyMeasurement add={add} shadow={visible} />
+          {/* <ObservationBodyMeasurement add={add} shadow={visible} /> */}
+          <PastHistory add={add} shadow={visible} />
         </Grid>
       </Grid>
-      <PatientEncounter encounterData={null} />
+      {/* <PatientEncounter encounterData={null} /> */}
+      <Grid
+        container
+        spacing={0}
+        alignItems="flex-start"
+        direction="row"
+        justifyContent="center"
+      >
+        <Grid item xs={12} md={12}>
+          <Assessment encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <FlowSheets encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Medications encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Diagnosis encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Reports encounterData={null} />
+        </Grid>
+      </Grid>
     </div>
   );
 }

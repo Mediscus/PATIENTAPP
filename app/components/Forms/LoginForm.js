@@ -180,15 +180,15 @@ function LoginForm(props) {
           centered
           className={classes.tab}
         >
-          <Tab label=" Aadhar Card" />
           <Tab label="Mobile Number " />
+          <Tab label=" Aadhar Card" />
         </Tabs>
-        {tab === 1 && (
+        {tab === 0 && (
           <Formik
             initialValues={values}
             // validationSchema={loginFormSchema}
             onSubmit={(values, { resetForm, setErrors }) => {
-              console.log(values , "mbile otp")
+              console.log(values, "mbile otp");
               if (mobileOtpSent) {
                 handleOtpVerify();
                 setTimeout(() => {
@@ -267,14 +267,14 @@ function LoginForm(props) {
             )}
           </Formik>
         )}
-        {tab === 0 && (
+        {tab === 1 && (
           <Formik
             initialValues={value}
             // validationSchema={registerFormSchema}
             onSubmit={(value, { resetForm, setErrors }) => {
-              console.log(value , "addhar otp")
+              console.log(value, "addhar otp");
               if (aadhaarOtpSent) {
-                console.log(values)
+                console.log(values);
                 handleAadharOtpVerify();
                 setTimeout(() => {
                   history.push("/register");

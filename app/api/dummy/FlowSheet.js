@@ -670,35 +670,33 @@ const flowSheetReadingData = [
 
 const Headers = ["", "03/09/2022, 11:37:39", "04/09/2022, 11:37:39"];
 
-const Categories = [
-  {
-    category_name: "Vitals",
-    data: [
-      { header: "Pulse" },
-      { header: "Blood Pressure" },
-      { header: "Respiratory Rate" },
-      { header: "Oxygen Saturation SPO2" },
-      { header: "Temperature" },
-    ],
-  },
-  {
-    category_name: "General Examination",
-    data: [
-      { header: "Height" },
-      { header: "Weight" },
-      { header: "Skin" },
-      { header: "Nails" },
-      { header: "Pallor" },
-      { header: "Jaundice" },
-      { header: "Cyanosis" },
-      { header: "Pedal Edema" },
-      { header: "Edema" },
-      { header: "Lumps / Lymph nodes" },
-      { header: "Facial appearance" },
-      { header: "Gait" },
-    ],
-  },
-];
+const VitalsD = {
+  category_name: "Vitals",
+  data: [
+    { header: "Pulse" },
+    { header: "Blood Pressure" },
+    { header: "Respiratory Rate" },
+    { header: "Oxygen Saturation SPO2" },
+    { header: "Temperature" },
+  ],
+};
+const BodyMeasurementD = {
+  category_name: "Body Measurement",
+  data: [
+    { header: "Height" },
+    { header: "Weight" },
+    { header: "BMI" },
+    // { header: "Nails" },
+    // { header: "Pallor" },
+    // { header: "Jaundice" },
+    // { header: "Cyanosis" },
+    // { header: "Pedal Edema" },
+    // { header: "Edema" },
+    // { header: "Lumps / Lymph nodes" },
+    // { header: "Facial appearance" },
+    // { header: "Gait" },
+  ],
+};
 
 const CatData = {
   Pulse: [
@@ -1033,8 +1031,9 @@ export {
   flowSheetCatItem,
   flowSheetReadingData,
   Headers,
-  Categories,
   CatData,
   Assets,
   // GeneralExaminationHeaders,
+  VitalsD,
+  BodyMeasurementD,
 };
