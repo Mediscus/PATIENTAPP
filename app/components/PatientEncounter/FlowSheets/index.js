@@ -1,15 +1,19 @@
 import React from "react";
 import PropTypes from "prop-types";
 import withStyles from "@mui/styles/withStyles";
-import { Box, Grid, Paper, Typography } from "@mui/material";
-import FlowSheets from "./FlowSheets";
+import { Grid, Box } from "@mui/material";
 import PapperBlock from "../../PapperBlock";
-
+import VitalsComponent from "./VitalsComponent";
+import BodyMeasurementComp from "./BodyMeasurementComp";
+import "./FlowSheets.css";
 function FlowSheet(props) {
   return (
     <Grid item xs={12} md={12}>
       <PapperBlock title="FlowSheets" icon="none">
-        <FlowSheets />
+        <Box className="table-container">
+          <VitalsComponent />
+          <BodyMeasurementComp />
+        </Box>
       </PapperBlock>
     </Grid>
   );

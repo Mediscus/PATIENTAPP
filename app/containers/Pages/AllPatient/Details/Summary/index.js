@@ -28,6 +28,8 @@ import AddLabPrescription from "../../../../../components/PatientEncounter/LabPr
 import LabPrescriptions from "../../../../../components/PatientEncounter/LabPrescriptions";
 import { PatientEncounter } from "dan-components";
 import ECGPanel from "./ECG Panel";
+import Assessment from "../../../../../components/PatientEncounter/Assessment";
+import Reports from "../../../../../components/PatientEncounter/Reports";
 
 function Status(props) {
   const title = brand.name + " - Patient Summary";
@@ -61,7 +63,7 @@ function Status(props) {
           <FamilyHistory add={add} shadow={visible} />
           <Medications add={add} shadow={visible} />
           <VaccinationsHistory add={add} shadow={visible} />
-          <PastHistory add={add} shadow={visible} />
+
           {/*  <CheifComplaint add={add} shadow={visible} />  */}
           {/* <Assessment add={add} shadow={visible} /> */}
         </Grid>
@@ -76,9 +78,37 @@ function Status(props) {
           <ReproductiveHistory add={add} shadow={visible} />
           <ObservationGeneralAssessment add={add} shadow={visible} />
           <ECGPanel add={add} shadow={visible} />
+          <PastHistory add={add} shadow={visible} />
         </Grid>
       </Grid>
-      <PatientEncounter encounterData={null} />
+      {/* <PatientEncounter encounterData={null} /> */}
+      <Grid
+        container
+        spacing={0}
+        alignItems="flex-start"
+        direction="row"
+        justifyContent="center"
+      >
+        <Grid item xs={12} md={12}>
+          <Assessment encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <FlowSheets encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Medications encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Diagnosis encounterData={null} />
+        </Grid>
+
+        <Grid item xs={12} md={12}>
+          <Reports encounterData={null} />
+        </Grid>
+      </Grid>
     </div>
   );
 }

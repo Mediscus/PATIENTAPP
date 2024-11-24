@@ -49,9 +49,9 @@ function Settings(props) {
     setValue(newValue);
   };
 
-  const handleClick = () =>{
-   history.push("/app/pages/patient-application")
-  }
+  const handleClick = () => {
+    history.push("/app/pages/patient-application");
+  };
 
   const title = brand.name;
   const description = brand.desc;
