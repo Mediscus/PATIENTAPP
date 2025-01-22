@@ -1,0 +1,39 @@
+.accordition-container {
+    background-color: #045e8a54 !important;
+    border-radius: 16px !important;
+    margin: 0 5px !important
+}
+
+.family-avatar-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px
+}
+
+.collapse-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.main-collapse-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center
+}
+
+.family-menu-container {
+    display: flex;
+    gap: 20px;
+    border-radius: 25px !important;
+
+}
+
+.member-avatar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+}

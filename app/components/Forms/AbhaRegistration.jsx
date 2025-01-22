@@ -27,7 +27,7 @@ import {
 import { setCookieData } from "../Common/storageFun";
 import { useHistory } from "react-router-dom";
 
-const MobileRegistration = () => {
+const AbhaRegistration = () => {
   const initialState = {
     first_name: "",
     last_name: "",
@@ -229,77 +229,17 @@ const MobileRegistration = () => {
           >
             <TextField
               fullWidth
-              name="first_name"
-              placeholder="First Name"
+              name="aadhar_number"
+              placeholder="Enter Aadhar Number"
               label={
                 <>
-                  First Name<sup style={{ color: "red" }}>*</sup>
-                </>
-              }
-              value={moRegistrationData.first_name}
-              onChange={handleChange}
-              helperText={formErr.first_name}
-              error={formErr.first_name.length > 0}
-            />
-
-            <TextField
-              fullWidth
-              name="last_name"
-              placeholder="Last Name"
-              label={
-                <>
-                  Last Name<sup style={{ color: "red" }}>*</sup>
+                  Enter Aadhar Number<sup style={{ color: "red" }}>*</sup>
                 </>
               }
               value={moRegistrationData.last_name}
               onChange={handleChange}
               helperText={formErr.last_name}
               error={formErr.last_name.length > 0}
-            />
-          </Box>
-
-          <Box
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "20px",
-            }}
-          >
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                label={
-                  <>
-                    Date of birth<sup style={{ color: "red" }}>*</sup>
-                  </>
-                }
-                value={moRegistrationData.dob}
-                onChange={(value) => {
-                  const date = moment(new Date(value)).format("YYYY-MM-DD");
-                  console.log(date);
-                  setMoRegistrationData({ ...moRegistrationData, dob: date });
-                }}
-                renderInput={(params) => (
-                  <MuiTextField {...params} fullWidth name="dob" />
-                )}
-                helperText={formErr.dob}
-                error={formErr.dob.length > 0}
-              />
-            </LocalizationProvider>
-
-            <TextField
-              fullWidth
-              name="mobile"
-              placeholder="Mobile number "
-              label={
-                <>
-                  Mobile number<sup style={{ color: "red" }}>*</sup>
-                </>
-              }
-              type="number"
-              value={moRegistrationData.mobile}
-              onChange={handleChange}
-              helperText={formErr.mobile}
-              error={formErr.mobile.length > 0}
             />
           </Box>
 
@@ -364,4 +304,4 @@ const MobileRegistration = () => {
   );
 };
 
-export default MobileRegistration;
+export default AbhaRegistration;

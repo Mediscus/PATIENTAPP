@@ -192,9 +192,10 @@ module.exports = (options) => ({
     }),
     new webpack.EnvironmentPlugin({
       NODE_ENV: "development",
-      API_ENDPOINT: "http://156.67.111.202:8085",
+      INTERNAL_API_ENDPOINT: "http://156.67.111.202:8001",
+      ABDM_API_ENDPOINT: "http://156.67.111.202:8000",
       SNOMED_API_ENDPOINT: "https://hapi.fhir.org/baseR4/ValueSet/$expand?url=",
-      SNOMED_DATASET_API_ENDPOINT: "http://94.72.98.206:8081/csnoserv",
+      SNOMED_DATASET_API_ENDPOINT: "http://156.67.111.202:8081/csnoserv",
     }),
     new webpack.ContextReplacementPlugin(/^\.\/locale$/, (context) => {
       if (!/\/moment\//.test(context.context)) {

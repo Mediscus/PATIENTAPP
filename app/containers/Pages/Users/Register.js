@@ -9,12 +9,14 @@ import { createHealthIdRequest } from "dan-redux/actions/index";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { FlashAuto } from "@mui/icons-material";
+import AccountStatus from "../../../components/Forms/AccountStatus";
 
 function Register(props) {
   const { classes } = useStyles();
   const responseData = useSelector((state) => state.otp);
   const dispatch = useDispatch();
   const history = useHistory(); // Initialize useHistory hook
+  const { showAccountStatus } = useSelector((state) => state.registration);
   // const [show, setShow] = useState(false);
   const authLogin = (values) => {
     dispatch(createHealthIdRequest(values));
@@ -47,10 +49,14 @@ function Register(props) {
       </Helmet>
       <div className={classes.container}>
         <div className={classes.userFormWrap}>
-          <RegisterForm
-            handleData={(values) => submitForm(values)}
-            errorSms={responseData.error}
-          />
+          {showAccountStatus.isShow ? (
+            <AccountStatus />
+          ) : (
+            <RegisterForm
+              handleData={(values) => submitForm(values)}
+              errorSms={responseData.error}
+            />
+          )}
         </div>
       </div>
     </div>

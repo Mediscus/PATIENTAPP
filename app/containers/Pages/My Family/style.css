@@ -1,0 +1,39 @@
+.family-avatar-container {
+    display: flex;
+    justify-content: center;
+    gap: 5px
+}
+
+.select-member-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    background-color: #045e8a54;
+    border-radius: 25px;
+    padding: 15px;
+    margin-top: 5px;
+}
+
+.family-member-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 120px;
+    cursor: pointer;
+}
+
+.family-member-wrapper {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.family-member-name {
+    white-space: nowrap;
+    width: 100%; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

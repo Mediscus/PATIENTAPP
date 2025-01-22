@@ -115,6 +115,7 @@
     "compression": "1.7.4",
     "connected-react-router": "6.9.1",
     "cross-env": "^5.2.1",
+    "crypto-js": "^4.2.0",
     "date-fns": "2.1.0",
     "dayjs": "^1.11.7",
     "detect-browser": "^4.0.0",

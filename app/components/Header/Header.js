@@ -201,13 +201,11 @@ function Header(props) {
             )}
           </div>
         </Hidden>
-
         {/* <div className={classes.searchWrapper}>
           <div className={classNames(classes.wrapper, classes.light)}>
             <ClinicList />
           </div>
         </div> */}
-
         <div className={classes.searchWrapper}>
           <div className={classNames(classes.wrapper, classes.light)}>
             <div className={classes.search}>
@@ -219,6 +217,7 @@ function Header(props) {
         <Hidden smDown>
           <span className={classes.separatorV} />
         </Hidden>
+
         <UserMenu />
       </Toolbar>
     </AppBar>

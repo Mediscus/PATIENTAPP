@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@mui/styles';
-import AppBar from '@mui/material/AppBar';
-import { NavLink } from 'react-router-dom';
-import Toolbar from '@mui/material/Toolbar';
-import SearchIcon from '@mui/icons-material/Search';
-import classNames from 'classnames';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import logo from 'dan-images/logo.svg';
-import brand from 'dan-api/dummy/brand';
-import Hidden from '@mui/material/Hidden';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import dummy from 'dan-api/dummy/dummyContents';
-import MenuIcon from '@mui/icons-material/Menu';
-import SidebarContent from '../Sidebar/SidebarContent';
-import DropListMenu from './DropListMenu';
-import MegaMenu from './MegaMenu';
-import UserMenu from './UserMenu';
-import styles from './header-jss';
-import SearchUi from '../Search/SearchUi';
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
+import { withStyles } from "@mui/styles";
+import AppBar from "@mui/material/AppBar";
+import { NavLink } from "react-router-dom";
+import Toolbar from "@mui/material/Toolbar";
+import SearchIcon from "@mui/icons-material/Search";
+import classNames from "classnames";
+import Tooltip from "@mui/material/Tooltip";
+import IconButton from "@mui/material/IconButton";
+import logo from "dan-images/logo.svg";
+import brand from "dan-api/dummy/brand";
+import Hidden from "@mui/material/Hidden";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import dummy from "dan-api/dummy/dummyContents";
+import MenuIcon from "@mui/icons-material/Menu";
+import SidebarContent from "../Sidebar/SidebarContent";
+import DropListMenu from "./DropListMenu";
+import MegaMenu from "./MegaMenu";
+import UserMenu from "./UserMenu";
+import styles from "./header-jss";
+import SearchUi from "../Search/SearchUi";
 
 const elem = document.documentElement;
 
@@ -35,7 +35,7 @@ function HeaderMenu(props) {
   const handleScroll = () => {
     const doc = document.documentElement;
     const scroll = (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
-    const newFlagFixedMenu = (scroll > 64);
+    const newFlagFixedMenu = scroll > 64;
     if (flagFixedMenu !== newFlagFixedMenu) {
       setFixed(newFlagFixedMenu);
       flagFixedMenu = newFlagFixedMenu;
@@ -43,9 +43,9 @@ function HeaderMenu(props) {
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
@@ -53,11 +53,14 @@ function HeaderMenu(props) {
     setFullScreen(true);
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
-    } else if (elem.mozRequestFullScreen) { /* Firefox */
+    } else if (elem.mozRequestFullScreen) {
+      /* Firefox */
       elem.mozRequestFullScreen();
-    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+    } else if (elem.webkitRequestFullscreen) {
+      /* Chrome, Safari & Opera */
       elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+    } else if (elem.msRequestFullscreen) {
+      /* IE/Edge */
       elem.msRequestFullscreen();
     }
   };
@@ -75,15 +78,15 @@ function HeaderMenu(props) {
     }
   };
 
-  const turnMode = mode => {
-    if (mode === 'light') {
-      props.changeMode('dark');
+  const turnMode = (mode) => {
+    if (mode === "light") {
+      props.changeMode("dark");
     } else {
-      props.changeMode('light');
+      props.changeMode("light");
     }
   };
 
-  const handleOpen = event => {
+  const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -91,7 +94,7 @@ function HeaderMenu(props) {
     setAnchorEl(null);
   };
 
-  const handleChangeStatus = st => {
+  const handleChangeStatus = (st) => {
     setStatus(st);
     handleClose();
   };
@@ -107,17 +110,15 @@ function HeaderMenu(props) {
     openMobileNav,
     loadTransition,
     isLogin,
-    logoLink
+    logoLink,
   } = props;
   return (
     <AppBar
-      className={
-        classNames(
-          classes.appBar,
-          classes.attachedbar,
-          fixed ? classes.fixed : ''
-        )
-      }
+      className={classNames(
+        classes.appBar,
+        classes.attachedbar,
+        fixed ? classes.fixed : ""
+      )}
     >
       <div className={classes.appMenu}>
         <Hidden lgUp>
@@ -125,7 +126,8 @@ function HeaderMenu(props) {
             className={classes.menuButton}
             aria-label="Menu"
             onClick={toggleDrawerOpen}
-            size="large">
+            size="large"
+          >
             <MenuIcon />
           </IconButton>
         </Hidden>
@@ -134,24 +136,40 @@ function HeaderMenu(props) {
             <div className={classNames(classes.headerAction, classes.invert)}>
               {fullScreen ? (
                 <Tooltip title="Exit Full Screen" placement="bottom">
-                  <IconButton className={classes.button} onClick={closeFullScreen} size="large">
+                  <IconButton
+                    className={classes.button}
+                    onClick={closeFullScreen}
+                    size="large"
+                  >
                     <i className="ion-ios-qr-scanner-outline" />
                   </IconButton>
                 </Tooltip>
               ) : (
                 <Tooltip title="Full Screen" placement="bottom">
-                  <IconButton className={classes.button} onClick={openFullScreen} size="large">
+                  <IconButton
+                    className={classes.button}
+                    onClick={openFullScreen}
+                    size="large"
+                  >
                     <i className="ion-ios-qr-scanner-outline" />
                   </IconButton>
                 </Tooltip>
               )}
               <Tooltip title="Turn Dark/Light" placement="bottom">
-                <IconButton className={classes.button} onClick={() => turnMode(mode)} size="large">
+                <IconButton
+                  className={classes.button}
+                  onClick={() => turnMode(mode)}
+                  size="large"
+                >
                   <i className="ion-ios-bulb-outline" />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Show Guide" placement="bottom">
-                <IconButton className={classes.button} onClick={openGuide} size="large">
+                <IconButton
+                  className={classes.button}
+                  onClick={openGuide}
+                  size="large"
+                >
                   <i className="ion-ios-help-circle-outline" />
                 </IconButton>
               </Tooltip>
@@ -175,7 +193,11 @@ function HeaderMenu(props) {
         </Toolbar>
       </div>
       <Hidden lgDown>
-        { type === 'mega-menu' ? <MegaMenu dataMenu={dataMenu} /> : <DropListMenu dataMenu={dataMenu} />}
+        {type === "mega-menu" ? (
+          <MegaMenu dataMenu={dataMenu} />
+        ) : (
+          <DropListMenu dataMenu={dataMenu} />
+        )}
       </Hidden>
       <Hidden lgUp>
         <SwipeableDrawer
@@ -217,12 +239,12 @@ HeaderMenu.propTypes = {
   loadTransition: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired,
   logoLink: PropTypes.string,
-  isLogin: PropTypes.bool
+  isLogin: PropTypes.bool,
 };
 
 HeaderMenu.defaultProps = {
   isLogin: true,
-  logoLink: '/',
+  logoLink: "/",
 };
 
 export default withStyles(styles)(HeaderMenu);

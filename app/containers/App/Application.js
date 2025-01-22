@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { PropTypes } from "prop-types";
 import { Switch, Route } from "react-router-dom";
 import Dashboard from "../Templates/Dashboard";
@@ -17,13 +17,25 @@ import {
   Appointments,
   MyFamily,
   PatientApplication,
-  Settings
+  Settings,
 } from "../pageListAsync";
 import LoginDemo from "../Pages/Abha/logindemo";
+import FamilyMemberModal from "../Pages/My Family/FamilyMemberModal";
+import { getFamilyMemberList } from "../Pages/My Family/FamilyMemberAction";
+import { getCookieData } from "../../components/Common/storageFun";
+import { useDispatch } from "react-redux";
+import CommonSnackbar from "../../components/Common/CommonSnackbar";
 
 function Application(props) {
   const { history } = props;
   const changeMode = useContext(ThemeContext);
+  const authToken = getCookieData("authToken");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    getFamilyMemberList(authToken, dispatch);
+  }, []);
+
   return (
     <Dashboard history={history} changeMode={changeMode}>
       <Switch>
@@ -46,11 +58,17 @@ function Application(props) {
         <Route exact path="/app/pages/logindemo" component={LoginDemo} />
         <Route exact path="/app/pages/appointments" component={Appointments} />
         <Route exact path="/app/pages/myfamily" component={MyFamily} />
-        <Route exact path="/app/pages/patient-application" component={PatientApplication} />
+        <Route
+          exact
+          path="/app/pages/patient-application"
+          component={PatientApplication}
+        />
         <Route exact path="/app/pages/Settings" component={Settings} />
 
         <Route component={NotFound} />
       </Switch>
+      <FamilyMemberModal />
+      <CommonSnackbar />
     </Dashboard>
   );
 }

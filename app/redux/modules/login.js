@@ -1,14 +1,19 @@
+import { getCookieData } from "../../components/Common/storageFun";
 import {
   LOGIN_FAIL,
   LOGIN_SUCCESS,
   USER_LOGIN,
   LOG_OUT,
+  SET_MOBILE_LOGIN_LOADER,
+  UPDATE_LOGGED_IN_USER,
 } from "../constants/reduxFormConstants";
 
 const initialState = {
   data: {},
   loading: false,
   error: "",
+  mobileLoginLoader: false,
+  loggedInUser: getCookieData("loggedInUser"),
 };
 
 function login(state = initialState, action) {
@@ -42,6 +47,17 @@ function login(state = initialState, action) {
         loading: false,
         data: {},
         error: "",
+      };
+    case SET_MOBILE_LOGIN_LOADER:
+      return {
+        ...state,
+        mobileLoginLoader: action.payload,
+      };
+
+    case UPDATE_LOGGED_IN_USER:
+      return {
+        ...state,
+        loggedInUser: action.payload,
       };
 
     default:

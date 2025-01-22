@@ -10,7 +10,7 @@ import uiReducer from "./modules/ui";
 import patients from "./modules/Patients";
 import initval from "./modules/initForm";
 import login from "./modules/login";
-import register from "./modules/register";
+import registrationReducer from "./modules/registrationReducer";
 import chat from "../containers/Pages/Chat/reducers/chatReducer";
 import contact from "../containers/Pages/Contact/reducers/contactReducer";
 import encounters from "./modules/encounters";
@@ -19,6 +19,8 @@ import AllergyReducer from "./modules/AllergyReducer";
 import DiagnosisReducer from "./modules/DiagnosisReducer";
 import MedicationReducer from "./modules/MedicationReducer";
 import VaccinationReducer from "./modules/VaccinationReducer";
+import familyMembersReducer from "./modules/familyMembersReducer";
+import commonReducer from "./modules/commonReducer";
 
 /*
  * Creates the main reducer with the dynamically injected ones
@@ -34,7 +36,7 @@ export default function createReducer(injectedReducers = {}) {
     initval,
     contact,
     chat,
-    register,
+    registration: registrationReducer,
     allergy: AllergyReducer,
     vaccine: VaccinationReducer,
     medication: MedicationReducer,
@@ -42,6 +44,8 @@ export default function createReducer(injectedReducers = {}) {
     language: languageProviderReducer,
     router: connectRouter(history),
     ...injectedReducers,
+    familyMembers: familyMembersReducer,
+    common: commonReducer,
   });
 
   // Wrap the root reducer and return a new root reducer with router state
