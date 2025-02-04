@@ -11,7 +11,7 @@ import {
   Paper,
   Box,
 } from "@mui/material";
-// import { ChiefComplaintData } from "dan-api/dummy/ChiefComplaintData";
+
 import classNames from "classnames";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
